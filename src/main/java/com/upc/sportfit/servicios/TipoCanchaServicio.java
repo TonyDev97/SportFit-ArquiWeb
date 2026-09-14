@@ -1,16 +1,16 @@
 package com.upc.sportfit.servicios;
 
 import com.upc.sportfit.entidades.TipoCancha;
-import com.upc.sportfit.repositorios.CanchaRepositorio;
+import com.upc.sportfit.repositorios.TipoCanchaRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CanchaServicio {
+public class TipoCanchaServicio {
     @Autowired
-    private CanchaRepositorio canchaRepositorio;
+    private TipoCanchaRepositorio canchaRepositorio;
 
     public TipoCancha insertar(TipoCancha tipoCancha) { return canchaRepositorio.save(tipoCancha);}
 
