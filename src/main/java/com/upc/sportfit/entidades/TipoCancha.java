@@ -1,5 +1,4 @@
-package com.upc.sporfit.entidades;
-
+package com.upc.sportfit.entidades;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -21,19 +20,22 @@ public class TipoCancha {
     @Size(max = 250)
     @Column(name = "descripcion", length = 250)
     private String descripcion;
+
     @Size(max = 20)
     @NotNull
     @Column(name = "deporte", nullable = false, length = 20)
     private String deporte;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cancha", nullable = false)
     private Integer id;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id_tipo_cancha;
+
     private String nombre;
+
     private Long aforo;
+
     private LocalDate f_creacion;
-//conderar camel case por si las moscas
 }

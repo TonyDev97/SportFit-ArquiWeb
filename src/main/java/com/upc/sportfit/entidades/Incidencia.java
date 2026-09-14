@@ -1,4 +1,4 @@
-package com.upc.sporfit.entidades;
+package com.upc.sportfit.entidades;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
