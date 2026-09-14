@@ -1,7 +1,7 @@
-package com.upc.sporfit.controladores;
+package com.upc.sportfit.controladores;
 
-import com.upc.sporfit.entidades.TipoCancha;
-import com.upc.sporfit.servicios.CanchaServicio;
+import com.upc.sportfit.entidades.TipoCancha;
+import com.upc.sportfit.servicios.CanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +21,12 @@ public class CanchaControlador {
     public List<TipoCancha> listar() { return canchaServicio.listar();}
 
     @PutMapping("/{id}")
-    public TipoCancha actualizar(@PathVariable Long id, @RequestBody TipoCancha tipoCancha) {
+    public TipoCancha actualizar(@PathVariable Integer id, @RequestBody TipoCancha tipoCancha) {
         return canchaServicio.actualizar(id, tipoCancha);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
+    public void eliminar(@PathVariable Integer id) {
         canchaServicio.eliminar(id);
     }
 

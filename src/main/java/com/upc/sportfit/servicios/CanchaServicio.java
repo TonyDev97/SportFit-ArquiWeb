@@ -1,7 +1,7 @@
-package com.upc.sporfit.servicios;
+package com.upc.sportfit.servicios;
 
-import com.upc.sporfit.entidades.TipoCancha;
-import com.upc.sporfit.repositorios.CanchaRepositorio;
+import com.upc.sportfit.entidades.TipoCancha;
+import com.upc.sportfit.repositorios.CanchaRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class CanchaServicio {
 
     public List<TipoCancha> listar(){ return canchaRepositorio.findAll();}
 
-    public TipoCancha actualizar (Long id , TipoCancha datosActualizados){
+    public TipoCancha actualizar (Integer id , TipoCancha datosActualizados){
         // 1. Buscamos si existe en la BD
         TipoCancha canchaExistente = canchaRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error: Cancha no encontrada con ID " + id));
@@ -30,7 +30,7 @@ public class CanchaServicio {
         return canchaRepositorio.save(canchaExistente);
     }
 
-    public void eliminar(Long id) {
+    public void eliminar(Integer id) {
         // ELIMINACIÓN FÍSICA TEMPORAL PARA PRUEBAS
         canchaRepositorio.deleteById(id);
 
