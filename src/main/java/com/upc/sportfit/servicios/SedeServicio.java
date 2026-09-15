@@ -9,29 +9,32 @@ import java.util.List;
 
 @Service
 public class SedeServicio {
+
     @Autowired
     private SedeRepositorio sedeRepositorio;
 
-    public Sede Insertar(Sede sede){
-        return sedeRepositorio.save(sede);
-    }
-    public List<Sede> Listar(){
+    public List<Sede> listar() {
         return sedeRepositorio.findAll();
     }
 
-    public Sede actualizar(Sede sede){
-        return sedeRepositorio.save(sede);
-    }
-
-    public Sede buscarPorId(Integer id){
+    public Sede buscarPorId(Integer id) {
         return sedeRepositorio.findById(id).orElse(null);
     }
 
-    public List<Sede> listarPorDistrito(String distrito){
-        return sedeRepositorio.findByDistritoIgnoreCase(distrito);
+    // Nombre de método actualizado para coincidir con el repositorio
+    public List<Sede> listarPorDistrito(String distrito) {
+        return sedeRepositorio.encontrarPorDistrito(distrito);
     }
 
-    public void eliminar(Integer id){
+    public Sede insertar(Sede sede) {
+        return sedeRepositorio.save(sede);
+    }
+
+    public Sede actualizar(Sede sede) {
+        return sedeRepositorio.save(sede);
+    }
+
+    public void eliminar(Integer id) {
         sedeRepositorio.deleteById(id);
     }
 }
