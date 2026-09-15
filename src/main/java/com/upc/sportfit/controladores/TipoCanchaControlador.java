@@ -1,7 +1,7 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.entidades.TipoCancha;
-import com.upc.sportfit.servicios.CanchaServicio;
+import com.upc.sportfit.servicios.TipoCanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class CanchaControlador {
+public class TipoCanchaControlador {
     @Autowired
-    private CanchaServicio canchaServicio;
+    private TipoCanchaServicio canchaServicio;
 
     @PostMapping("/Cancha")
     public TipoCancha insertar(@RequestBody TipoCancha tipoCancha) {return canchaServicio.insertar(tipoCancha);}
