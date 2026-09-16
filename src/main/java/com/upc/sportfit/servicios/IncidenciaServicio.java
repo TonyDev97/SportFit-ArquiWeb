@@ -28,4 +28,10 @@ public class IncidenciaServicio {
     public List<Incidencia> listarIncidenciasPorEstado(String estado){
         return incidenciaRepositorio.findByEstado(estado);
     }
+    public Incidencia editarIncidencia(Incidencia incidencia) {
+        if (incidenciaRepositorio.existsById(incidencia.getId())) {
+            return incidenciaRepositorio.save(incidencia);
+        }
+        return null;
+    }
 }

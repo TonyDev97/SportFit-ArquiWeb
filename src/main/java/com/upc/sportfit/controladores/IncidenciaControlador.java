@@ -34,4 +34,8 @@ public class IncidenciaControlador {
     public List<Incidencia> listarPorEstado(@PathVariable String estado) {
         return incidenciaServicio.listarIncidenciasPorEstado(estado);
     }
+    @PutMapping("/Incidencia-Actualizar")
+    public Incidencia actualizar(@RequestBody Incidencia incidencia) {
+        return incidenciaServicio.editarIncidencia(incidencia);
+    }
 }
