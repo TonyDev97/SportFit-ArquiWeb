@@ -8,34 +8,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/notificaciones")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class NotificacionControlador {
 
     @Autowired
     private NotificacionServicio notificacionServicio;
 
-    @GetMapping
+    @GetMapping("/notificaciones")
     public List<Notificacion> listar() {
         return notificacionServicio.listarNotificaciones();
     }
 
-    @PostMapping
+    @PostMapping("/notificacion")
     public Notificacion registrar(@RequestBody Notificacion notificacion) {
         return notificacionServicio.registrarNotificacion(notificacion);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/notificacion/{id}")
     public Notificacion listarId(@PathVariable("id") Long id) {
         return notificacionServicio.listarNotificacionPorId(id);
     }
 
-    @PutMapping
+    @PutMapping("notificacion-actualizar")
     public Notificacion actualizar(@RequestBody Notificacion notificacion) {
         return notificacionServicio.registrarNotificacion(notificacion);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/notificacion-eliminar/{id}")
     public void eliminar(@PathVariable("id") Long id) {
         notificacionServicio.eliminarNotificacion(id);
     }
