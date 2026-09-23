@@ -13,28 +13,28 @@ public class IncidenciaControlador {
     @Autowired
     private IncidenciaServicio incidenciaServicio;
 
-    @PostMapping("/Incidencia")
+    @PostMapping("/incidencia")
     public Incidencia insertar(@RequestBody Incidencia incidencia) {
         return incidenciaServicio.InsertarIncidencia(incidencia);
     }
-    @GetMapping("/Incidencias")
+    @GetMapping("/incidencias")
     public List<Incidencia> listar() {
         return incidenciaServicio.listarIncidencias();
     }
-    @GetMapping("/Incidencia-id/{id}")
+    @GetMapping("/incidencia-id/{id}")
     public Incidencia BuscarIncidenciaPorId(@PathVariable Integer id){
         return incidenciaServicio.BuscarIncidenciaPorId(id);
     }
 
-    @GetMapping("/Incidencias-tipo/{tipo}")
+    @GetMapping("/incidencias-tipo/{tipo}")
     public List<Incidencia> listarPorTipo(@PathVariable String tipo) {
         return incidenciaServicio.listarIncidenciasPorTipo(tipo);
     }
-    @GetMapping("/Incidencias-estado/{estado}")
+    @GetMapping("/incidencias-estado/{estado}")
     public List<Incidencia> listarPorEstado(@PathVariable String estado) {
         return incidenciaServicio.listarIncidenciasPorEstado(estado);
     }
-    @PutMapping("/Incidencia-Actualizar")
+    @PutMapping("/incidencia-actualizar")
     public Incidencia actualizar(@RequestBody Incidencia incidencia) {
         return incidenciaServicio.editarIncidencia(incidencia);
     }

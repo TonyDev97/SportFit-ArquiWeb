@@ -8,34 +8,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pagos")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class PagoControlador {
 
     @Autowired
     private PagoServicio pagoServicio;
 
-    @GetMapping
+    @GetMapping("/pagos")
     public List<Pago> listar() {
         return pagoServicio.listarPagos();
     }
 
-    @PostMapping
+    @PostMapping("/pago")
     public Pago registrar(@RequestBody Pago pago) {
         return pagoServicio.registrarPago(pago);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/pago/{id}")
     public Pago listarId(@PathVariable("id") Long id) {
         return pagoServicio.listarPagoPorId(id);
     }
 
-    @PutMapping
+    @PutMapping("/pago-añadir")
     public Pago actualizar(@RequestBody Pago pago) {
         return pagoServicio.registrarPago(pago);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/pago-eliminar/{id}")
     public void eliminar(@PathVariable("id") Long id) {
         pagoServicio.eliminarPago(id);
     }

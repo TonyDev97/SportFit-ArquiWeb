@@ -14,32 +14,32 @@ public class TipoCanchaControlador {
     @Autowired
     private TipoCanchaServicio tipoCanchaServicio;
 
-    @PostMapping("/TipoCancha")
+    @PostMapping("/tipoCancha")
     public TipoCancha insertar(@RequestBody TipoCancha tipoCancha) {
         return tipoCanchaServicio.insertar(tipoCancha);
     }
 
-    @GetMapping("/TipoCanchas")
+    @GetMapping("/tipoCanchas")
     public List<TipoCancha> listar() {
         return tipoCanchaServicio.listar();
     }
 
-    @PutMapping("/TipoCancha-Actualizar/{id}")
+    @PutMapping("/tipoCancha-actualizar/{id}")
     public TipoCancha actualizar(@RequestBody TipoCancha tipoCancha) {
         return tipoCanchaServicio.actualizar(tipoCancha);
     }
 
-    @DeleteMapping("/TipoCancha-Eliminar/{id}")
+    @DeleteMapping("/tipoCancha-eliminar/{id}")
     public void eliminar(@PathVariable Integer id) {
         tipoCanchaServicio.eliminar(id);
     }
 
-    @GetMapping("/TipoCancha-Id/{id}")
+    @GetMapping("/tipoCancha-id/{id}")
     public TipoCancha buscarPorId(@PathVariable Integer id) {
         return tipoCanchaServicio.buscarPorId(id);
     }
 
-    @GetMapping("/TipoCancha-Deporte/{deporte}")
+    @GetMapping("/tipoCancha-deporte/{deporte}")
     public List<TipoCancha> buscarPorDeporte(@PathVariable String deporte) {
         return tipoCanchaServicio.buscarPorDeporte(deporte);
     }

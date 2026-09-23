@@ -3,6 +3,7 @@ package com.upc.sportfit.controladores;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.servicios.ReservaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,80 +17,50 @@ public class ReservaControlador {
     @Autowired
     private ReservaServicio reservaServicio;
 
-
-    // Registra una nueva reserva.
-    @PostMapping("/reserva")
-    public Reserva registrar(@RequestBody Reserva reserva) {
-        return reservaServicio.registrar(reserva);
+    @GetMapping("/api")
+    public List<Reserva> listarReservas(){
+        return reservaServicio.listarReservas();
     }
 
-
-    // Lista todas las reservas registradas.
-    @GetMapping("/reservas")
-    public List<Reserva> listar() {
-        return reservaServicio.listar();
+    // GET /api/reserva/disponibilidad/{idCancha}?fecha=2026-09-15
+    @GetMapping("/reserva/disponibilidad/{idCancha}")
+    public List<Reserva> listarReservaCancha(@PathVariable Integer idCancha,
+                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha){
+        return reservaServicio.listarReservaCancha(fecha, idCancha);
     }
 
-
-    // Busca una reserva por su ID.
-    @GetMapping("/reserva/{id}")
-    public Reserva listarPorId(@PathVariable Integer id) {
-        return reservaServicio.listarPorId(id);
-    }
-
-
-    // Busca las reservas realizadas por un usuario.
     @GetMapping("/reserva/usuario/{idUsuario}")
-    public List<Reserva> encontrarPorUsuario(
-            @PathVariable Integer idUsuario) {
+    public List<Reserva> listarReservasCliente(@PathVariable Integer idUsuario){
+        return reservaServicio.listarReservasCliente(idUsuario);
+    }
 
-        return reservaServicio.encontrarPorUsuario(idUsuario);
+    @GetMapping("/reserva-validar")
+    public List<Reserva> listarReservaConfirmada(){
+        return reservaServicio.listarReservaConfirmada();
+    }
+
+    @PostMapping("/reserva")
+    public Reserva registrarReserva(@RequestBody Reserva reserva){
+        return reservaServicio.registrarReserva(reserva);
+    }
+
+    @PutMapping("/reserva-actualizar")
+    public Reserva editarReserva(@RequestBody Reserva reserva){
+        return reservaServicio.editarReserva(reserva);
+    }
+
+    @PutMapping("/reserva-cancelar/{idReserva}")
+    public Reserva eliminarLogicoReserva(@PathVariable Integer idReserva){
+        return reservaServicio.eliminarLogicoReserva(idReserva);
     }
 
 
-    // Consulta las reservas de una cancha para una fecha.
-    @GetMapping("/reserva/disponibilidad/{idSedeCancha}")
-    public List<Reserva> consultarDisponibilidad(
-            @PathVariable Integer idSedeCancha,
-            @RequestParam LocalDate fecha) {
 
-        return reservaServicio.consultarDisponibilidad(
-                idSedeCancha,
-                fecha
-        );
+
+    @DeleteMapping("/reserva-eliminar/{id}")
+    public void eliminarReserva(@RequestBody Integer id){
+        reservaServicio.eliminarReserva(id);
     }
 
 
-    // Verifica si un horario se encuentra disponible.
-    @GetMapping("/reserva/disponibilidad/validar/{idSedeCancha}")
-    public boolean validarHorarioDisponible(
-            @PathVariable Integer idSedeCancha,
-            @RequestParam LocalDate fecha,
-            @RequestParam LocalTime horaInicio,
-            @RequestParam LocalTime horaFin) {
-
-        return reservaServicio.validarHorarioDisponible(
-                idSedeCancha,
-                fecha,
-                horaInicio,
-                horaFin
-        );
-    }
-
-
-    // Modifica la fecha, horario o cancha de una reserva.
-    @PutMapping("/reserva/{id}")
-    public Reserva actualizar(
-            @PathVariable Integer id,
-            @RequestBody Reserva reserva) {
-
-        return reservaServicio.actualizar(id, reserva);
-    }
-
-
-    // Cancela una reserva.
-    @PutMapping("/reserva/{id}/estado")
-    public Reserva cancelar(@PathVariable Integer id) {
-        return reservaServicio.cancelar(id);
-    }
 }
