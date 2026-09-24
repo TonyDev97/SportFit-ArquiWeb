@@ -18,8 +18,8 @@ public class UsuarioServicio {
     private RolRepositorio rolRepositorio;
 
     public Usuario insertar(Usuario usuario){
-        Rol rol = rolRepositorio.findById(usuario.getIdRol().getId()).orElse(null);
-        usuario.setIdRol(rol);
+        Rol rol = rolRepositorio.findById(usuario.getRol().getIdRol()).orElse(null);
+        usuario.setRol(rol);
         return usuarioRepositorio.save(usuario);
     }
 
@@ -32,7 +32,7 @@ public class UsuarioServicio {
     }
 
     public Usuario actualizar(Usuario usuario){
-        if(usuarioRepositorio.existsById(usuario.getId()))
+        if(usuarioRepositorio.existsById(usuario.getIdUsuario()))
             return usuarioRepositorio.save(usuario);
         return null;
     }

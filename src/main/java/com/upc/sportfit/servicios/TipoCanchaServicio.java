@@ -19,7 +19,7 @@ public class TipoCanchaServicio {
         return tipoCanchaRepositorio.findAll();
     }
     public TipoCancha actualizar(TipoCancha tipoCancha) {
-        if (tipoCanchaRepositorio.existsById(tipoCancha.getId())) {
+        if (tipoCanchaRepositorio.existsById(tipoCancha.getIdTipoCancha())) {
             return tipoCanchaRepositorio.save(tipoCancha);
         }
         return null;

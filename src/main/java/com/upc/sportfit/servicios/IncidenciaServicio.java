@@ -29,7 +29,7 @@ public class IncidenciaServicio {
         return incidenciaRepositorio.findByEstado(estado);
     }
     public Incidencia editarIncidencia(Incidencia incidencia) {
-        if (incidenciaRepositorio.existsById(incidencia.getId())) {
+        if (incidenciaRepositorio.existsById(incidencia.getIdIncidencia())) {
             return incidenciaRepositorio.save(incidencia);
         }
         return null;

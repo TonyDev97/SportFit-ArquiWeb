@@ -41,7 +41,7 @@ public class SedeCanchaControlador {
 
     @PutMapping("/cancha/{id}")
     public SedeCancha actualizar(@PathVariable Integer id, @RequestBody SedeCancha sedeCancha) {
-        sedeCancha.setId(id);
+        sedeCancha.setIdSedeCancha(id);
         return sedeCanchaServicio.actualizar(sedeCancha);
     }
 

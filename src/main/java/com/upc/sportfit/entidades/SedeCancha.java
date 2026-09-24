@@ -17,7 +17,7 @@ public class SedeCancha {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_sede_cancha", nullable = false)
-    private Integer id;
+    private Integer idSedeCancha;
 
     @Size(max = 50)
     @NotNull
@@ -40,12 +40,13 @@ public class SedeCancha {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_sede", nullable = false)
-    private Sede idSede;
+    private Sede sede;
+    //nombre modificado por rara incosistencia
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_cancha", nullable = false)
-    private TipoCancha idCancha;
+    private TipoCancha cancha;
 
 
 }

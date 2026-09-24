@@ -54,9 +54,6 @@ public class ReservaControlador {
         return reservaServicio.eliminarLogicoReserva(idReserva);
     }
 
-
-
-
     @DeleteMapping("/reserva-eliminar/{id}")
     public void eliminarReserva(@RequestBody Integer id){
         reservaServicio.eliminarReserva(id);

@@ -14,7 +14,7 @@ public class Sede {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_sede", nullable = false)
-    private Integer id;
+    private Integer idSede;
 
     @Size(max = 50)
     @NotNull
@@ -31,6 +31,11 @@ public class Sede {
     @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 
+    // Aquí agregamos la URL para Google Maps para la ruta (POSIBLE INTEGRACIO MI KONG)
+    @Size(max = 500)
+    @Column(name = "url_ubicacion", length = 500)
+    private String urlUbicacion;
+
     @Size(max = 300)
     @Column(name = "img_sede", length = 300)
     private String imgSede;
@@ -38,7 +43,7 @@ public class Sede {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 
 
 }

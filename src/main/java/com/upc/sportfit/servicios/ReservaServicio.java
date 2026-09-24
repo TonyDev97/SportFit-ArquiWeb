@@ -28,7 +28,7 @@ public class ReservaServicio {
 
     // Actualizar reserva
     public Reserva editarReserva(Reserva reserva){
-        if (reservaRepositorio.existsById(reserva.getId())){
+        if (reservaRepositorio.existsById(reserva.getIdReserva())){
             return reservaRepositorio.save(reserva);
         }
         return null;

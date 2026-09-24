@@ -17,25 +17,28 @@ import java.time.LocalDate;
 @Entity
 public class TipoCancha {
 
-    @Size(max = 250)
-    @Column(name = "descripcion", length = 250)
-    private String descripcion;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tipo_cancha", nullable = false)
+    private Integer idTipoCancha;
+
+    @Size(max = 255)
+    @Column(name = "nombre", length = 255)
+    private String nombre;
 
     @Size(max = 20)
     @NotNull
     @Column(name = "deporte", nullable = false, length = 20)
     private String deporte;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_cancha", nullable = false)
-    private Integer id;
+    @Size(max = 250)
+    @Column(name = "descripcion", length = 250)
+    private String descripcion;
 
-    private Long id_tipo_cancha;
-
-    private String nombre;
-
+    @Column(name = "aforo")
     private Long aforo;
 
-    private LocalDate f_creacion;
+    // Fecha como campo simple
+    @Column(name = "f_creacion")
+    private LocalDate fechaCreacion;
 }
