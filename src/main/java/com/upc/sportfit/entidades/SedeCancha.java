@@ -45,7 +45,7 @@ public class SedeCancha {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_cancha", nullable = false)
+    @JoinColumn(name = "id_tipo_cancha", nullable = false)
     private TipoCancha cancha;
 
 
