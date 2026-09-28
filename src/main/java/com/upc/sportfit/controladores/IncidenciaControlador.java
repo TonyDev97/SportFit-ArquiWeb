@@ -13,15 +13,15 @@ public class IncidenciaControlador {
     @Autowired
     private IncidenciaServicio incidenciaServicio;
 
-    @PostMapping("/Incidencia")
+    @PostMapping("/incidencia")
     public Incidencia insertar(@RequestBody Incidencia incidencia) {
         return incidenciaServicio.InsertarIncidencia(incidencia);
     }
-    @GetMapping("/Incidencias")
+    @GetMapping("/incidencias")
     public List<Incidencia> listar() {
         return incidenciaServicio.listarIncidencias();
     }
-    @GetMapping("/Incidencia-id/{id}")
+    @GetMapping("/incidencia-id/{id}")
     public Incidencia BuscarIncidenciaPorId(@PathVariable Integer id){
         return incidenciaServicio.BuscarIncidenciaPorId(id);
     }
