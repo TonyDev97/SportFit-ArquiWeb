@@ -26,15 +26,15 @@ public class IncidenciaControlador {
         return incidenciaServicio.BuscarIncidenciaPorId(id);
     }
 
-    @GetMapping("/Incidencias-tipo/{tipo}")
+    @GetMapping("/incidencias-tipo/{tipo}")
     public List<Incidencia> listarPorTipo(@PathVariable String tipo) {
         return incidenciaServicio.listarIncidenciasPorTipo(tipo);
     }
-    @GetMapping("/Incidencias-estado/{estado}")
+    @GetMapping("/incidencias-estado/{estado}")
     public List<Incidencia> listarPorEstado(@PathVariable String estado) {
         return incidenciaServicio.listarIncidenciasPorEstado(estado);
     }
-    @PutMapping("/Incidencia-Actualizar")
+    @PutMapping("/incidencia-actualizar")
     public Incidencia actualizar(@RequestBody Incidencia incidencia) {
         return incidenciaServicio.editarIncidencia(incidencia);
     }
