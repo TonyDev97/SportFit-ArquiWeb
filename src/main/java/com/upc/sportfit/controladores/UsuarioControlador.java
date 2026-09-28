@@ -28,7 +28,7 @@ public class UsuarioControlador {
 
     @PutMapping("/usuario/{id}")
     public Usuario actualizar(@PathVariable Integer id, @RequestBody Usuario usuario){
-        usuario.setId(id);
+        usuario.setIdUsuario(id);
         return usuarioServicio.actualizar(usuario);
     }
 

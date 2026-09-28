@@ -19,7 +19,7 @@ public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_reserva", nullable = false)
-    private Integer id;
+    private Integer idReserva;
 
     @NotNull
     @Column(name = "f_reserva", nullable = false)
@@ -32,6 +32,7 @@ public class Reserva {
     @NotNull
     @Column(name = "h_fin", nullable = false)
     private LocalTime hFin;
+
 
     @Size(max = 25)
     @NotNull
@@ -58,12 +59,12 @@ public class Reserva {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_sede_cancha", nullable = false)
-    private SedeCancha idSedeCancha;
+    private SedeCancha sedeCancha;
 
 
 }

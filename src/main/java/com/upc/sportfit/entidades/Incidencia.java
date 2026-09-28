@@ -17,7 +17,7 @@ public class Incidencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_incidencia", nullable = false)
-    private Integer id;
+    private Integer idIncidencia;
 
     @Size(max = 20)
     @NotNull
@@ -54,7 +54,7 @@ public class Incidencia {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 
 
 }

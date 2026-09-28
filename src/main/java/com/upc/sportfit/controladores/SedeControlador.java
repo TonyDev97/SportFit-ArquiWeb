@@ -36,7 +36,7 @@ public class SedeControlador {
 
     @PutMapping("/sede/{id}")
     public Sede actualizar(@PathVariable Integer id, @RequestBody Sede sede) {
-        sede.setId(id);
+        sede.setIdSede(id);
         return sedeServicio.actualizar(sede);
     }
 

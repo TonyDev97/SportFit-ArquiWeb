@@ -17,7 +17,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario", nullable = false)
-    private Integer id;
+    private Integer idUsuario;
 
     @Size(max = 100)
     @NotNull
@@ -78,7 +78,7 @@ public class Usuario {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_rol", nullable = false)
-    private Rol idRol;
+    private Rol rol;
 
 
 }

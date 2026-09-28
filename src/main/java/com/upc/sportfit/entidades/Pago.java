@@ -16,7 +16,7 @@ public class Pago {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pago", nullable = false)
-    private Integer id;
+    private Integer idPago;
 
     @NotNull
     @Column(name = "monto_total", nullable = false, precision = 18, scale = 2)
@@ -30,7 +30,7 @@ public class Pago {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_reserva", nullable = false)
-    private Reserva idReserva;
+    private Reserva reserva;
 
 
 }

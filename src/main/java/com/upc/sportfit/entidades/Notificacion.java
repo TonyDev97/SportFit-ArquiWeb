@@ -17,7 +17,7 @@ public class Notificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_notificacion", nullable = false)
-    private Integer id;
+    private Integer idNotifiacion;
 
     @Size(max = 20)
     @NotNull
@@ -47,7 +47,7 @@ public class Notificacion {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 
 
 }

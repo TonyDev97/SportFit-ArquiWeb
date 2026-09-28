@@ -17,7 +17,7 @@ public class Cancelacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cancelacion", nullable = false)
-    private Integer id;
+    private Integer idCancelacion;
 
     @Size(max = 25)
     @NotNull
@@ -32,7 +32,7 @@ public class Cancelacion {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_reserva", nullable = false)
-    private Reserva idReserva;
+    private Reserva reserva;
 
 
 }

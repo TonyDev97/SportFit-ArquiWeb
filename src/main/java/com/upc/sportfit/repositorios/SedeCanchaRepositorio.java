@@ -14,7 +14,7 @@ public interface SedeCanchaRepositorio extends JpaRepository<SedeCancha, Integer
     // Busca las canchas activas que pertenecen a una sede específica
     @Query("""
         SELECT sc FROM SedeCancha sc 
-        WHERE sc.idSede.id = :idSede 
+        WHERE sc.sede.idSede = :idSede 
         AND sc.estado = true
     """)
     List<SedeCancha> encontrarActivasPorSede(@Param("idSede") Integer idSede);
@@ -22,8 +22,8 @@ public interface SedeCanchaRepositorio extends JpaRepository<SedeCancha, Integer
     // Busca canchas activas en una sede filtrando por el nombre del deporte (HU01)
     @Query("""
         SELECT sc FROM SedeCancha sc 
-        WHERE sc.idSede.id = :idSede 
-        AND LOWER(sc.idCancha.deporte) = LOWER(:deporte) 
+        WHERE sc.sede.idSede = :idSede 
+        AND LOWER(sc.cancha.deporte) = LOWER(:deporte) 
         AND sc.estado = true
     """)
     List<SedeCancha> encontrarActivasPorSedeYDeporte(
@@ -34,7 +34,7 @@ public interface SedeCanchaRepositorio extends JpaRepository<SedeCancha, Integer
     // Busca todas las canchas de una sede (activas e inactivas) para administración
     @Query("""
         SELECT sc FROM SedeCancha sc 
-        WHERE sc.idSede.id = :idSede
+        WHERE sc.sede.idSede = :idSede
     """)
     List<SedeCancha> encontrarTodasPorSede(@Param("idSede") Integer idSede);
 }

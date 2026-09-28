@@ -13,9 +13,11 @@ public class IncidenciaServicio {
     private IncidenciaRepositorio incidenciaRepositorio;
 
     public Incidencia InsertarIncidencia(Incidencia incidencia){
+
         return incidenciaRepositorio.save(incidencia);
     }
     public List<Incidencia> listarIncidencias(){
+
         return incidenciaRepositorio.findAll();
     }
     public Incidencia BuscarIncidenciaPorId(Integer id){
@@ -23,13 +25,14 @@ public class IncidenciaServicio {
                 .orElseThrow(() -> new RuntimeException("Error: Incidencia no encontrada con ID " + id));
     }
     public List<Incidencia> listarIncidenciasPorTipo(String tipo){
+
         return incidenciaRepositorio.findByTipo(tipo);
     }
     public List<Incidencia> listarIncidenciasPorEstado(String estado){
         return incidenciaRepositorio.findByEstado(estado);
     }
     public Incidencia editarIncidencia(Incidencia incidencia) {
-        if (incidenciaRepositorio.existsById(incidencia.getId())) {
+        if (incidenciaRepositorio.existsById(incidencia.getIdIncidencia())) {
             return incidenciaRepositorio.save(incidencia);
         }
         return null;

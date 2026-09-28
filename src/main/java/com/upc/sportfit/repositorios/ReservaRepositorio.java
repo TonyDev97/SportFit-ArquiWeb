@@ -15,10 +15,10 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
 
     // Consultar Reserva de una cancha para una fecha
     // Verificar funcionalidad
-    @Query("select r from Reserva r join r.idSedeCancha sc where r.fReserva =:fecha_reserva and sc.id =:id")
+    @Query("select r from Reserva r join r.sedeCancha sc where r.fReserva =:fecha_reserva and sc.idSedeCancha =:id")
     List<Reserva> listarReservaCancha(@Param("fecha_reserva") LocalDate fechaReserva, @Param("id") Integer id);
 
-    @Query("select r from Reserva r join r.idUsuario cl where cl.id =:id")
+    @Query("select r from Reserva r join r.usuario cl where cl.idUsuario =:id")
     List<Reserva> listarReservaCliente(@Param("id") Integer id);
 
     List<Reserva> findByEstado(String estado);

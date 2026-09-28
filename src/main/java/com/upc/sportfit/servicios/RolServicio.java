@@ -21,7 +21,7 @@ public class RolServicio {
     }
 
     public Rol actualizar(Rol rol){
-        if(rolRepositorio.existsById(rol.getId()))
+        if(rolRepositorio.existsById(rol.getIdRol()))
             return rolRepositorio.save(rol);
         return null;
     }
