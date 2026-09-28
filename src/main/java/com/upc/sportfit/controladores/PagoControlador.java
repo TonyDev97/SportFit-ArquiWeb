@@ -39,4 +39,6 @@ public class PagoControlador {
     public void eliminar(@PathVariable("id") Long id) {
         pagoServicio.eliminarPago(id);
     }
+
+    //esta
 }

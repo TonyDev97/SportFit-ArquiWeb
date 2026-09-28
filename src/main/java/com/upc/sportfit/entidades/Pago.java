@@ -27,10 +27,13 @@ public class Pago {
     @Column(name = "metodo", nullable = false, length = 50)
     private String metodo;
 
+    @Size(max = 500)
+    @Column(name = "url_comprobante", length = 500)
+    private String urlComprobante;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_reserva", nullable = false)
     private Reserva reserva;
-
 
 }
