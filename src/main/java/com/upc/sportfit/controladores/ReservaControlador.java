@@ -16,12 +16,13 @@ public class ReservaControlador {
 
     @Autowired
     private ReservaServicio reservaServicio;
-
-    @GetMapping("/api")
+    //VALIDADO
+    @GetMapping("/reservas")
     public List<Reserva> listarReservas(){
         return reservaServicio.listarReservas();
     }
 
+    //VALIDADO
     // GET /api/reserva/disponibilidad/{idCancha}?fecha=2026-09-15
     @GetMapping("/reserva/disponibilidad/{idCancha}")
     public List<Reserva> listarReservaCancha(@PathVariable Integer idCancha,
@@ -44,11 +45,13 @@ public class ReservaControlador {
         return reservaServicio.registrarReserva(reserva);
     }
 
+    //VALIDADO
     @PutMapping("/reserva-actualizar")
     public Reserva editarReserva(@RequestBody Reserva reserva){
         return reservaServicio.editarReserva(reserva);
     }
 
+     //VALIDADO
     @PutMapping("/reserva-cancelar/{idReserva}")
     public Reserva eliminarLogicoReserva(@PathVariable Integer idReserva){
         return reservaServicio.eliminarLogicoReserva(idReserva);
@@ -59,5 +62,15 @@ public class ReservaControlador {
         reservaServicio.eliminarReserva(id);
     }
 
+    //VALIDADO
+    @GetMapping("reservas/sede/{id_sede}")
+    public List<Reserva> listarReservasSede(@PathVariable Integer id_sede){
+        return reservaServicio.listarReservasSede(id_sede);
+    }
+    //VALIDADO
+    @GetMapping("reservas/deporte/{deporte}")
+    public List<Reserva> listarReservasDeporte(@PathVariable String deporte){
+        return reservaServicio.listarReservasDeporte(deporte);
+    }
 
 }

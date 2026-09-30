@@ -23,4 +23,10 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
 
     List<Reserva> findByEstado(String estado);
 
+
+    @Query("select r from Reserva r where r.sedeCancha.sede.idSede = :id_sede")
+    List<Reserva> listarReservasSede(@Param("id_sede") Integer id_sede);
+
+    @Query("select r from Reserva r where r.sedeCancha.cancha.deporte = :deporte")
+    List<Reserva> listarReservasDeporte(@Param("deporte") String deporte);
 }

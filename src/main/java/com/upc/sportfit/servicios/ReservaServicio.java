@@ -67,4 +67,12 @@ public class ReservaServicio {
         return null;
     }
 
+    public List<Reserva> listarReservasSede(Integer id_sede) {
+        return reservaRepositorio.listarReservasSede(id_sede);
+    }
+
+    public List<Reserva> listarReservasDeporte(String deporte){
+        return reservaRepositorio.listarReservasDeporte(deporte);
+    }
+
 }

@@ -20,6 +20,7 @@ public class PagoControlador {
         return pagoServicio.listarPagos();
     }
 
+    //VALIDADO
     @PostMapping("/pago")
     public Pago registrar(@RequestBody Pago pago) {
         return pagoServicio.registrarPago(pago);
