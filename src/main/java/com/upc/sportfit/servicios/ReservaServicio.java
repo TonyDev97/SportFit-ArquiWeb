@@ -1,7 +1,10 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.dtos.ReservaDTO;
+import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.repositorios.ReservaRepositorio;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,9 @@ public class ReservaServicio {
     @Autowired
     private ReservaRepositorio reservaRepositorio;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     //CRUD
     public Reserva registrarReserva(Reserva reserva){
         return reservaRepositorio.save(reserva);
@@ -27,11 +33,15 @@ public class ReservaServicio {
     }
 
     // Actualizar reserva
-    public Reserva editarReserva(Reserva reserva){
-        if (reservaRepositorio.existsById(reserva.getIdReserva())){
-            return reservaRepositorio.save(reserva);
-        }
-        return null;
+    public ReservaDTO editarReserva(ReservaDTO reservaDTO){
+        return reservaRepositorio.findById(reservaDTO.getIdReserva())
+                .map(
+                        reserva -> {
+                            modelMapper.map(reserva, reservaDTO);
+                            return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
+                        }
+                )
+                .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + reservaDTO.getIdReserva()));
     }
 
     public void eliminarReserva(Integer id){
@@ -57,14 +67,17 @@ public class ReservaServicio {
         return reservaRepositorio.findByEstado(confirmada);
     }
 
-    public Reserva eliminarLogicoReserva(Integer id){
-        Reserva reserva = reservaRepositorio.findById(id).orElse(null);
-        if (reserva != null){
-            reserva.setEstado("Eliminada");
-            reserva.setFModificacion(Instant.now());
-            return reservaRepositorio.save(reserva);
-        }
-        return null;
+    // Eliminar logico de la reserva
+    public ReservaDTO eliminarLogicoReserva(Integer id){
+        return reservaRepositorio.findById(id)
+                .map(
+                        reserva -> {
+                            reserva.setEstado("Eliminada");
+                            reserva.setFModificacion(Instant.now());
+                            return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
+                        }
+                )
+                .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + id));
     }
 
     public List<Reserva> listarReservasSede(Integer id_sede) {
@@ -74,5 +87,22 @@ public class ReservaServicio {
     public List<Reserva> listarReservasDeporte(String deporte){
         return reservaRepositorio.listarReservasDeporte(deporte);
     }
+
+    public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSede(){
+        List<ReservaDeporteSede> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSede();
+        if (reportes.isEmpty()){
+            throw new RuntimeException("No hay información suficiente");
+        }
+        return reportes;
+    }
+
+    public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSedeEntreFechas(LocalDate fechaMin, LocalDate fechaMax){
+        List<ReservaDeporteSede> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax);
+        if (reportes.isEmpty()){
+            throw new RuntimeException("No hay información suficiente");
+        }
+        return reportes;
+    }
+
 
 }

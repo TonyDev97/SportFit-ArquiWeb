@@ -1,7 +1,6 @@
 package com.upc.sportfit.dtos;
 
-import com.upc.sportfit.entidades.SedeCancha;
-import com.upc.sportfit.entidades.Usuario;
+import com.upc.sportfit.entidades.Rol;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,28 +11,23 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservaDTO {
+public class UsuarioDTO {
 
-    private Integer idReserva;
-    private LocalDate fReserva;
-    private LocalTime hInicio;
-    private LocalTime hFin;
-    private String estado;
-    private String creadoPor;
+    private Integer idUsuario;
+    private String nombre;
+    private String apellido;
+    private String dni;
+    private String telefono;
+    private String correo;
+    private String contrasenaHash;
+    private Boolean activo;
+    private String imgUsuario;
     private Instant fCreacion;
-    private String modificadoPor;
     private Instant fModificacion;
-    private UsuarioDTO usuario;
-    private SedeCanchaDTO sedeCancha;
-
-
-
+    private RolDTO rol;
 }

@@ -1,9 +1,12 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.ReservaDTO;
+import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.servicios.ReservaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -47,14 +50,14 @@ public class ReservaControlador {
 
     //VALIDADO
     @PutMapping("/reserva-actualizar")
-    public Reserva editarReserva(@RequestBody Reserva reserva){
-        return reservaServicio.editarReserva(reserva);
+    public ResponseEntity<ReservaDTO> editarReserva(@RequestBody ReservaDTO reservaDTO){
+        return ResponseEntity.ok(reservaServicio.editarReserva(reservaDTO));
     }
 
      //VALIDADO
     @PutMapping("/reserva-cancelar/{idReserva}")
-    public Reserva eliminarLogicoReserva(@PathVariable Integer idReserva){
-        return reservaServicio.eliminarLogicoReserva(idReserva);
+    public ResponseEntity<ReservaDTO> eliminarLogicoReserva(@PathVariable Integer idReserva){
+        return ResponseEntity.ok(reservaServicio.eliminarLogicoReserva(idReserva));
     }
 
     @DeleteMapping("/reserva-eliminar/{id}")
@@ -72,5 +75,19 @@ public class ReservaControlador {
     public List<Reserva> listarReservasDeporte(@PathVariable String deporte){
         return reservaServicio.listarReservasDeporte(deporte);
     }
+
+
+    // Validado
+    @GetMapping("/reservas/sede/tipoCancha")
+    public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSede(){
+        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSede());
+    }
+
+    // Validado
+    @GetMapping("/reservas/sede/tipoCancha/{fechaMin}{fechaMax}")
+    public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSedeEntreFechas(@PathVariable LocalDate fechaMin, @PathVariable LocalDate fechaMax){
+        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax));
+    }
+
 
 }
