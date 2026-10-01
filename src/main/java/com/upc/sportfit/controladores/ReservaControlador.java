@@ -1,6 +1,8 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.EstadoReservaDTO;
 import com.upc.sportfit.dtos.ReservaDTO;
+import com.upc.sportfit.dtos.SolicitudReservaDTO;
 import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.servicios.ReservaServicio;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,10 +24,13 @@ public class ReservaControlador {
     private ReservaServicio reservaServicio;
     //VALIDADO
     @GetMapping("/reservas")
-    public List<Reserva> listarReservas(){
-        return reservaServicio.listarReservas();
-    }
+    public ResponseEntity<List<ReservaDTO>> listarReservas(
+            @RequestParam(required = false) String estado) {
 
+        return ResponseEntity.ok(
+                reservaServicio.listarReservasDTO(estado)
+        );
+    }
     //VALIDADO
     // GET /api/reserva/disponibilidad/{idCancha}?fecha=2026-09-15
     @GetMapping("/reserva/disponibilidad/{idCancha}")
@@ -87,6 +93,34 @@ public class ReservaControlador {
     @GetMapping("/reservas/sede/tipoCancha/{fechaMin}{fechaMax}")
     public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSedeEntreFechas(@PathVariable LocalDate fechaMin, @PathVariable LocalDate fechaMax){
         return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax));
+    }
+
+    @GetMapping("/reserva/{idReserva}")
+    public ResponseEntity<SolicitudReservaDTO> consultarSolicitud(
+            @PathVariable Integer idReserva) {
+
+        return ResponseEntity.ok(
+                reservaServicio.consultarSolicitud(idReserva)
+        );
+    }
+
+    @PutMapping("/reservas/{id_reserva}/estado")
+    public ResponseEntity<ReservaDTO> cambiarEstadoSolicitud(
+            @PathVariable("id_reserva") Integer idReserva,
+            @RequestBody EstadoReservaDTO dto) {
+
+        return ResponseEntity.ok(
+                reservaServicio.cambiarEstadoSolicitud(idReserva, dto)
+        );
+    }
+
+    @GetMapping("/reservas/cancha/{idCancha}")
+    public ResponseEntity<List<ReservaDTO>> listarReservasPorCancha(
+            @PathVariable Integer idCancha) {
+
+        return ResponseEntity.ok(
+                reservaServicio.listarReservasPorCancha(idCancha)
+        );
     }
 
 

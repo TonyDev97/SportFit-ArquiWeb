@@ -42,4 +42,10 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "group by r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre")
     List<ReservaDeporteSede> frecuenciaReservasPorDeporteSedeEntreFechas(@Param("fecha_inicio") LocalDate fechaInicio, @Param("fecha_fin") LocalDate fechaFin);
 
+    @Query("select r from Reserva r " +
+            "where r.sedeCancha.idSedeCancha = :idCancha " +
+            "order by r.fReserva desc, r.hInicio asc")
+    List<Reserva> listarPorCancha(
+            @Param("idCancha") Integer idCancha
+    );
 }
