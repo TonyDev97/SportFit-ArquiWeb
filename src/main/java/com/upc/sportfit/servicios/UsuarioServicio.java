@@ -1,18 +1,25 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.dtos.UsuarioDTO;
 import com.upc.sportfit.entidades.Rol;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.RolRepositorio;
 import com.upc.sportfit.repositorios.UsuarioRepositorio;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UsuarioServicio {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private RolRepositorio rolRepositorio;
@@ -31,10 +38,14 @@ public class UsuarioServicio {
         return usuarioRepositorio.findByActivoTrue();
     }
 
-    public Usuario actualizar(Usuario usuario){
-        if(usuarioRepositorio.existsById(usuario.getIdUsuario()))
-            return usuarioRepositorio.save(usuario);
-        return null;
+
+    public UsuarioDTO actualizar(UsuarioDTO usuarioDTO){
+        return usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
+                .map(usuario -> {
+                    modelMapper.map(usuario, usuarioDTO);
+                    return modelMapper.map(usuarioRepositorio.save(usuario), UsuarioDTO.class);
+                })
+                .orElseThrow(() -> new RuntimeException("No existe el usuario con el id: " + usuarioDTO.getIdUsuario()));
     }
 
     public Usuario cambiarEstado(Integer id, Boolean estado){
@@ -66,19 +77,44 @@ public class UsuarioServicio {
         return usuarioRepositorio.findById(id).orElse(null);
     }
 
-    public Usuario cambiarPassword(Integer id, String password){
+    public UsuarioDTO cambiarPassword(Integer id, String password){
 
-        Usuario usuario = usuarioRepositorio
-                .findById(id)
-                .orElse(null);
+        Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
 
-        if(usuario != null){
-
-            usuario.setContrasenaHash(password);
-
-            return usuarioRepositorio.save(usuario);
+        if(usuario == null){
+            throw new RuntimeException("No es existe el usuario para cambiar la contraseña");
         }
-
-        return null;
+        return modelMapper.map(usuario, UsuarioDTO.class) ;
     }
+
+    public List<UsuarioDTO> buscarClientesNombreContiene(String nombre){
+        List<Usuario> clientes = usuarioRepositorio.findByNombreContainingIgnoreCaseAndRol_IdRol(nombre, 1);
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for (Usuario cliente : clientes){
+            usuarioDTOs.add(modelMapper.map(cliente, UsuarioDTO.class));
+        }
+        return usuarioDTOs;
+    }
+
+    public List<UsuarioDTO> buscarClientesDniInicia(String dni){
+        List<Usuario> clientes = usuarioRepositorio.findByDniStartingWithAndRol_IdRol(dni, 1);
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for (Usuario cliente : clientes){
+            usuarioDTOs.add(modelMapper.map(cliente, UsuarioDTO.class));
+        }
+        return usuarioDTOs;
+    }
+    public List<UsuarioDTO> buscarClientesEstado(Boolean estado){
+        List<Usuario> clientes =  usuarioRepositorio.findByActivoAndRol_IdRol(estado, 1);
+        if (clientes == null){
+            throw new RuntimeException("No existen usuarios con el estado: " + estado);
+        }
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for (Usuario cliente : clientes){
+            usuarioDTOs.add(modelMapper.map(cliente, UsuarioDTO.class));
+        }
+        return usuarioDTOs;
+    }
+
+
 }
