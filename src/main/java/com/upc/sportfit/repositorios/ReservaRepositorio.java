@@ -1,6 +1,9 @@
 package com.upc.sportfit.repositorios;
 
+import com.upc.sportfit.dtos.reportes.CancelacionDiaDTO;
 import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
+import com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO;
+import com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO;
 import com.upc.sportfit.entidades.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -42,4 +45,53 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "group by r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre")
     List<ReservaDeporteSede> frecuenciaReservasPorDeporteSedeEntreFechas(@Param("fecha_inicio") LocalDate fechaInicio, @Param("fecha_fin") LocalDate fechaFin);
 
+    // HU08 - ED21: Cancelaciones por día en un mes/año
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r)) " +
+            "FROM Reserva r " +
+            "WHERE r.estado = 'Cancelada' " +
+            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY r.fReserva " +
+            "ORDER BY r.fReserva")
+    List<CancelacionDiaDTO> obtenerCancelacionesPorDia(@Param("mes") Integer mes, @Param("anio") Integer anio);
+
+    // HU08 - ED23: Total de reservas canceladas en un mes/año
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO(COUNT(r)) " +
+            "FROM Reserva r " +
+            "WHERE r.estado = 'Cancelada' " +
+            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio")
+    TotalCancelacionesDTO obtenerTotalCancelaciones(@Param("mes") Integer mes, @Param("anio") Integer anio);
+
+    // HU09 - ED24: Reservas por cliente en un período
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO(u.idUsuario, CONCAT(u.nombre, ' ', u.apellido), COUNT(r)) " +
+            "FROM Reserva r JOIN r.usuario u " +
+            "WHERE r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY u.idUsuario, u.nombre, u.apellido " +
+            "ORDER BY COUNT(r) DESC")
+    List<ReservasPorClienteDTO> obtenerReservasPorCliente(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    // HU09 - ED25: Reservas por cliente con filtro mínimo
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO(u.idUsuario, CONCAT(u.nombre, ' ', u.apellido), COUNT(r)) " +
+            "FROM Reserva r JOIN r.usuario u " +
+            "WHERE r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY u.idUsuario, u.nombre, u.apellido " +
+            "HAVING COUNT(r) >= :minReservas " +
+            "ORDER BY COUNT(r) DESC")
+    List<ReservasPorClienteDTO> obtenerReservasPorClienteMinimo(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin, @Param("minReservas") Long minReservas);
+
+    // HU09 - ED26: Top de clientes con más reservas
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO(u.idUsuario, CONCAT(u.nombre, ' ', u.apellido), COUNT(r)) " +
+            "FROM Reserva r JOIN r.usuario u " +
+            "WHERE r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY u.idUsuario, u.nombre, u.apellido " +
+            "ORDER BY COUNT(r) DESC")
+    List<ReservasPorClienteDTO> obtenerTopClientesReservas(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin, @Param("top") Integer top);
+
+    @Query("select r from Reserva r " +
+            "where r.sedeCancha.idSedeCancha = :idCancha " +
+            "order by r.fReserva desc, r.hInicio asc")
+    List<Reserva> listarPorCancha(
+            @Param("idCancha") Integer idCancha
+    );
 }

@@ -1,5 +1,6 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.NotificacionDTO;
 import com.upc.sportfit.entidades.Notificacion;
 import com.upc.sportfit.servicios.NotificacionServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class NotificacionControlador {
     private NotificacionServicio notificacionServicio;
 
     @GetMapping("/notificaciones")
-    public List<Notificacion> listar() {
+    public List<NotificacionDTO> listar() {
         return notificacionServicio.listarNotificaciones();
     }
 
@@ -26,7 +27,7 @@ public class NotificacionControlador {
     }
 
     @GetMapping("/notificacion/{id}")
-    public Notificacion listarId(@PathVariable("id") Long id) {
+    public Notificacion listarId(@PathVariable("id") Integer id) {
         return notificacionServicio.listarNotificacionPorId(id);
     }
 
@@ -36,7 +37,7 @@ public class NotificacionControlador {
     }
 
     @DeleteMapping("/notificacion-eliminar/{id}")
-    public void eliminar(@PathVariable("id") Long id) {
+    public void eliminar(@PathVariable("id") Integer id) {
         notificacionServicio.eliminarNotificacion(id);
     }
 }
