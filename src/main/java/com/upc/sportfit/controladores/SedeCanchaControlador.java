@@ -4,6 +4,7 @@ import com.upc.sportfit.entidades.SedeCancha;
 import com.upc.sportfit.servicios.SedeCanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.upc.sportfit.dtos.SedeCanchaDTO;
 
 import java.util.List;
 
@@ -18,20 +19,20 @@ public class SedeCanchaControlador {
     public List<SedeCancha> listarCanchasPorSede(@PathVariable Integer idSede) {
         return sedeCanchaServicio.listarPorSedeActivas(idSede);
     }
-
+    //VALIDADO
     @GetMapping("/cancha/sede/{idSede}/deporte/{deporte}")
     public List<SedeCancha> listarPorSedeYDeporte(@PathVariable Integer idSede, @PathVariable String deporte) {
         return sedeCanchaServicio.listarPorSedeYDeporte(idSede, deporte);
     }
 
     @GetMapping("/cancha/{id}")
-    public SedeCancha buscarPorId(@PathVariable Integer id) {
-        return sedeCanchaServicio.buscarPorId(id);
+    public SedeCanchaDTO buscarPorId(@PathVariable Integer id) {
+        return sedeCanchaServicio.buscarEspacio(id);
     }
 
     @GetMapping("/canchas")
-    public List<SedeCancha> listar() {
-        return sedeCanchaServicio.listar();
+    public List<SedeCanchaDTO> listar() {
+        return sedeCanchaServicio.listarEspacios();
     }
 
     @PostMapping("/cancha")
@@ -40,13 +41,23 @@ public class SedeCanchaControlador {
     }
 
     @PutMapping("/cancha/{id}")
-    public SedeCancha actualizar(@PathVariable Integer id, @RequestBody SedeCancha sedeCancha) {
-        sedeCancha.setIdSedeCancha(id);
-        return sedeCanchaServicio.actualizar(sedeCancha);
+    public SedeCanchaDTO actualizar(
+            @PathVariable Integer id,
+            @RequestBody SedeCanchaDTO sedeCancha) {
+
+        return sedeCanchaServicio.actualizarEspacio(id, sedeCancha);
     }
 
     @DeleteMapping("/cancha/{id}")
     public void eliminar(@PathVariable Integer id) {
         sedeCanchaServicio.eliminar(id);
+    }
+
+    @PutMapping("/sede-cancha/{idCancha}/estado")
+    public SedeCanchaDTO cambiarEstadoEspacio(
+            @PathVariable Integer idCancha,
+            @RequestParam Boolean estado) {
+
+        return sedeCanchaServicio.cambiarEstadoEspacio(idCancha, estado);
     }
 }

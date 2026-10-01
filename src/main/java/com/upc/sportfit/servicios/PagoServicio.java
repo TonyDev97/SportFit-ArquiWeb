@@ -21,11 +21,11 @@ public class PagoServicio {
         return pagoRepositorio.save(pago);
     }
 
-    public Pago listarPagoPorId(Long id) {
+    public Pago listarPagoPorId(Integer id) {
         return pagoRepositorio.findById(id).orElse(new Pago());
     }
 
-    public void eliminarPago(Long id) {
+    public void eliminarPago(Integer id) {
         pagoRepositorio.deleteById(id);
     }
 }
