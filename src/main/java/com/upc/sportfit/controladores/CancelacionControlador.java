@@ -13,7 +13,7 @@ import java.util.List;
 public class CancelacionControlador {
     @Autowired
     private CancelacionServicio cancelacionServicio;
-    //VALIDADO
+
     @PostMapping("/cancelacion")
     public Cancelacion registrar(@RequestBody Cancelacion cancelacion) {
         return cancelacionServicio.registrar(cancelacion);
