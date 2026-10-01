@@ -21,11 +21,11 @@ public class NotificacionServicio {
         return notificacionRepositorio.save(notificacion);
     }
 
-    public Notificacion listarNotificacionPorId(Long id) {
+    public Notificacion listarNotificacionPorId(Integer id) {
         return notificacionRepositorio.findById(id).orElse(new Notificacion());
     }
 
-    public void eliminarNotificacion(Long id) {
+    public void eliminarNotificacion(Integer id) {
         notificacionRepositorio.deleteById(id);
     }
 }

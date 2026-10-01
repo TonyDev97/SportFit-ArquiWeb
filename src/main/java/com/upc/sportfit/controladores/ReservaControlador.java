@@ -1,7 +1,7 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.ReservaDTO;
-import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
+import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.servicios.ReservaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +88,57 @@ public class ReservaControlador {
     public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSedeEntreFechas(@PathVariable LocalDate fechaMin, @PathVariable LocalDate fechaMax){
         return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax));
     }
+
+    // HU08 - ED21: Cancelaciones por día (mes y año como parámetros)
+    @GetMapping("/reservas-canceladas/dia")
+    public ResponseEntity<List<CancelacionDiaDTO>> obtenerCancelacionesPorDia(
+            @RequestParam Integer mes,
+            @RequestParam Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerCancelacionesPorDia(mes, anio));
+    }
+
+    // HU08 - ED22: Monto perdido por cancelaciones
+    @GetMapping("/reservas-canceladas/monto-perdido")
+    public ResponseEntity<MontoPerdidoDTO> obtenerMontoPerdidoPorCancelaciones(
+            @RequestParam Integer mes,
+            @RequestParam Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerMontoPerdidoPorCancelaciones(mes, anio));
+    }
+
+    // HU08 - ED23: Total de cancelaciones
+    @GetMapping("/reservas-canceladas/total")
+    public ResponseEntity<TotalCancelacionesDTO> obtenerTotalCancelaciones(
+            @RequestParam Integer mes,
+            @RequestParam Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerTotalCancelaciones(mes, anio));
+    }
+
+    // HU09 - ED24: Reservas por cliente (general)
+    @GetMapping("/reservas-cliente")
+    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerReservasPorCliente(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+        return ResponseEntity.ok(reservaServicio.obtenerReservasPorCliente(fechaInicio, fechaFin));
+    }
+
+    // HU09 - ED25: Reservas por cliente con filtro mínimo
+    @GetMapping("/reservas/cliente/minimo")
+    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerReservasPorClienteMinimo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam Long minReservas) {
+        return ResponseEntity.ok(reservaServicio.obtenerReservasPorClienteMinimo(fechaInicio, fechaFin, minReservas));
+    }
+
+    // HU09 - ED26: Top de clientes con más reservas
+    @GetMapping("/reservas/cliente/top")
+    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerTopClientesReservas(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam Integer top) {
+        return ResponseEntity.ok(reservaServicio.obtenerTopClientesReservas(fechaInicio, fechaFin, top));
+    }
+
 
 
 }

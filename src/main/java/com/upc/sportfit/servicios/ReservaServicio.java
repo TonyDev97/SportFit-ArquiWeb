@@ -1,7 +1,7 @@
 package com.upc.sportfit.servicios;
 
 import com.upc.sportfit.dtos.ReservaDTO;
-import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
+import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.repositorios.ReservaRepositorio;
 import org.modelmapper.ModelMapper;
@@ -18,6 +18,10 @@ public class ReservaServicio {
 
     @Autowired
     private ReservaRepositorio reservaRepositorio;
+
+    //revisar esto si es valido porque asi lo estaba revisando
+    @Autowired
+    private PagoServicio pagoServicio;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -102,6 +106,52 @@ public class ReservaServicio {
             throw new RuntimeException("No hay información suficiente");
         }
         return reportes;
+    }
+
+    // HU08 - ED21: Cancelaciones por día
+    public List<CancelacionDiaDTO> obtenerCancelacionesPorDia(Integer mes, Integer anio) {
+        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorDia(mes, anio);
+        if (cancelaciones.isEmpty()) {
+            throw new RuntimeException("No se encontraron cancelaciones para el período seleccionado");
+        }
+        return cancelaciones;
+    }
+
+    // HU08 - ED22: Monto perdido por cancelaciones (delegado a PagoServicio)
+    public MontoPerdidoDTO obtenerMontoPerdidoPorCancelaciones(Integer mes, Integer anio) {
+        return pagoServicio.obtenerMontoPerdidoPorCancelaciones(mes, anio);
+    }
+
+    // HU08 - ED23: Total_cancelaciones
+    public TotalCancelacionesDTO obtenerTotalCancelaciones(Integer mes, Integer anio) {
+        return reservaRepositorio.obtenerTotalCancelaciones(mes, anio);
+    }
+
+    // HU09 - ED24: Reservas por cliente
+    public List<ReservasPorClienteDTO> obtenerReservasPorCliente(LocalDate fechaInicio, LocalDate fechaFin) {
+        List<ReservasPorClienteDTO> reservas = reservaRepositorio.obtenerReservasPorCliente(fechaInicio, fechaFin);
+        if (reservas.isEmpty()) {
+            throw new RuntimeException("No se encontraron reservas para los criterios seleccionados");
+        }
+        return reservas;
+    }
+
+    // HU09 - ED25: Reservas por cliente con filtro mínimo
+    public List<ReservasPorClienteDTO> obtenerReservasPorClienteMinimo(LocalDate fechaInicio, LocalDate fechaFin, Long minReservas) {
+        List<ReservasPorClienteDTO> reservas = reservaRepositorio.obtenerReservasPorClienteMinimo(fechaInicio, fechaFin, minReservas);
+        if (reservas.isEmpty()) {
+            throw new RuntimeException("No se encontraron clientes que cumplan con el mínimo de reservas");
+        }
+        return reservas;
+    }
+
+    // HU09 - ED26: Top clientes con más reservas
+    public List<ReservasPorClienteDTO> obtenerTopClientesReservas(LocalDate fechaInicio, LocalDate fechaFin, Integer top) {
+        List<ReservasPorClienteDTO> reservas = reservaRepositorio.obtenerTopClientesReservas(fechaInicio, fechaFin, top);
+        if (reservas.isEmpty()) {
+            throw new RuntimeException("No se encontraron reservas para los criterios seleccionados");
+        }
+        return reservas.subList(0, Math.min(top, reservas.size()));
     }
 
 
