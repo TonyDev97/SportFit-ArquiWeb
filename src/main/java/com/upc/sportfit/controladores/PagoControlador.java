@@ -20,14 +20,13 @@ public class PagoControlador {
         return pagoServicio.listarPagos();
     }
 
-    //VALIDADO
     @PostMapping("/pago")
     public Pago registrar(@RequestBody Pago pago) {
         return pagoServicio.registrarPago(pago);
     }
 
     @GetMapping("/pago/{id}")
-    public Pago listarId(@PathVariable("id") Integer id) {
+    public Pago listarId(@PathVariable("id") Long id) {
         return pagoServicio.listarPagoPorId(id);
     }
 
@@ -37,7 +36,7 @@ public class PagoControlador {
     }
 
     @DeleteMapping("/pago-eliminar/{id}")
-    public void eliminar(@PathVariable("id") Integer id) {
+    public void eliminar(@PathVariable("id") Long id) {
         pagoServicio.eliminarPago(id);
     }
 
