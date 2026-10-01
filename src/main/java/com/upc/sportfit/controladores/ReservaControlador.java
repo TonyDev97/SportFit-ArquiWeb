@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.upc.sportfit.dtos.EstadoReservaDTO;
+import com.upc.sportfit.dtos.SolicitudReservaDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api")
@@ -137,6 +140,47 @@ public class ReservaControlador {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
             @RequestParam Integer top) {
         return ResponseEntity.ok(reservaServicio.obtenerTopClientesReservas(fechaInicio, fechaFin, top));
+    }
+
+    // HU12 - Listar Reservas DTO por estado opcional
+    @GetMapping("/reservas/dto")
+    public ResponseEntity<List<ReservaDTO>> listarReservasDTO(
+            @RequestParam(required = false) String estado) {
+
+        return ResponseEntity.ok(
+                reservaServicio.listarReservasDTO(estado)
+        );
+    }
+
+    // HU13 - Consultar Detalle de Solicitud de Reserva y Pagos
+    @GetMapping("/reserva/{idReserva}")
+    public ResponseEntity<SolicitudReservaDTO> consultarSolicitud(
+            @PathVariable Integer idReserva) {
+
+        return ResponseEntity.ok(
+                reservaServicio.consultarSolicitud(idReserva)
+        );
+    }
+
+    // HU13 - Cambiar Estado de la Solicitud (Aceptar / Rechazar)
+    @PutMapping("/reservas/{id_reserva}/estado")
+    public ResponseEntity<ReservaDTO> cambiarEstadoSolicitud(
+            @PathVariable("id_reserva") Integer idReserva,
+            @RequestBody EstadoReservaDTO dto) {
+
+        return ResponseEntity.ok(
+                reservaServicio.cambiarEstadoSolicitud(idReserva, dto)
+        );
+    }
+
+    // HU14 - Listar Reservas por Cancha
+    @GetMapping("/reservas/cancha/{idCancha}")
+    public ResponseEntity<List<ReservaDTO>> listarReservasPorCancha(
+            @PathVariable Integer idCancha) {
+
+        return ResponseEntity.ok(
+                reservaServicio.listarReservasPorCancha(idCancha)
+        );
     }
 
 

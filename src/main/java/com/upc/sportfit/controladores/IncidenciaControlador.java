@@ -6,6 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.upc.sportfit.dtos.IncidenciaDTO;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api")
@@ -37,5 +42,43 @@ public class IncidenciaControlador {
     @PutMapping("/incidencia-actualizar")
     public Incidencia actualizar(@RequestBody Incidencia incidencia) {
         return incidenciaServicio.editarIncidencia(incidencia);
+    }
+
+    @GetMapping("/incidencia/usuario/{idUsuario}")
+    public List<Incidencia> listarPorUsuario(
+            @PathVariable Integer idUsuario) {
+
+        return incidenciaServicio.listarPorUsuario(idUsuario);
+    }
+
+    @GetMapping("/incidencia/usuario/{idUsuario}/filtro")
+    public List<Incidencia> filtrarPorUsuario(
+            @PathVariable Integer idUsuario,
+            @RequestParam String tipo,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fechaInicio,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fechaFin) {
+
+        return incidenciaServicio.filtrarPorUsuario(
+                idUsuario, tipo, fechaInicio, fechaFin
+        );
+    }
+
+    @GetMapping("/incidencia/{tipo}")
+    public List<Incidencia> filtrarAdministrador(
+            @PathVariable String tipo,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fechaInicio,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fechaFin) {
+
+        return incidenciaServicio.filtrarParaAdministrador(
+                tipo, fechaInicio, fechaFin
+        );
     }
 }

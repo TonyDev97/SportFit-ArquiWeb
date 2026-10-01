@@ -88,5 +88,10 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "ORDER BY COUNT(r) DESC")
     List<ReservasPorClienteDTO> obtenerTopClientesReservas(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin, @Param("top") Integer top);
 
-
+    @Query("select r from Reserva r " +
+            "where r.sedeCancha.idSedeCancha = :idCancha " +
+            "order by r.fReserva desc, r.hInicio asc")
+    List<Reserva> listarPorCancha(
+            @Param("idCancha") Integer idCancha
+    );
 }
