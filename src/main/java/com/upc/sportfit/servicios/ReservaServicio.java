@@ -49,14 +49,20 @@ public class ReservaServicio {
     @Autowired
     private ModelMapper modelMapper;
 
-    //CRUD
-    public Reserva registrarReserva(Reserva reserva){
-        return reservaRepositorio.save(reserva);
+    // Registrar reserva
+    public ReservaDTO registrarReserva(ReservaDTO reservaDTO){
+
+        Reserva reserva = modelMapper.map(reservaDTO, Reserva.class);
+        reservaRepositorio.save(reserva);
+        return modelMapper.map(reserva, ReservaDTO.class);
     }
 
-    // Registrar reserva
-    public List<Reserva> listarReservas(){
-        return reservaRepositorio.findAll();
+    // Listar
+    public List<ReservaDTO> listarReservas(){
+
+        return reservaRepositorio.findAll().stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
     }
 
     // Actualizar reserva
@@ -72,6 +78,7 @@ public class ReservaServicio {
     }
 
     public void eliminarReserva(Integer id){
+
         reservaRepositorio.deleteById(id);
     }
 
@@ -81,8 +88,10 @@ public class ReservaServicio {
     }
 
     // Consultar Reserva de una cancha para una fecha
-    public List<Reserva> listarReservaCancha(LocalDate fecha, Integer id){
-        return reservaRepositorio.listarReservaCancha(fecha, id);
+    public List<ReservaDTO> listarReservaCancha(LocalDate fecha, Integer id){
+        return reservaRepositorio.listarReservaCancha(fecha, id).stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
     }
 
     // HU10 ED16
@@ -115,12 +124,17 @@ public class ReservaServicio {
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + id));
     }
 
-    public List<Reserva> listarReservasSede(Integer id_sede) {
-        return reservaRepositorio.listarReservasSede(id_sede);
+    public List<ReservaDTO> listarReservasSede(Integer id_sede) {
+
+        return reservaRepositorio.listarReservasSede(id_sede).stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
     }
 
-    public List<Reserva> listarReservasDeporte(String deporte){
-        return reservaRepositorio.listarReservasDeporte(deporte);
+    public List<ReservaDTO> listarReservasDeporte(String deporte){
+        return reservaRepositorio.listarReservasDeporte(deporte).stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
     }
 
     public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSede(){

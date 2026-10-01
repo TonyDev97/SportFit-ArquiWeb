@@ -1,5 +1,6 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.SedeCanchaDTO;
 import com.upc.sportfit.entidades.SedeCancha;
 import com.upc.sportfit.servicios.SedeCanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class SedeCanchaControlador {
     }
     //VALIDADO
     @GetMapping("/cancha/sede/{idSede}/deporte/{deporte}")
-    public List<SedeCancha> listarPorSedeYDeporte(@PathVariable Integer idSede, @PathVariable String deporte) {
+    public List<SedeCanchaDTO> listarPorSedeYDeporte(@PathVariable Integer idSede, @PathVariable String deporte) {
         return sedeCanchaServicio.listarPorSedeYDeporte(idSede, deporte);
     }
 

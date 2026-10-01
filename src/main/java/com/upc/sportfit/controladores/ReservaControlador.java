@@ -24,14 +24,15 @@ public class ReservaControlador {
     private ReservaServicio reservaServicio;
     //VALIDADO
     @GetMapping("/reservas")
-    public List<Reserva> listarReservas(){
+    public List<ReservaDTO> listarReservas(){
+
         return reservaServicio.listarReservas();
     }
 
     //VALIDADO
     // GET /api/reserva/disponibilidad/{idCancha}?fecha=2026-09-15
     @GetMapping("/reserva/disponibilidad/{idCancha}")
-    public List<Reserva> listarReservaCancha(@PathVariable Integer idCancha,
+    public List<ReservaDTO> listarReservaCancha(@PathVariable Integer idCancha,
                                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha){
         return reservaServicio.listarReservaCancha(fecha, idCancha);
     }
@@ -47,8 +48,8 @@ public class ReservaControlador {
     }
 
     @PostMapping("/reserva")
-    public Reserva registrarReserva(@RequestBody Reserva reserva){
-        return reservaServicio.registrarReserva(reserva);
+    public ReservaDTO registrarReserva(@RequestBody ReservaDTO reservaDTO){
+        return reservaServicio.registrarReserva(reservaDTO);
     }
 
     //VALIDADO
@@ -70,15 +71,14 @@ public class ReservaControlador {
 
     //VALIDADO
     @GetMapping("reservas/sede/{id_sede}")
-    public List<Reserva> listarReservasSede(@PathVariable Integer id_sede){
+    public List<ReservaDTO> listarReservasSede(@PathVariable Integer id_sede){
         return reservaServicio.listarReservasSede(id_sede);
     }
     //VALIDADO
     @GetMapping("reservas/deporte/{deporte}")
-    public List<Reserva> listarReservasDeporte(@PathVariable String deporte){
+    public List<ReservaDTO> listarReservasDeporte(@PathVariable String deporte){
         return reservaServicio.listarReservasDeporte(deporte);
     }
-
 
     // Validado
     @GetMapping("/reservas/sede/tipoCancha")

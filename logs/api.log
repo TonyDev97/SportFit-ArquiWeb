@@ -1111,6 +1111,11 @@ Caused by: org.hibernate.query.sqm.PathElementException: Could not resolve attri
 2026-09-30T10:29:52.427-05:00  WARN 31424 --- [crud] [restartedMain] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
 2026-09-30T10:29:52.427-05:00  WARN 31424 --- [crud] [restartedMain] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
 2026-09-30T10:29:52.428-05:00  INFO 31424 --- [crud] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-09-30T10:35:19.030-05:00  INFO 31424 --- [crud] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-30T10:35:19.039-05:00  INFO 31424 --- [crud] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-09-30T10:35:19.045-05:00  INFO 31424 --- [crud] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30T10:35:19.049-05:00  INFO 31424 --- [crud] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2026-09-30T10:35:19.053-05:00  INFO 31424 --- [crud] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
 2026-09-30T13:08:09.104-05:00  INFO 11544 --- [crud] [restartedMain] com.upc.sportfit.SporfitApplication      : Starting SporfitApplication using Java 21.0.12 with PID 11544 (C:\Users\ADRIAN\Desktop\Area Java\Repos\target\classes started by ADRIAN in C:\Users\ADRIAN\Desktop\Area Java\Repos)
 2026-09-30T13:08:09.111-05:00  INFO 11544 --- [crud] [restartedMain] com.upc.sportfit.SporfitApplication      : No active profile set, falling back to 1 default profile: "default"
 2026-09-30T13:08:09.191-05:00  INFO 11544 --- [crud] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
