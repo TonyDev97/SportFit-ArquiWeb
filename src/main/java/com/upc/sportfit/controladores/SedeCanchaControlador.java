@@ -18,7 +18,7 @@ public class SedeCanchaControlador {
     public List<SedeCancha> listarCanchasPorSede(@PathVariable Integer idSede) {
         return sedeCanchaServicio.listarPorSedeActivas(idSede);
     }
-    //VALIDADO
+
     @GetMapping("/cancha/sede/{idSede}/deporte/{deporte}")
     public List<SedeCancha> listarPorSedeYDeporte(@PathVariable Integer idSede, @PathVariable String deporte) {
         return sedeCanchaServicio.listarPorSedeYDeporte(idSede, deporte);

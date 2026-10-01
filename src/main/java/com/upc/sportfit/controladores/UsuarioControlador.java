@@ -1,10 +1,8 @@
 package com.upc.sportfit.controladores;
 
-import com.upc.sportfit.dtos.UsuarioDTO;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +26,10 @@ public class UsuarioControlador {
     @GetMapping("/usuarios/activos")
     public List<Usuario> listarActivos() {return usuarioServicio.listarActivos();}
 
-
-    // Validado
-    @PutMapping("/usuario-actualizar")
-    public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO){
-        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO));
+    @PutMapping("/usuario/{id}")
+    public Usuario actualizar(@PathVariable Integer id, @RequestBody Usuario usuario){
+        usuario.setIdUsuario(id);
+        return usuarioServicio.actualizar(usuario);
     }
 
     @PutMapping("/usuario/{id}/estado")
@@ -57,32 +54,11 @@ public class UsuarioControlador {
         return usuarioServicio.buscarClientes(nombre, dni, estado);
     }
 
-
-    @PutMapping("/usuario/administrador-password")
-    public ResponseEntity<UsuarioDTO> cambiarPassword(
+    @PutMapping("/usuario/{id}/password")
+    public Usuario cambiarPassword(
             @PathVariable Integer id,
             @RequestBody String password){
 
-        return ResponseEntity.ok(usuarioServicio.cambiarPassword(id, password));
+        return usuarioServicio.cambiarPassword(id, password);
     }
-
-    // Validado
-    @GetMapping("/usuario/clientes-nombre/{nombre}")
-    public List<UsuarioDTO> buscarClientesNombreContiene(@PathVariable String nombre){
-        return usuarioServicio.buscarClientesNombreContiene(nombre);
-    }
-
-    // Validado
-    @GetMapping("/usuario/clientes-dni/{dni}")
-    public List<UsuarioDTO> buscarClientesDniInicia(@PathVariable String dni){
-        return usuarioServicio.buscarClientesDniInicia(dni);
-    }
-
-    // Validado
-    @GetMapping("/usuario/clientes-estado/{estado}")
-    public ResponseEntity<List<UsuarioDTO>> buscarClientesEstado(@PathVariable Boolean estado){
-        return ResponseEntity.ok(usuarioServicio.buscarClientesEstado(estado));
-    }
-
-
 }
