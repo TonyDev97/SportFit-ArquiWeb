@@ -1,7 +1,9 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.dtos.SedeCanchaDTO;
 import com.upc.sportfit.entidades.SedeCancha;
 import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +15,17 @@ public class SedeCanchaServicio {
     @Autowired
     private SedeCanchaRepositorio sedeCanchaRepositorio;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public List<SedeCancha> listarPorSedeActivas(Integer idSede) {
         return sedeCanchaRepositorio.encontrarActivasPorSede(idSede);
     }
 
-    public List<SedeCancha> listarPorSedeYDeporte(Integer idSede, String deporte) {
-        return sedeCanchaRepositorio.encontrarActivasPorSedeYDeporte(idSede, deporte);
+    public List<SedeCanchaDTO> listarPorSedeYDeporte(Integer idSede, String deporte) {
+        return sedeCanchaRepositorio.encontrarActivasPorSedeYDeporte(idSede, deporte).stream()
+                .map(sedeCancha -> modelMapper.map(sedeCancha, SedeCanchaDTO.class))
+                .toList();
     }
 
     public List<SedeCancha> listarTodasPorSede(Integer idSede) {
