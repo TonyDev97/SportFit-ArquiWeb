@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+import com.upc.sportfit.entidades.Pago;
 
 @Repository
 public interface PagoRepositorio extends JpaRepository<Pago, Integer> {
@@ -26,4 +28,6 @@ public interface PagoRepositorio extends JpaRepository<Pago, Integer> {
             "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
             "AND EXTRACT(YEAR FROM r.fReserva) = :anio")
     Number obtenerMontoPerdidoPorCancelaciones(@Param("mes") Integer mes, @Param("anio") Integer anio);
+
+    List<Pago> findByReserva_IdReserva(Integer idReserva);
 }
