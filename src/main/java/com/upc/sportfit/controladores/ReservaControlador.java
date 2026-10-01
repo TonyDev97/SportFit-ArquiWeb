@@ -34,7 +34,7 @@ public class ReservaControlador {
     }
 
     @GetMapping("/reserva/usuario/{idUsuario}")
-    public List<Reserva> listarReservasCliente(@PathVariable Integer idUsuario){
+    public List<ReservaDTO> listarReservasCliente(@PathVariable Integer idUsuario){
         return reservaServicio.listarReservasCliente(idUsuario);
     }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,8 +63,16 @@ public class ReservaServicio {
         return reservaRepositorio.listarReservaCancha(fecha, id);
     }
 
-    public List<Reserva> listarReservasCliente(Integer id){
-        return reservaRepositorio.listarReservaCliente(id);
+    // HU10 ED16
+    public List<ReservaDTO> listarReservasCliente(Integer id) {
+        List<Reserva> reservas = reservaRepositorio.listarReservaCliente(id);
+        List<ReservaDTO> reservaDTOs = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            reservaDTOs.add(
+                    modelMapper.map(reserva, ReservaDTO.class)
+            );
+        }
+        return reservaDTOs;
     }
 
     public List<Reserva> listarReservaConfirmada(){

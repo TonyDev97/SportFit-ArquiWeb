@@ -1,5 +1,6 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.NotificacionDTO;
 import com.upc.sportfit.entidades.Notificacion;
 import com.upc.sportfit.servicios.NotificacionServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class NotificacionControlador {
     private NotificacionServicio notificacionServicio;
 
     @GetMapping("/notificaciones")
-    public List<Notificacion> listar() {
+    public List<NotificacionDTO> listar() {
         return notificacionServicio.listarNotificaciones();
     }
 
