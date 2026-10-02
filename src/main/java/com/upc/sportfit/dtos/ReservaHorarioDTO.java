@@ -7,18 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PagoDTO {
-
-    private Integer idPago;
-    @JsonProperty("montoTotal")
-    private BigDecimal montoTotal;
-    private String metodo;
-    @JsonProperty("urlComprobante")
-    private String urlComprobante;
-    private ReservaDTO reserva;
+public class ReservaHorarioDTO {
+    private Integer idReserva;
+    private Integer idSedeCancha;
+    private BigDecimal precio;
+    private Long aforo;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
 }

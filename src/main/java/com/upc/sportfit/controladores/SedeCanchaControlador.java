@@ -4,6 +4,7 @@ import com.upc.sportfit.dtos.SedeCanchaDTO;
 import com.upc.sportfit.entidades.SedeCancha;
 import com.upc.sportfit.servicios.SedeCanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +21,14 @@ public class SedeCanchaControlador {
     public List<SedeCancha> listarCanchasPorSede(@PathVariable Integer idSede) {
         return sedeCanchaServicio.listarPorSedeActivas(idSede);
     }
-    //VALIDADO
-    @GetMapping("/cancha/sede/{idSede}/deporte/{deporte}")
-    public List<SedeCanchaDTO> listarPorSedeYDeporte(@PathVariable Integer idSede, @PathVariable String deporte) {
-        return sedeCanchaServicio.listarPorSedeYDeporte(idSede, deporte);
+    //VALIDADO NICOLE
+    @GetMapping("/cancha/sede/{idSede}/deporte/{idTipoCancha}")
+    public ResponseEntity<List<SedeCanchaDTO>> BuscarPorDeporteYSede(
+            @PathVariable("idSede") Integer idSede,
+            @PathVariable("idTipoCancha") Integer idTipoCancha) {
+
+        List<SedeCanchaDTO> resultado = sedeCanchaServicio.listarPorDeporteYSede(idTipoCancha, idSede);
+        return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/cancha/{id}")

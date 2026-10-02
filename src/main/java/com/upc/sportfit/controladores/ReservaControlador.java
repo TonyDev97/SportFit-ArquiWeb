@@ -1,6 +1,7 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.ReservaDTO;
+import com.upc.sportfit.dtos.ReservaHorarioDTO;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.servicios.ReservaServicio;
@@ -22,19 +23,23 @@ public class ReservaControlador {
 
     @Autowired
     private ReservaServicio reservaServicio;
-    //VALIDADO
+    //VALIDADO NICOLE ED79
     @GetMapping("/reservas")
-    public List<ReservaDTO> listarReservas(){
-
-        return reservaServicio.listarReservas();
+    public ResponseEntity<List<ReservaDTO>> listarReservas(){
+        return ResponseEntity.ok(reservaServicio.listarReservas());
     }
 
-    //VALIDADO
-    // GET /api/reserva/disponibilidad/{idCancha}?fecha=2026-09-15
-    @GetMapping("/reserva/disponibilidad/{idCancha}")
-    public List<ReservaDTO> listarReservaCancha(@PathVariable Integer idCancha,
-                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha){
-        return reservaServicio.listarReservaCancha(fecha, idCancha);
+    //VALIDADO NICOLE
+    @GetMapping("/reservas/horarios")
+    public ResponseEntity<List<ReservaHorarioDTO>> ListarReservasPorFechaDeporteSede(@RequestParam LocalDate fecha, @RequestParam Integer idDeporte, @RequestParam Integer idSede) {
+        return ResponseEntity.ok(reservaServicio.ListarReservasPorFechaDeporteSede(fecha, idDeporte, idSede));
+    }
+
+    //VALIDADO NICOLE ED72
+    @PutMapping("/reserva/estado/{id}")
+    public ResponseEntity<ReservaDTO> ActualizarEstado(@PathVariable("id") Integer id, @RequestParam("estado") String estado) {
+        ReservaDTO reservaActualizada = reservaServicio.ActualizarEstado(id, estado);
+        return ResponseEntity.ok(reservaActualizada);
     }
 
     @GetMapping("/reserva/usuario/{idUsuario}")
@@ -47,9 +52,10 @@ public class ReservaControlador {
         return reservaServicio.listarReservaConfirmada();
     }
 
+    //VALIDADO
     @PostMapping("/reserva")
-    public ReservaDTO registrarReserva(@RequestBody ReservaDTO reservaDTO){
-        return reservaServicio.registrarReserva(reservaDTO);
+    public ResponseEntity<ReservaDTO> registrarReserva(@RequestBody ReservaDTO reservaDTO) {
+        return ResponseEntity.ok(reservaServicio.registrarReserva(reservaDTO));
     }
 
     //VALIDADO
@@ -58,7 +64,7 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.editarReserva(reservaDTO));
     }
 
-     //VALIDADO
+     //VALIDADO NICOLE ED13
     @PutMapping("/reserva-cancelar/{idReserva}")
     public ResponseEntity<ReservaDTO> eliminarLogicoReserva(@PathVariable Integer idReserva){
         return ResponseEntity.ok(reservaServicio.eliminarLogicoReserva(idReserva));
@@ -71,13 +77,13 @@ public class ReservaControlador {
 
     //VALIDADO
     @GetMapping("reservas/sede/{id_sede}")
-    public List<ReservaDTO> listarReservasSede(@PathVariable Integer id_sede){
-        return reservaServicio.listarReservasSede(id_sede);
+    public ResponseEntity<List<ReservaDTO>> listarReservasSede(@PathVariable Integer id_sede){
+        return ResponseEntity.ok(reservaServicio.listarReservasSede(id_sede));
     }
     //VALIDADO
     @GetMapping("reservas/deporte/{deporte}")
-    public List<ReservaDTO> listarReservasDeporte(@PathVariable String deporte){
-        return reservaServicio.listarReservasDeporte(deporte);
+    public ResponseEntity<List<ReservaDTO>> listarReservasDeporte(@PathVariable String deporte){
+        return ResponseEntity.ok(reservaServicio.listarReservasDeporte(deporte));
     }
 
     // Validado

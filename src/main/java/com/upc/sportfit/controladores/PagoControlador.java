@@ -1,5 +1,6 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.PagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
 import com.upc.sportfit.entidades.Pago;
 import com.upc.sportfit.servicios.PagoServicio;
@@ -24,10 +25,11 @@ public class PagoControlador {
         return pagoServicio.listarPagos();
     }
 
-    //VALIDADO
+    //VALIDADO NICOLE
     @PostMapping("/pago")
-    public Pago registrar(@RequestBody Pago pago) {
-        return pagoServicio.registrarPago(pago);
+    public ResponseEntity<PagoDTO> registrar(@RequestBody PagoDTO pagoDTO) {
+        PagoDTO nuevoPago = pagoServicio.registrarPago(pagoDTO);
+        return ResponseEntity.ok(nuevoPago);
     }
 
     @GetMapping("/pago/{id}")
@@ -36,7 +38,7 @@ public class PagoControlador {
     }
 
     @PutMapping("/pago-añadir")
-    public Pago actualizar(@RequestBody Pago pago) {
+    public PagoDTO actualizar(@RequestBody PagoDTO pago) {
         return pagoServicio.registrarPago(pago);
     }
 

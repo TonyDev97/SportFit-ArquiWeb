@@ -34,8 +34,16 @@ public class SedeCanchaServicio {
         return sedeCanchaRepositorio.encontrarActivasPorSede(idSede);
     }
 
-    public List<SedeCancha> listarPorSedeYDeporte(Integer idSede, String deporte) {
-        return sedeCanchaRepositorio.encontrarActivasPorSedeYDeporte(idSede, deporte);
+    // VALIDADO NICOLE
+    public List<SedeCanchaDTO> listarPorDeporteYSede(Integer idTipoCancha, Integer idSede) {
+        List<SedeCanchaDTO> lista = sedeCanchaRepositorio.BuscarPorDeporteYSede(idTipoCancha, idSede).stream()
+                .map(sc -> modelMapper.map(sc, SedeCanchaDTO.class))
+                .toList();
+
+        if (lista.isEmpty()) {
+            throw new RuntimeException("No se encontraron canchas para el tipo de cancha con id " + idTipoCancha + " en la sede con id " + idSede);
+        }
+        return lista;
     }
 
     public List<SedeCancha> listarTodasPorSede(Integer idSede) {

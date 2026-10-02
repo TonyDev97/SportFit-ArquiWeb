@@ -1,6 +1,6 @@
 package com.upc.sportfit.servicios;
 
-import com.upc.sportfit.dtos.ReservaDTO;
+import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.repositorios.PagoRepositorio;
@@ -16,9 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import com.upc.sportfit.dtos.EstadoReservaDTO;
-import com.upc.sportfit.dtos.PagoDTO;
-import com.upc.sportfit.dtos.SolicitudReservaDTO;
+
 import com.upc.sportfit.entidades.Pago;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.PagoRepositorio;
@@ -51,18 +49,29 @@ public class ReservaServicio {
 
     // Registrar reserva
     public ReservaDTO registrarReserva(ReservaDTO reservaDTO){
+        List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
+        String estadoIngresado = reservaDTO.getEstado();
+
+        if (estadoIngresado == null || !estadosValidos.contains(estadoIngresado.trim().toLowerCase())) {
+            throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
+        }
 
         Reserva reserva = modelMapper.map(reservaDTO, Reserva.class);
-        reservaRepositorio.save(reserva);
+        reserva.setEstado(estadoIngresado.trim().toLowerCase());
+        reserva = reservaRepositorio.save(reserva);
         return modelMapper.map(reserva, ReservaDTO.class);
     }
 
     // Listar
     public List<ReservaDTO> listarReservas(){
-
-        return reservaRepositorio.findAll().stream()
+        List<ReservaDTO> lista = reservaRepositorio.findAll().stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
                 .toList();
+
+        if (lista.isEmpty()) {
+            throw new RuntimeException("No existen reservas registradas");
+        }
+        return lista;
     }
 
     // Actualizar reserva
@@ -77,6 +86,22 @@ public class ReservaServicio {
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + reservaDTO.getIdReserva()));
     }
 
+    @Transactional
+    public ReservaDTO ActualizarEstado(Integer idReserva, String nuevoEstado) {
+        List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
+
+        if (nuevoEstado == null || !estadosValidos.contains(nuevoEstado.trim().toLowerCase())) {
+            throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
+        }
+
+        return reservaRepositorio.findById(idReserva)
+                .map(reserva -> {
+                    reserva.setEstado(nuevoEstado.trim().toLowerCase());
+                    return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
+                })
+                .orElseThrow(() -> new RuntimeException("No existe la reserva con el id: " + idReserva));
+    }
+
     public void eliminarReserva(Integer id){
 
         reservaRepositorio.deleteById(id);
@@ -87,10 +112,34 @@ public class ReservaServicio {
         return reservaRepositorio.findById(id).orElse(null);
     }
 
-    // Consultar Reserva de una cancha para una fecha
-    public List<ReservaDTO> listarReservaCancha(LocalDate fecha, Integer id){
-        return reservaRepositorio.listarReservaCancha(fecha, id).stream()
+    // Consultar reservas por fecha, deporte y sede
+    public List<ReservaDTO> listarReservaCancha(LocalDate fecha, Integer idDeporte){
+        return reservaRepositorio.listarReservaCancha(fecha, idDeporte).stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
+    }
+
+    public List<ReservaHorarioDTO> ListarReservasPorFechaDeporteSede(LocalDate fecha, Integer idDeporte, Integer idSede) {
+        List<Reserva> reservas = reservaRepositorio.ListarReservasPorFechaDeporteSede(fecha, idDeporte, idSede);
+
+        return reservas.stream()
+                .map(reserva -> {
+                    ReservaHorarioDTO dto = new ReservaHorarioDTO();
+                    dto.setIdReserva(reserva.getIdReserva());
+
+                    if (reserva.getSedeCancha() != null) {
+                        dto.setIdSedeCancha(reserva.getSedeCancha().getIdSedeCancha());
+                        dto.setPrecio(reserva.getSedeCancha().getPrecio());
+
+                        if (reserva.getSedeCancha().getCancha() != null) {
+                            dto.setAforo(reserva.getSedeCancha().getCancha().getAforo());
+                        }
+                    }
+
+                    dto.setHoraInicio(reserva.getHInicio());
+                    dto.setHoraFin(reserva.getHFin());
+                    return dto;
+                })
                 .toList();
     }
 
@@ -111,17 +160,19 @@ public class ReservaServicio {
         return reservaRepositorio.findByEstado(confirmada);
     }
 
-    // Eliminar logico de la reserva
-    public ReservaDTO eliminarLogicoReserva(Integer id){
+    // Eliminar logico de la reserva, si tiene estado confirmada
+    public ReservaDTO eliminarLogicoReserva(Integer id) {
         return reservaRepositorio.findById(id)
-                .map(
-                        reserva -> {
-                            reserva.setEstado("Eliminada");
-                            reserva.setFModificacion(Instant.now());
-                            return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
-                        }
-                )
-                .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + id));
+                .map(reserva -> {
+                    if (!"confirmada".equalsIgnoreCase(reserva.getEstado())) {
+                        throw new RuntimeException("Solo se pueden cancelar reservas en estado 'confirmada'. Estado actual: " + reserva.getEstado());
+                    }
+
+                    reserva.setEstado("cancelada");
+                    reserva.setFModificacion(Instant.now());
+                    return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
+                })
+                .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id: " + id));
     }
 
     public List<ReservaDTO> listarReservasSede(Integer id_sede) {
