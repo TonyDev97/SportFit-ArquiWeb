@@ -113,4 +113,26 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     List<Reserva> listarPorCancha(
             @Param("idCancha") Integer idCancha
     );
+
+    // HU09 - ED86: Reporte consolidado de reservas por cliente con filtros dinámicos
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservaClienteDTO(" +
+            "CAST(u.idUsuario AS string), " +
+            "CONCAT(CONCAT(u.nombre, ' '), u.apellido), " +
+            "MAX(r.fReserva), " +
+            "COUNT(r.idReserva)) " +
+            "FROM Reserva r JOIN r.usuario u " +
+            "WHERE r.estado = 'Confirmada' " +
+            "AND (:fechaDesde IS NULL OR r.fReserva >= :fechaDesde) " +
+            "AND (:fechaHasta IS NULL OR r.fReserva <= :fechaHasta) " +
+            "GROUP BY u.idUsuario, u.nombre, u.apellido " +
+            "HAVING (:minReservas IS NULL OR COUNT(r.idReserva) >= :minReservas) " +
+            "AND (:maxReservas IS NULL OR COUNT(r.idReserva) <= :maxReservas) " +
+            "ORDER BY COUNT(r.idReserva) DESC")
+    List<ReservaClienteDTO> obtenerReservasPorClienteConsolidado(
+            @Param("fechaDesde") LocalDate fechaDesde,
+            @Param("fechaHasta") LocalDate fechaHasta,
+            @Param("minReservas") Integer minReservas,
+            @Param("maxReservas") Integer maxReservas,
+            @Param("top") Integer top
+    );
 }

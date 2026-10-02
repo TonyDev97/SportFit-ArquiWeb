@@ -137,31 +137,19 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.obtenerTendenciaAnualCancelaciones(anio));
     }
 
-    // HU09 - ED24: Reservas por cliente (general)
-    @GetMapping("/reservas-cliente")
-    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerReservasPorCliente(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
-        return ResponseEntity.ok(reservaServicio.obtenerReservasPorCliente(fechaInicio, fechaFin));
+
+    // HU09 - ED86: Reporte consolidado de reservas por cliente
+    @GetMapping("/reportes/reservas-por-cliente")
+    public ResponseEntity<List<ReservaClienteDTO>> obtenerReservasPorClienteConsolidado(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
+            @RequestParam(required = false) Integer minReservas,
+            @RequestParam(required = false) Integer maxReservas,
+            @RequestParam(required = false) Integer top) {
+        return ResponseEntity.ok(reservaServicio.obtenerReservasPorClienteConsolidado(
+                fechaDesde, fechaHasta, minReservas, maxReservas, top));
     }
 
-    // HU09 - ED25: Reservas por cliente con filtro mínimo
-    @GetMapping("/reservas/cliente/minimo")
-    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerReservasPorClienteMinimo(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam Long minReservas) {
-        return ResponseEntity.ok(reservaServicio.obtenerReservasPorClienteMinimo(fechaInicio, fechaFin, minReservas));
-    }
-
-    // HU09 - ED26: Top de clientes con más reservas
-    @GetMapping("/reservas/cliente/top")
-    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerTopClientesReservas(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam Integer top) {
-        return ResponseEntity.ok(reservaServicio.obtenerTopClientesReservas(fechaInicio, fechaFin, top));
-    }
 
     // HU12 - Listar Reservas DTO por estado opcional
     @GetMapping("/reservas/dto")

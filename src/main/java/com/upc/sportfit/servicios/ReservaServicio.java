@@ -292,6 +292,46 @@ public class ReservaServicio {
         return reservas.subList(0, Math.min(top, reservas.size()));
     }
 
+    // HU09 - ED86: Reporte consolidado de reservas por cliente
+    public List<ReservaClienteDTO> obtenerReservasPorClienteConsolidado(
+            LocalDate fechaDesde,
+            LocalDate fechaHasta,
+            Integer minReservas,
+            Integer maxReservas,
+            Integer top) {
+
+        // Validaciones
+        if (fechaDesde != null && fechaHasta != null && fechaDesde.isAfter(fechaHasta)) {
+            throw new IllegalArgumentException("La fechaDesde no puede ser posterior a fechaHasta");
+        }
+
+        if (minReservas != null && minReservas < 0) {
+            throw new IllegalArgumentException("minReservas no puede ser negativo");
+        }
+
+        if (maxReservas != null && maxReservas < 0) {
+            throw new IllegalArgumentException("maxReservas no puede ser negativo");
+        }
+
+        if (minReservas != null && maxReservas != null && minReservas > maxReservas) {
+            throw new IllegalArgumentException("minReservas no puede ser mayor que maxReservas");
+        }
+
+        if (top != null && top < 0) {
+            throw new IllegalArgumentException("top no puede ser negativo");
+        }
+
+        List<ReservaClienteDTO> resultados = reservaRepositorio.obtenerReservasPorClienteConsolidado(
+                fechaDesde, fechaHasta, minReservas, maxReservas, top);
+
+        // Aplicar límite top en Service si no se hizo en la query
+        if (top != null && top > 0 && resultados.size() > top) {
+            return resultados.subList(0, top);
+        }
+
+        return resultados;
+    }
+
     // HU12 - Listar Solicitudes de Reserva por estado
     public List<ReservaDTO> listarReservasDTO(String estado) {
         List<Reserva> reservas;
