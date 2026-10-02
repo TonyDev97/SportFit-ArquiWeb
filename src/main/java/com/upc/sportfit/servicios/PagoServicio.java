@@ -85,9 +85,10 @@ public class PagoServicio {
         return new LocalDate[]{fechaInicio, fechaFin};
     }
 
+
     // HU08 - ED22: Monto perdido por cancelaciones (desde Pago, sin tocar Reserva)
-    public MontoPerdidoDTO obtenerMontoPerdidoPorCancelaciones(Integer mes, Integer anio) {
-        Number monto = pagoRepositorio.obtenerMontoPerdidoPorCancelaciones(mes, anio);
+    public MontoPerdidoDTO obtenerMontoPerdidoPorCancelaciones(LocalDate fechaInicio, LocalDate fechaFin) {
+        Number monto = pagoRepositorio.obtenerMontoPerdidoPorCancelaciones(fechaInicio, fechaFin);
         BigDecimal valor;
         if (monto != null) {
             valor = new BigDecimal(monto.toString());

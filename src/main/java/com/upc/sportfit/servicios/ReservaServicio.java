@@ -2,7 +2,9 @@ package com.upc.sportfit.servicios;
 
 import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
+import com.upc.sportfit.entidades.Pago;
 import com.upc.sportfit.entidades.Reserva;
+import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.PagoRepositorio;
 import com.upc.sportfit.repositorios.ReservaRepositorio;
 import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
@@ -10,19 +12,13 @@ import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.upc.sportfit.entidades.Pago;
-import com.upc.sportfit.entidades.Usuario;
-import com.upc.sportfit.repositorios.PagoRepositorio;
-import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
-import com.upc.sportfit.repositorios.UsuarioRepositorio;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 
 @Service
@@ -40,7 +36,6 @@ public class ReservaServicio {
     @Autowired
     private ReservaRepositorio reservaRepositorio;
 
-    //revisar esto si es valido porque asi lo estaba revisando
     @Autowired
     private PagoServicio pagoServicio;
 
@@ -204,9 +199,36 @@ public class ReservaServicio {
         return reportes;
     }
 
+    // HU08 - Validación y cálculo de rango de fechas (mes opcional, año obligatorio)
+    private LocalDate[] validarYCalcularRangoFechas(Integer mes, Integer anio) {
+        int anioActual = Year.now().getValue();
+
+        if (anio == null || anio < 2000 || anio > anioActual) {
+            throw new IllegalArgumentException("El año debe ser un número válido entre 2000 y " + anioActual);
+        }
+
+        if (mes != null && (mes < 1 || mes > 12)) {
+            throw new IllegalArgumentException("El mes debe estar entre 1 y 12");
+        }
+
+        LocalDate fechaInicio;
+        LocalDate fechaFin;
+
+        if (mes != null) {
+            fechaInicio = LocalDate.of(anio, mes, 1);
+            fechaFin = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
+        } else {
+            fechaInicio = LocalDate.of(anio, 1, 1);
+            fechaFin = LocalDate.of(anio, 12, 31);
+        }
+
+        return new LocalDate[]{fechaInicio, fechaFin};
+    }
+
     // HU08 - ED21: Cancelaciones por día
-    public List<CancelacionDiaDTO> obtenerCancelacionesPorDia(Integer mes, Integer anio) {
-        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorDia(mes, anio);
+    public List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(Integer mes, Integer anio) {
+        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
+        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorPeriodo(rango[0], rango[1]);
         if (cancelaciones.isEmpty()) {
             throw new RuntimeException("No se encontraron cancelaciones para el período seleccionado");
         }
@@ -215,12 +237,32 @@ public class ReservaServicio {
 
     // HU08 - ED22: Monto perdido por cancelaciones (delegado a PagoServicio)
     public MontoPerdidoDTO obtenerMontoPerdidoPorCancelaciones(Integer mes, Integer anio) {
-        return pagoServicio.obtenerMontoPerdidoPorCancelaciones(mes, anio);
+        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
+        return pagoServicio.obtenerMontoPerdidoPorCancelaciones(rango[0], rango[1]);
     }
 
-    // HU08 - ED23: Total_cancelaciones
+    // HU08 - ED23: Total cancelaciones
     public TotalCancelacionesDTO obtenerTotalCancelaciones(Integer mes, Integer anio) {
-        return reservaRepositorio.obtenerTotalCancelaciones(mes, anio);
+        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
+        return reservaRepositorio.obtenerTotalCancelaciones(rango[0], rango[1]);
+    }
+
+    // HU08 - ED84: Distribución por motivo de cancelación
+    public List<MotivoCancelacionDTO> obtenerDistribucionPorMotivoCancelacion(Integer mes, Integer anio) {
+        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
+        return reservaRepositorio.obtenerDistribucionPorMotivoCancelacion(rango[0], rango[1]);
+    }
+
+    // HU08 - ED85: Tendencia anual de cancelaciones
+    public List<TendenciaCancelacionDTO> obtenerTendenciaAnualCancelaciones(Integer anio) {
+        if (anio == null) {
+            throw new IllegalArgumentException("El año es obligatorio");
+        }
+        int anioActual = Year.now().getValue();
+        if (anio < 2000 || anio > anioActual) {
+            throw new IllegalArgumentException("El año debe ser un número válido entre 2000 y " + anioActual);
+        }
+        return reservaRepositorio.obtenerTendenciaAnualCancelaciones(anio);
     }
 
     // HU09 - ED24: Reservas por cliente

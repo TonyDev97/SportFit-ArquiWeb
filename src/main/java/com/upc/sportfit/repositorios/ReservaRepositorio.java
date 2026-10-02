@@ -1,9 +1,6 @@
 package com.upc.sportfit.repositorios;
 
-import com.upc.sportfit.dtos.reportes.CancelacionDiaDTO;
-import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
-import com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO;
-import com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO;
+import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -55,19 +52,35 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r)) " +
             "FROM Reserva r " +
             "WHERE r.estado = 'Cancelada' " +
-            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
-            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
             "GROUP BY r.fReserva " +
             "ORDER BY r.fReserva")
-    List<CancelacionDiaDTO> obtenerCancelacionesPorDia(@Param("mes") Integer mes, @Param("anio") Integer anio);
+    List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 
     // HU08 - ED23: Total de reservas canceladas en un mes/año
     @Query("SELECT new com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO(COUNT(r)) " +
             "FROM Reserva r " +
             "WHERE r.estado = 'Cancelada' " +
-            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
-            "AND EXTRACT(YEAR FROM r.fReserva) = :anio")
-    TotalCancelacionesDTO obtenerTotalCancelaciones(@Param("mes") Integer mes, @Param("anio") Integer anio);
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin")
+    TotalCancelacionesDTO obtenerTotalCancelaciones(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    //HU08 -ED84 Obenetmos la sitribucion por motivos de cancelacion
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.MotivoCancelacionDTO(c.tipoCancelacion, COUNT(c)) " +
+            "FROM Cancelacion c JOIN c.reserva r " +
+            "WHERE r.estado = 'Cancelada' " +
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY c.tipoCancelacion " +
+            "ORDER BY COUNT(c) DESC")
+    List<MotivoCancelacionDTO> obtenerDistribucionPorMotivoCancelacion(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    //HU08 - ED85 Obtenemos tendencias anuales de cancelaciones
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.TendenciaCancelacionDTO(EXTRACT(MONTH FROM r.fReserva), c.tipoCancelacion, COUNT(c)) " +
+            "FROM Cancelacion c JOIN c.reserva r " +
+            "WHERE r.estado = 'Cancelada' " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY EXTRACT(MONTH FROM r.fReserva), c.tipoCancelacion " +
+            "ORDER BY EXTRACT(MONTH FROM r.fReserva)")
+    List<TendenciaCancelacionDTO> obtenerTendenciaAnualCancelaciones(@Param("anio") Integer anio);
 
     // HU09 - ED24: Reservas por cliente en un período
     @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO(u.idUsuario, CONCAT(u.nombre, ' ', u.apellido), COUNT(r)) " +

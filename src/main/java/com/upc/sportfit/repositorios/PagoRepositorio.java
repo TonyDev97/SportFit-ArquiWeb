@@ -32,9 +32,8 @@ public interface PagoRepositorio extends JpaRepository<Pago, Integer> {
     @Query("SELECT COALESCE(SUM(p.montoTotal), 0) " +
             "FROM Pago p JOIN p.reserva r " +
             "WHERE r.estado = 'Cancelada' " +
-            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
-            "AND EXTRACT(YEAR FROM r.fReserva) = :anio")
-    Number obtenerMontoPerdidoPorCancelaciones(@Param("mes") Integer mes, @Param("anio") Integer anio);
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin")
+    Number obtenerMontoPerdidoPorCancelaciones(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 
     List<Pago> findByReserva_IdReserva(Integer idReserva);
 }

@@ -99,11 +99,11 @@ public class ReservaControlador {
     }
 
     // HU08 - ED21: Cancelaciones por día (mes y año como parámetros)
-    @GetMapping("/reservas-canceladas/dia")
-    public ResponseEntity<List<CancelacionDiaDTO>> obtenerCancelacionesPorDia(
+    @GetMapping("/reservas-canceladas/periodo")
+    public ResponseEntity<List<CancelacionDiaDTO>> obtenerCancelacionesPorPeriodo(
             @RequestParam Integer mes,
             @RequestParam Integer anio) {
-        return ResponseEntity.ok(reservaServicio.obtenerCancelacionesPorDia(mes, anio));
+        return ResponseEntity.ok(reservaServicio.obtenerCancelacionesPorPeriodo(mes, anio));
     }
 
     // HU08 - ED22: Monto perdido por cancelaciones
@@ -120,6 +120,21 @@ public class ReservaControlador {
             @RequestParam Integer mes,
             @RequestParam Integer anio) {
         return ResponseEntity.ok(reservaServicio.obtenerTotalCancelaciones(mes, anio));
+    }
+
+    // HU08 - ED84: Distribución por motivo de cancelación (Gráfico de Barras)
+    @GetMapping("/reservas-canceladas/motivos")
+    public ResponseEntity<List<MotivoCancelacionDTO>> obtenerDistribucionPorMotivoCancelacion(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerDistribucionPorMotivoCancelacion(mes, anio));
+    }
+
+    // HU08 - ED85: Tendencia anual de cancelaciones (Gráfico de Líneas)
+    @GetMapping("/reservas-canceladas/tendencia-anual")
+    public ResponseEntity<List<TendenciaCancelacionDTO>> obtenerTendenciaAnualCancelaciones(
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerTendenciaAnualCancelaciones(anio));
     }
 
     // HU09 - ED24: Reservas por cliente (general)
