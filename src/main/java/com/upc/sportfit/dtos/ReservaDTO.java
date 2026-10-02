@@ -1,5 +1,6 @@
 package com.upc.sportfit.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.upc.sportfit.entidades.SedeCancha;
 import com.upc.sportfit.entidades.Usuario;
 import jakarta.persistence.*;
@@ -23,13 +24,18 @@ import java.time.LocalTime;
 public class ReservaDTO {
 
     private Integer idReserva;
+    @JsonProperty("fReserva")
     private LocalDate fReserva;
+    @JsonProperty("fInicio")
     private LocalTime hInicio;
+    @JsonProperty("fFin")
     private LocalTime hFin;
     private String estado;
     private String creadoPor;
+    @JsonProperty("fCreacion")
     private Instant fCreacion;
     private String modificadoPor;
+    @JsonProperty("fModificacion")
     private Instant fModificacion;
     private UsuarioDTO usuario;
     private SedeCanchaDTO sedeCancha;

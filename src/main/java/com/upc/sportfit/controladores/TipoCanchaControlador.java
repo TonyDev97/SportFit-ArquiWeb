@@ -24,6 +24,7 @@ public class TipoCanchaControlador {
         return tipoCanchaServicio.listar();
     }
 
+
     @PutMapping("/tipoCancha-actualizar/{id}")
     public TipoCancha actualizar(@RequestBody TipoCancha tipoCancha) {
         return tipoCanchaServicio.actualizar(tipoCancha);

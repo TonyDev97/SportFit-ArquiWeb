@@ -37,4 +37,8 @@ public interface SedeCanchaRepositorio extends JpaRepository<SedeCancha, Integer
         WHERE sc.sede.idSede = :idSede
     """)
     List<SedeCancha> encontrarTodasPorSede(@Param("idSede") Integer idSede);
+
+    // Busar cancha según deporte y sede
+    @Query("SELECT DISTINCT sc FROM SedeCancha sc WHERE sc.sede.idSede = :idSede AND sc.cancha.idTipoCancha = :idTipoCancha")
+    List<SedeCancha> BuscarPorDeporteYSede(@Param("idTipoCancha") Integer idTipoCancha, @Param("idSede") Integer idSede);
 }

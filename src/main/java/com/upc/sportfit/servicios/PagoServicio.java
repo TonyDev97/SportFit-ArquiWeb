@@ -1,9 +1,12 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.dtos.PagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
 import com.upc.sportfit.dtos.reportes.MontoPerdidoDTO;
 import com.upc.sportfit.entidades.Pago;
+import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.repositorios.PagoRepositorio;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,12 +22,18 @@ public class PagoServicio {
     @Autowired
     private PagoRepositorio pagoRepositorio;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public List<Pago> listarPagos() {
         return pagoRepositorio.findAll();
     }
 
-    public Pago registrarPago(Pago pago) {
-        return pagoRepositorio.save(pago);
+    // VALIDADO NICOLE
+    public PagoDTO registrarPago(PagoDTO pagoDTO) {
+        Pago pago = modelMapper.map(pagoDTO, Pago.class);
+        pago = pagoRepositorio.save(pago);
+        return modelMapper.map(pago, PagoDTO.class);
     }
 
     public Pago listarPagoPorId(Integer id) {
