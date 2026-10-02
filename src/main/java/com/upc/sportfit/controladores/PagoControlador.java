@@ -1,6 +1,7 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.PagoDTO;
+import com.upc.sportfit.dtos.reportes.DistribucionPagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
 import com.upc.sportfit.entidades.Pago;
 import com.upc.sportfit.servicios.PagoServicio;
@@ -47,13 +48,20 @@ public class PagoControlador {
         pagoServicio.eliminarPago(id);
     }
 
-    //esta
-    // HU07 - ED20: Reporte financiero por período
+    // HU07 - ED20: Reporte de Ingresos (gráfico lineal + tarjetas métricas)
     @GetMapping("/pago/reporte/ingresos")
     public ResponseEntity<List<IngresoDiarioDTO>> obtenerIngresosPorPeriodo(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
-        return ResponseEntity.ok(pagoServicio.obtenerIngresosPorPeriodo(fechaInicio, fechaFin));
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(pagoServicio.obtenerIngresosPorPeriodo(mes, anio));
+    }
+
+    // HU07 - ED83: Distribución por Método de Pago (gráfico circular)
+    @GetMapping("/pago/reporte/metodos-pago")
+    public ResponseEntity<List<DistribucionPagoDTO>> obtenerDistribucionPorMetodoPago(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(pagoServicio.obtenerDistribucionPorMetodoPago(mes, anio));
     }
 
 

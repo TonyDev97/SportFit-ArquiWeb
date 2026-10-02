@@ -30,9 +30,8 @@ public class Cancelacion {
     private Instant fCancelacion;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_reserva", nullable = false)
     private Reserva reserva;
-
 
 }

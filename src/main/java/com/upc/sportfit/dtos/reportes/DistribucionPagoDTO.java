@@ -6,16 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IngresoDiarioDTO {
+public class DistribucionPagoDTO {
 
-    private LocalDate fecha;
-    private BigDecimal ingresos;
-    private Long cantidadPagos;
+    private String metodoPago;
+    private BigDecimal totalRecaudado;
+    private Long cantidadTransacciones;
 
 }
