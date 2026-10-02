@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +26,18 @@ public class UsuarioServicio {
     @Autowired
     private RolRepositorio rolRepositorio;
 
-    public Usuario insertar(Usuario usuario){
-        Rol rol = rolRepositorio.findById(usuario.getRol().getIdRol()).orElse(null);
+    public UsuarioDTO insertar(UsuarioDTO usuarioDTO){
+        Usuario usuario = modelMapper.map(usuarioDTO,Usuario.class);
+        Rol rol = rolRepositorio.findByNombre("CLIENTE");
         usuario.setRol(rol);
-        return usuarioRepositorio.save(usuario);
+        usuario.setFCreacion(Instant.now());
+        usuario.setCreadoPor("API");
+        usuarioRepositorio.save(usuario);
+        return modelMapper.map(usuario,UsuarioDTO.class);
     }
 
     public List<Usuario> listarTodo(){
-        return usuarioRepositorio.findAll();
+        return usuarioRepositorio.findByRol_IdRol(1);
     }
 
     public List<Usuario> listarActivos(){
@@ -42,11 +48,13 @@ public class UsuarioServicio {
     public UsuarioDTO actualizar(UsuarioDTO usuarioDTO){
         return usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
                 .map(usuario -> {
-                    modelMapper.map(usuario, usuarioDTO);
-                    return modelMapper.map(usuarioRepositorio.save(usuario), UsuarioDTO.class);
+                    modelMapper.map(usuarioDTO, usuario);
+                    Usuario usuarioGuardado = usuarioRepositorio.save(usuario);
+                    return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
                 })
                 .orElseThrow(() -> new RuntimeException("No existe el usuario con el id: " + usuarioDTO.getIdUsuario()));
     }
+
 
     public Usuario cambiarEstado(Integer id, Boolean estado){
         Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
@@ -77,13 +85,15 @@ public class UsuarioServicio {
         return usuarioRepositorio.findById(id).orElse(null);
     }
 
+    // MODIFICAR ACA
     public UsuarioDTO cambiarPassword(Integer id, String password){
 
         Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
-
         if(usuario == null){
             throw new RuntimeException("No es existe el usuario para cambiar la contraseña");
         }
+        usuario.setContrasenaHash(password);
+        usuarioRepositorio.save(usuario);
         return modelMapper.map(usuario, UsuarioDTO.class) ;
     }
 
@@ -115,6 +125,35 @@ public class UsuarioServicio {
         }
         return usuarioDTOs;
     }
+
+    public List<UsuarioDTO> buscarClientesTelefonoInicia(String telefono){
+        List<Usuario> clientes =  usuarioRepositorio.findByTelefonoStartingWithAndRol_IdRol(telefono,1 );
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for (Usuario cliente : clientes){
+            usuarioDTOs.add(modelMapper.map(cliente, UsuarioDTO.class));
+        }
+        return usuarioDTOs;
+    }
+
+
+    public List<UsuarioDTO> buscarClienteCorreoDominio(String dominio){
+        List<Usuario> clientes =  usuarioRepositorio.findByCorreoEndingWithAndRol_IdRol(dominio,1);
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for (Usuario cliente : clientes){
+            usuarioDTOs.add(modelMapper.map(cliente, UsuarioDTO.class));
+        }
+        return usuarioDTOs;
+    }
+
+    public List<UsuarioDTO> buscarClientesCantidadReservas(Integer cantidadReservas){
+        List<Usuario> clientes =  usuarioRepositorio.buscarClientesCantidadReservas(cantidadReservas);
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for (Usuario cliente : clientes){
+            usuarioDTOs.add(modelMapper.map(cliente, UsuarioDTO.class));
+        }
+        return usuarioDTOs;
+    }
+
 
 
 }

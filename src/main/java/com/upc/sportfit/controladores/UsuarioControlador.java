@@ -15,19 +15,10 @@ public class UsuarioControlador {
     @Autowired
     private UsuarioServicio usuarioServicio;
 
-    @PostMapping("/usuario")
-    public Usuario insertar(@RequestBody Usuario usuario){
-        return usuarioServicio.insertar(usuario);
+    @PostMapping("/usuario/cliente")
+    public UsuarioDTO insertar(@RequestBody UsuarioDTO usuarioDTO){
+        return usuarioServicio.insertar(usuarioDTO);
     }
-
-    @GetMapping("/usuarios")
-    public List<Usuario> listarTodo(){
-        return usuarioServicio.listarTodo();
-    }
-
-    @GetMapping("/usuarios/activos")
-    public List<Usuario> listarActivos() {return usuarioServicio.listarActivos();}
-
 
     // Validado
     @PutMapping("/usuario-actualizar")
@@ -40,30 +31,18 @@ public class UsuarioControlador {
         return usuarioServicio.cambiarEstado(id, estado);
     }
 
-    @GetMapping("/usuario/{id}")
-    public Usuario buscarPorId(@PathVariable Integer id){
-        return usuarioServicio.buscarPorId(id);
-    }
-
-
-    // Buscar clientes por filtros
-    @GetMapping("/usuario/clientes")
-    public List<Usuario> buscarClientes(
-            @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) String dni,
-            @RequestParam(required = false) Boolean estado
-    ){
-
-        return usuarioServicio.buscarClientes(nombre, dni, estado);
-    }
-
-
-    @PutMapping("/usuario/administrador-password")
+    @PutMapping("/usuario/administrador-password/{idAdmin}")
     public ResponseEntity<UsuarioDTO> cambiarPassword(
-            @PathVariable Integer id,
+            @PathVariable Integer idAdmin,
             @RequestBody String password){
+        return ResponseEntity.ok(usuarioServicio.cambiarPassword(idAdmin, password));
+    }
 
-        return ResponseEntity.ok(usuarioServicio.cambiarPassword(id, password));
+
+    // Buscar clientes
+    @GetMapping("/usuario/clientes")
+    public List<Usuario> buscarClientes(){
+        return usuarioServicio.listarTodo();
     }
 
     // Validado
@@ -84,5 +63,32 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuarioServicio.buscarClientesEstado(estado));
     }
 
+    @GetMapping("/usuarios-clientes-telefono/{telefono}")
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesTelefonoInicia(@PathVariable String telefono){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesTelefonoInicia(telefono));
+    }
 
+    @GetMapping("/api/usuarios-clientes-correo/{dominio}")
+    public ResponseEntity<List<UsuarioDTO>> buscarClienteCorreoDominio(@PathVariable String dominio){
+        return ResponseEntity.ok(usuarioServicio.buscarClienteCorreoDominio(dominio));
+    }
+
+    @GetMapping("/api/usuario-clientes-reservas/{cantidadReservas}")
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesCantidadReservas(@PathVariable Integer cantidadReservas){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesCantidadReservas(cantidadReservas));
+    }
+
+
+
+    // NO SE VAN A USAR
+    //@GetMapping("/usuarios")
+    //public List<Usuario> listarTodo(){
+    //    return usuarioServicio.listarTodo();
+    //}
+
+    //@GetMapping("/usuarios/activos")
+    //public List<Usuario> listarActivos() {return usuarioServicio.listarActivos();}
+    //@GetMapping("/usuario/{id}")
+    //public Usuario buscarPorId(@PathVariable Integer id){
+    //    return usuarioServicio.buscarPorId(id);    }
 }
