@@ -42,6 +42,7 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaActualizada);
     }
 
+    //ED16 - HU4 HU10 - Obtener reservas del cliente
     @GetMapping("/reserva/usuario/{idUsuario}")
     public List<ReservaDTO> listarReservasCliente(@PathVariable Integer idUsuario){
         return reservaServicio.listarReservasCliente(idUsuario);
@@ -99,11 +100,11 @@ public class ReservaControlador {
     }
 
     // HU08 - ED21: Cancelaciones por día (mes y año como parámetros)
-    @GetMapping("/reservas-canceladas/dia")
-    public ResponseEntity<List<CancelacionDiaDTO>> obtenerCancelacionesPorDia(
+    @GetMapping("/reservas-canceladas/periodo")
+    public ResponseEntity<List<CancelacionDiaDTO>> obtenerCancelacionesPorPeriodo(
             @RequestParam Integer mes,
             @RequestParam Integer anio) {
-        return ResponseEntity.ok(reservaServicio.obtenerCancelacionesPorDia(mes, anio));
+        return ResponseEntity.ok(reservaServicio.obtenerCancelacionesPorPeriodo(mes, anio));
     }
 
     // HU08 - ED22: Monto perdido por cancelaciones
@@ -122,31 +123,34 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.obtenerTotalCancelaciones(mes, anio));
     }
 
-    // HU09 - ED24: Reservas por cliente (general)
-    @GetMapping("/reservas-cliente")
-    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerReservasPorCliente(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
-        return ResponseEntity.ok(reservaServicio.obtenerReservasPorCliente(fechaInicio, fechaFin));
+    // HU08 - ED84: Distribución por motivo de cancelación (Gráfico de Barras)
+    @GetMapping("/reservas-canceladas/motivos")
+    public ResponseEntity<List<MotivoCancelacionDTO>> obtenerDistribucionPorMotivoCancelacion(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerDistribucionPorMotivoCancelacion(mes, anio));
     }
 
-    // HU09 - ED25: Reservas por cliente con filtro mínimo
-    @GetMapping("/reservas/cliente/minimo")
-    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerReservasPorClienteMinimo(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam Long minReservas) {
-        return ResponseEntity.ok(reservaServicio.obtenerReservasPorClienteMinimo(fechaInicio, fechaFin, minReservas));
+    // HU08 - ED85: Tendencia anual de cancelaciones (Gráfico de Líneas)
+    @GetMapping("/reservas-canceladas/tendencia-anual")
+    public ResponseEntity<List<TendenciaCancelacionDTO>> obtenerTendenciaAnualCancelaciones(
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(reservaServicio.obtenerTendenciaAnualCancelaciones(anio));
     }
 
-    // HU09 - ED26: Top de clientes con más reservas
-    @GetMapping("/reservas/cliente/top")
-    public ResponseEntity<List<ReservasPorClienteDTO>> obtenerTopClientesReservas(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam Integer top) {
-        return ResponseEntity.ok(reservaServicio.obtenerTopClientesReservas(fechaInicio, fechaFin, top));
+
+    // HU09 - ED87: Reporte consolidado de reservas por cliente
+    @GetMapping("/reportes/reservas-por-cliente")
+    public ResponseEntity<List<ReservaClienteDTO>> obtenerReservasPorClienteConsolidado(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
+            @RequestParam(required = false) Integer minReservas,
+            @RequestParam(required = false) Integer maxReservas,
+            @RequestParam(required = false) Integer top) {
+        return ResponseEntity.ok(reservaServicio.obtenerReservasPorClienteConsolidado(
+                fechaDesde, fechaHasta, minReservas, maxReservas, top));
     }
+
 
     // HU12 - Listar Reservas DTO por estado opcional
     @GetMapping("/reservas/dto")
@@ -189,6 +193,33 @@ public class ReservaControlador {
         );
     }
 
+    //HU10 - ED24 - Obtener número de reservas de un cliente cliente (dashboard - tarjeta) - Dilan
+    @GetMapping("/reservas-cantidad/usuario/{idUsuario}")
+    public ResponseEntity<Integer> obtenerCantidadReservasPorCliente(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasPorCliente(idUsuario));
+    }
 
+    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    @GetMapping("/reservas-cantidad-proximas/usuario/{idUsuario}")
+    public ResponseEntity<Integer> obtenerCantidadReservasProximasPorCliente(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasProximas(idUsuario));
+    }
+    //Se puede juntar ED25 con ED26 solo mandando el estado y el usuario
+    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    @GetMapping("/reservas-cantidad-canceladas/usuario/{idUsuario}")
+    public ResponseEntity<Integer> obtenerCantidadReservasCanceladas(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasCanceladas(idUsuario));
+    }
 
+    //HU10 - ED27 - Obtener proximas reservas de un cliente (dashboard - mostrar) - Dilan
+    @GetMapping("/reservas-proximas/usuario/{idUsuario}")
+    public ResponseEntity<List<ReservaDTO>> obtenerProximasReservas(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerProximasReservas(idUsuario));
+    }
+
+    //HU10 - ED28 - Obtener las reservas solicitadas de un cliente (dashboard - mostrar) - Dilan
+    @GetMapping("/reservas-solicitadas/usuario/{idUsuario}")
+    public ResponseEntity<List<ReservaDTO>> obtenerSolicitadasReservas(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerSolicitadasReservas(idUsuario));
+    }
 }

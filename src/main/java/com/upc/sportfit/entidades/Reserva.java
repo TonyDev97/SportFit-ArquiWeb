@@ -66,5 +66,4 @@ public class Reserva {
     @JoinColumn(name = "id_sede_cancha", nullable = false)
     private SedeCancha sedeCancha;
 
-
 }

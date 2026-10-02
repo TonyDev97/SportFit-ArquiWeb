@@ -5,17 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IngresoDiarioDTO {
+public class ReservaClienteDTO {
 
-    private LocalDate fecha;
-    private BigDecimal ingresos;
-    private Long cantidadPagos;
+    private String clienteId;
+    private String nombreCliente;
+    private LocalDate ultimaReserva;
+    private Long totalReservas;
 
 }

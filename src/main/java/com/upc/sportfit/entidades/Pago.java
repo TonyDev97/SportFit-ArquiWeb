@@ -32,7 +32,7 @@ public class Pago {
     private String urlComprobante;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_reserva", nullable = false)
     private Reserva reserva;
 

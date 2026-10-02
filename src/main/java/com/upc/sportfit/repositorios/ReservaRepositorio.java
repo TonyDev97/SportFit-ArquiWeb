@@ -1,9 +1,6 @@
 package com.upc.sportfit.repositorios;
 
-import com.upc.sportfit.dtos.reportes.CancelacionDiaDTO;
-import com.upc.sportfit.dtos.reportes.ReservaDeporteSede;
-import com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO;
-import com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO;
+import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -55,19 +52,35 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r)) " +
             "FROM Reserva r " +
             "WHERE r.estado = 'Cancelada' " +
-            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
-            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
             "GROUP BY r.fReserva " +
             "ORDER BY r.fReserva")
-    List<CancelacionDiaDTO> obtenerCancelacionesPorDia(@Param("mes") Integer mes, @Param("anio") Integer anio);
+    List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 
     // HU08 - ED23: Total de reservas canceladas en un mes/año
     @Query("SELECT new com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO(COUNT(r)) " +
             "FROM Reserva r " +
             "WHERE r.estado = 'Cancelada' " +
-            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
-            "AND EXTRACT(YEAR FROM r.fReserva) = :anio")
-    TotalCancelacionesDTO obtenerTotalCancelaciones(@Param("mes") Integer mes, @Param("anio") Integer anio);
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin")
+    TotalCancelacionesDTO obtenerTotalCancelaciones(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    //HU08 -ED84 Obenetmos la sitribucion por motivos de cancelacion
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.MotivoCancelacionDTO(c.tipoCancelacion, COUNT(c)) " +
+            "FROM Cancelacion c JOIN c.reserva r " +
+            "WHERE r.estado = 'Cancelada' " +
+            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY c.tipoCancelacion " +
+            "ORDER BY COUNT(c) DESC")
+    List<MotivoCancelacionDTO> obtenerDistribucionPorMotivoCancelacion(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    //HU08 - ED85 Obtenemos tendencias anuales de cancelaciones
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.TendenciaCancelacionDTO(EXTRACT(MONTH FROM r.fReserva), c.tipoCancelacion, COUNT(c)) " +
+            "FROM Cancelacion c JOIN c.reserva r " +
+            "WHERE r.estado = 'Cancelada' " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY EXTRACT(MONTH FROM r.fReserva), c.tipoCancelacion " +
+            "ORDER BY EXTRACT(MONTH FROM r.fReserva)")
+    List<TendenciaCancelacionDTO> obtenerTendenciaAnualCancelaciones(@Param("anio") Integer anio);
 
     // HU09 - ED24: Reservas por cliente en un período
     @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservasPorClienteDTO(u.idUsuario, CONCAT(u.nombre, ' ', u.apellido), COUNT(r)) " +
@@ -100,4 +113,46 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     List<Reserva> listarPorCancha(
             @Param("idCancha") Integer idCancha
     );
+
+    // HU09 - 87: Reporte consolidado de reservas por cliente con filtros dinámicos
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservaClienteDTO(" +
+            "CAST(u.idUsuario AS string), " +
+            "CONCAT(CONCAT(u.nombre, ' '), u.apellido), " +
+            "MAX(r.fReserva), " +
+            "COUNT(r.idReserva)) " +
+            "FROM Reserva r JOIN r.usuario u " +
+            "WHERE r.estado = 'Confirmada' " +
+            "AND (:fechaDesde IS NULL OR r.fReserva >= :fechaDesde) " +
+            "AND (:fechaHasta IS NULL OR r.fReserva <= :fechaHasta) " +
+            "GROUP BY u.idUsuario, u.nombre, u.apellido " +
+            "HAVING (:minReservas IS NULL OR COUNT(r.idReserva) >= :minReservas) " +
+            "AND (:maxReservas IS NULL OR COUNT(r.idReserva) <= :maxReservas) " +
+            "ORDER BY COUNT(r.idReserva) DESC")
+    List<ReservaClienteDTO> obtenerReservasPorClienteConsolidado(
+            @Param("fechaDesde") LocalDate fechaDesde,
+            @Param("fechaHasta") LocalDate fechaHasta,
+            @Param("minReservas") Integer minReservas,
+            @Param("maxReservas") Integer maxReservas,
+            @Param("top") Integer top
+    );
+
+    //HU10 - ED24 Obtener el número de reservas de un cliente
+    @Query("SELECT COUNT(r) FROM Reserva r WHERE r.usuario.idUsuario = :idUsuario")
+    Long contarReservasPorCliente(Integer idUsuario);
+
+    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    @Query("SELECT COUNT(r) FROM Reserva r " +
+            "WHERE r.usuario.idUsuario = :idUsuario " +
+            "AND r.estado = 'confirmada'")
+    Long contarReservasProximas(@Param("idUsuario") Integer idUsuario);
+
+    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    @Query("SELECT COUNT(r) FROM Reserva r " +
+            "WHERE r.usuario.idUsuario = :idUsuario " +
+            "AND r.estado = 'cancelada'")
+    Long contarReservasCanceladas(@Param("idUsuario") Integer idUsuario);
+
+    // HU10 - ED27 ED28 - Obtener próximas reservas de un cliente
+    List<Reserva> findByUsuario_IdUsuarioAndEstado(Integer idUsuario, String estado);
+
 }
