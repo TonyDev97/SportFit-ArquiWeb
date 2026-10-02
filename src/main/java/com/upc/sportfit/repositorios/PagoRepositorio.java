@@ -1,5 +1,6 @@
 package com.upc.sportfit.repositorios;
 
+import com.upc.sportfit.dtos.reportes.DistribucionPagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
 import com.upc.sportfit.entidades.Pago;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,12 +15,18 @@ import com.upc.sportfit.entidades.Pago;
 
 @Repository
 public interface PagoRepositorio extends JpaRepository<Pago, Integer> {
-    @Query("SELECT new com.upc.sportfit.dtos.reportes.IngresoDiarioDTO(r.fReserva, SUM(p.montoTotal)) " +
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.IngresoDiarioDTO(r.fReserva, SUM(p.montoTotal), COUNT(p.idPago)) " +
             "FROM Pago p JOIN p.reserva r " +
             "WHERE r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
             "GROUP BY r.fReserva " +
             "ORDER BY r.fReserva")
-    List<IngresoDiarioDTO> obtenerIngresosPorPeriodo(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin")LocalDate fechaFin);
+    List<IngresoDiarioDTO> obtenerIngresosPorPeriodo(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.DistribucionPagoDTO(p.metodo, SUM(p.montoTotal), COUNT(p.idPago)) " +
+            "FROM Pago p JOIN p.reserva r " +
+            "WHERE r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY p.metodo")
+    List<DistribucionPagoDTO> obtenerDistribucionPorMetodoPago(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin")LocalDate fechaFin);
 
     // HU08 - ED22: Monto perdido por cancelaciones en un mes/año (desde Pago, sin tocar Reserva)
     @Query("SELECT COALESCE(SUM(p.montoTotal), 0) " +
