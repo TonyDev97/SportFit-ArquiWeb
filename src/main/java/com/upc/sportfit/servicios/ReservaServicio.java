@@ -500,5 +500,8 @@ public class ReservaServicio {
         return reservaRepositorio.listarDeporteParticipacion(mes, anio);
     }
 
+    public List<TendenciaAnualDTO> listarTendenciaAnual(Integer anio){
+        return reservaRepositorio.listarTendenciaAnual(anio);
+    }
 
 }

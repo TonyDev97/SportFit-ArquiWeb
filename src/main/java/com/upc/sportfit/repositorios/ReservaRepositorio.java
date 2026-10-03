@@ -160,6 +160,16 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "ORDER BY COUNT(r) DESC")
     List<DeporteParticipacionDTO> listarDeporteParticipacion(@Param("mes") Integer mes, @Param("anio") Integer anio);
 
+    // ED29: Tendencia anual de reservas por deporte y mes
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.TendenciaAnualDTO(r.sedeCancha.cancha.deporte, " +
+            "EXTRACT(MONTH FROM r.fReserva), COUNT(r)) " +
+            "FROM Reserva r " +
+            "WHERE r.estado IN ('confirmada', 'completada') " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY r.sedeCancha.cancha.deporte, EXTRACT(MONTH FROM r.fReserva) " +
+            "ORDER BY r.sedeCancha.cancha.deporte, EXTRACT(MONTH FROM r.fReserva)")
+    List<TendenciaAnualDTO> listarTendenciaAnual(@Param("anio") Integer anio);
+
 
 
 }

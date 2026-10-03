@@ -221,9 +221,17 @@ public class ReservaControlador {
     }
 
     // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
-    @GetMapping("/api/reservas/sede/tipoCancha/participacion")
+    @GetMapping("/reservas/sede/tipoCancha/participacion")
     public List<DeporteParticipacionDTO> listarDeporteParticipacion(){
         return reservaServicio.listarDeporteParticipacion();
     }
+
+    // ED29: Tendencia anual de reservas por deporte y mes
+    @GetMapping("/reservas-tendencia-anual/{anio}")
+    public List<TendenciaAnualDTO> listarTendenciaAnual(@PathVariable Integer anio){
+        return reservaServicio.listarTendenciaAnual(anio);
+    }
+
+    // ED30
 
 }
