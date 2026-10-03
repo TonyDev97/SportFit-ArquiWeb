@@ -1,6 +1,7 @@
 package com.upc.sportfit.servicios;
 
 import com.upc.sportfit.dtos.PagoDTO;
+import com.upc.sportfit.dtos.reportes.DetalleSedeDTO;
 import com.upc.sportfit.dtos.reportes.DistribucionPagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
 import com.upc.sportfit.dtos.reportes.MontoPerdidoDTO;
@@ -96,6 +97,10 @@ public class PagoServicio {
             valor = BigDecimal.ZERO;
         }
         return new MontoPerdidoDTO(valor);
+    }
+
+    public List<DetalleSedeDTO> listarDetalleSede(Integer mes, Integer anio, Integer sedeId) {
+        return pagoRepositorio.listarDetalleSede(mes, anio, sedeId);
     }
 
 }
