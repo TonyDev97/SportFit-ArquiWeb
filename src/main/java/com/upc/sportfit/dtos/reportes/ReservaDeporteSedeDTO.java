@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservaDeporteSede {
+public class ReservaDeporteSedeDTO {
 
     private String Deporte;
     private String Sede;

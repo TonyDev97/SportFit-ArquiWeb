@@ -1,5 +1,6 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.controladores.BannerReservasDTO;
 import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Pago;
@@ -11,15 +12,14 @@ import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
 import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class ReservaServicio {
@@ -183,16 +183,12 @@ public class ReservaServicio {
                 .toList();
     }
 
-    public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSede(){
-        List<ReservaDeporteSede> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSede();
-        if (reportes.isEmpty()){
-            throw new RuntimeException("No hay información suficiente");
-        }
-        return reportes;
-    }
 
-    public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSedeEntreFechas(LocalDate fechaMin, LocalDate fechaMax){
-        List<ReservaDeporteSede> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax);
+    public List<ReservaDeporteSedeDTO> frecuenciaReservasPorDeporteSede(Integer mes){
+        if (mes == null) {
+            mes = LocalDate.now().getMonthValue();
+        }
+        List<ReservaDeporteSedeDTO> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSede(mes);
         if (reportes.isEmpty()){
             throw new RuntimeException("No hay información suficiente");
         }
@@ -495,4 +491,44 @@ public class ReservaServicio {
         }
         return reservaDTOs;
     }
+
+    // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
+    public List<DeporteParticipacionDTO> listarDeporteParticipacion() {
+        Integer mes = LocalDate.now().getMonthValue();
+        Integer anio = LocalDate.now().getYear();
+        return reservaRepositorio.listarDeporteParticipacion(mes, anio);
+    }
+
+    // ED29
+    public List<TendenciaAnualDTO> listarTendenciaAnual(Integer anio){
+        if (anio == null) {
+            anio = LocalDate.now().getYear();
+        }
+        return reservaRepositorio.listarTendenciaAnual(anio);
+    }
+
+    // ED30: Banner del dashboard (total de reservas, deporte popular y sede popular del mes)
+    public BannerReservasDTO cargarBannerReservas() {
+        Integer mes = 9;
+        List<ReservaDeporteSedeDTO> datos = reservaRepositorio.frecuenciaReservasPorDeporteSede(mes);
+        if (datos.isEmpty()) {
+            throw new RuntimeException("No hay reservas para el período seleccionado");
+        }
+
+        Map<String, Integer> porDeporte = new HashMap<>();
+        Map<String, Integer> porSede = new HashMap<>();
+        Integer total = 0;
+        for (ReservaDeporteSedeDTO dato : datos) {
+            porDeporte.merge(dato.getDeporte(), dato.getFrecuencia(), Integer::sum);
+            porSede.merge(dato.getSede(), dato.getFrecuencia(), Integer::sum);
+            total += dato.getFrecuencia();
+        }
+
+        BannerReservasDTO banner = new BannerReservasDTO();
+        banner.setReservasMes(total);
+        banner.setDeportePopular(Collections.max(porDeporte.entrySet(), Map.Entry.comparingByValue()).getKey());
+        banner.setSedePopular(Collections.max(porSede.entrySet(), Map.Entry.comparingByValue()).getKey());
+        return banner;
+    }
+
 }

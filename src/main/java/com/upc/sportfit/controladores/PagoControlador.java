@@ -1,6 +1,7 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.PagoDTO;
+import com.upc.sportfit.dtos.reportes.DetalleSedeDTO;
 import com.upc.sportfit.dtos.reportes.DistribucionPagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
 import com.upc.sportfit.entidades.Pago;
@@ -64,7 +65,13 @@ public class PagoControlador {
         return ResponseEntity.ok(pagoServicio.obtenerDistribucionPorMetodoPago(mes, anio));
     }
 
-
+    // ED 86
+    @GetMapping("/pagos-detalles/reserva/sede")
+    public List<DetalleSedeDTO> listarDetalleSede(@RequestParam(name = "mes", required = true) Integer mes,
+                                                  @RequestParam(name = "anio", required = true) Integer anio,
+                                                  @RequestParam(name = "sedeId", required = false) Integer sedeId)  {
+        return pagoServicio.listarDetalleSede(mes, anio, sedeId);
+    }
 
 
 }

@@ -3,13 +3,11 @@ package com.upc.sportfit.repositorios;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -38,15 +36,12 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     List<Reserva> listarReservasDeporte(@Param("deporte") String deporte);
 
     // OBTENER LA FRECUENCIA DE RESERVAS POR TIPO DE DEPORTE PARA TODAS LAS SEDES (ME FALTA PROBAR)
-    @Query("select new com.upc.sportfit.dtos.reportes.ReservaDeporteSede(r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre, " +
-            "cast(count(r) as Integer)) from Reserva r group by r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre")
-    List<ReservaDeporteSede> frecuenciaReservasPorDeporteSede();
+    // ED18 OBTENER LA FRECUENCIA DE RESERVAS POR TIPO DE DEPORTE PARA TODAS LAS SEDES POR MES (DEFECTO ULTIMO MES)
+    @Query("select new com.upc.sportfit.dtos.reportes.ReservaDeporteSedeDTO(r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre, " +
+            "cast(count(r) as Integer)) from Reserva r where r.estado = 'completada' " +
+            "and extract(month from r.fReserva) = :mes group by r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre")
+    List<ReservaDeporteSedeDTO> frecuenciaReservasPorDeporteSede(@Param("mes") Integer mes);
 
-    // OBTENER LA FRECUENCIA DE RESERVAS POR TIPO DE DEPORTE PARA TODAS LAS SEDES FILTRADO ENTRE FECHAS (FALTA PROBAR)
-    @Query("select new com.upc.sportfit.dtos.reportes.ReservaDeporteSede(r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre, " +
-            "cast(count(r) as Integer)) from Reserva r where r.fReserva between :fecha_inicio and :fecha_fin " +
-            "group by r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre")
-    List<ReservaDeporteSede> frecuenciaReservasPorDeporteSedeEntreFechas(@Param("fecha_inicio") LocalDate fechaInicio, @Param("fecha_fin") LocalDate fechaFin);
 
     // HU08 - ED21: Cancelaciones por día en un mes/año
     @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r)) " +
@@ -154,5 +149,27 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
 
     // HU10 - ED27 ED28 - Obtener próximas reservas de un cliente
     List<Reserva> findByUsuario_IdUsuarioAndEstado(Integer idUsuario, String estado);
+
+    // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.DeporteParticipacionDTO(r.sedeCancha.cancha.deporte, COUNT(r)) " +
+            "FROM Reserva r " +
+            "WHERE r.estado IN ('confirmada', 'completada') " +
+            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY r.sedeCancha.cancha.deporte " +
+            "ORDER BY COUNT(r) DESC")
+    List<DeporteParticipacionDTO> listarDeporteParticipacion(@Param("mes") Integer mes, @Param("anio") Integer anio);
+
+    // ED29: Tendencia anual de reservas por deporte y mes
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.TendenciaAnualDTO(r.sedeCancha.cancha.deporte, " +
+            "EXTRACT(MONTH FROM r.fReserva), COUNT(r)) " +
+            "FROM Reserva r " +
+            "WHERE r.estado IN ('confirmada', 'completada') " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY r.sedeCancha.cancha.deporte, EXTRACT(MONTH FROM r.fReserva) " +
+            "ORDER BY r.sedeCancha.cancha.deporte, EXTRACT(MONTH FROM r.fReserva)")
+    List<TendenciaAnualDTO> listarTendenciaAnual(@Param("anio") Integer anio);
+
+
 
 }

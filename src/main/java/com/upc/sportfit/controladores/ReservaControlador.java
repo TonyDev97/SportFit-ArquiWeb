@@ -13,7 +13,6 @@ import com.upc.sportfit.dtos.EstadoReservaDTO;
 import com.upc.sportfit.dtos.SolicitudReservaDTO;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 
@@ -87,17 +86,15 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.listarReservasDeporte(deporte));
     }
 
-    // Validado
+    // ED18
     @GetMapping("/reservas/sede/tipoCancha")
-    public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSede(){
-        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSede());
+    public ResponseEntity<List<ReservaDeporteSedeDTO>> frecuenciaReservasPorDeporteSede(
+            @RequestParam (required = false) Integer mes
+    ){
+        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSede(mes));
     }
 
-    // Validado
-    @GetMapping("/reservas/sede/tipoCancha/{fechaMin}{fechaMax}")
-    public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSedeEntreFechas(@PathVariable LocalDate fechaMin, @PathVariable LocalDate fechaMax){
-        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax));
-    }
+
 
     // HU08 - ED21: Cancelaciones por día (mes y año como parámetros)
     @GetMapping("/reservas-canceladas/periodo")
@@ -222,4 +219,25 @@ public class ReservaControlador {
     public ResponseEntity<List<ReservaDTO>> obtenerSolicitadasReservas(@PathVariable Integer idUsuario) {
         return ResponseEntity.ok(reservaServicio.obtenerSolicitadasReservas(idUsuario));
     }
+
+    // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
+    @GetMapping("/reservas/sede/tipoCancha/participacion")
+    public List<DeporteParticipacionDTO> listarDeporteParticipacion(){
+        return reservaServicio.listarDeporteParticipacion();
+    }
+
+    // ED29: Tendencia anual de reservas por deporte y mes
+    @GetMapping("/reservas-tendencia-anual")
+    public List<TendenciaAnualDTO> listarTendenciaAnual(@RequestParam (required = false) Integer anio){
+        return reservaServicio.listarTendenciaAnual(anio);
+    }
+
+    // ED30
+    @GetMapping("/reservas-banners")
+    public BannerReservasDTO cargarBannerReservas(){
+        return reservaServicio.cargarBannerReservas();
+    }
+
+
+
 }
