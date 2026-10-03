@@ -11,6 +11,7 @@ import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
 import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,16 +184,12 @@ public class ReservaServicio {
                 .toList();
     }
 
-    public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSede(){
-        List<ReservaDeporteSede> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSede();
-        if (reportes.isEmpty()){
-            throw new RuntimeException("No hay información suficiente");
-        }
-        return reportes;
-    }
 
-    public List<ReservaDeporteSede> frecuenciaReservasPorDeporteSedeEntreFechas(LocalDate fechaMin, LocalDate fechaMax){
-        List<ReservaDeporteSede> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax);
+    public List<ReservaDeporteSedeDTO> frecuenciaReservasPorDeporteSede(Integer mes){
+        if (mes == null) {
+            mes = LocalDate.now().getMonthValue();
+        }
+        List<ReservaDeporteSedeDTO> reportes = reservaRepositorio.frecuenciaReservasPorDeporteSede(mes);
         if (reportes.isEmpty()){
             throw new RuntimeException("No hay información suficiente");
         }
@@ -495,4 +492,11 @@ public class ReservaServicio {
         }
         return reservaDTOs;
     }
+
+    // HU05 - ED31
+    public List<Reserva> filtrarReservas(Boolean estado, Integer idSede, LocalDate fecha, Integer idTipoDeporte) {
+        return reservaRepositorio.filtrarReservas(estado, idSede, fecha, idTipoDeporte);
+    }
+
+
 }

@@ -13,7 +13,6 @@ import com.upc.sportfit.dtos.EstadoReservaDTO;
 import com.upc.sportfit.dtos.SolicitudReservaDTO;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 
@@ -87,17 +86,15 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.listarReservasDeporte(deporte));
     }
 
-    // Validado
+    // ED18
     @GetMapping("/reservas/sede/tipoCancha")
-    public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSede(){
-        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSede());
+    public ResponseEntity<List<ReservaDeporteSedeDTO>> frecuenciaReservasPorDeporteSede(
+            @RequestParam (required = false) Integer mes
+    ){
+        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSede(mes));
     }
 
-    // Validado
-    @GetMapping("/reservas/sede/tipoCancha/{fechaMin}{fechaMax}")
-    public ResponseEntity<List<ReservaDeporteSede>> frecuenciaReservasPorDeporteSedeEntreFechas(@PathVariable LocalDate fechaMin, @PathVariable LocalDate fechaMax){
-        return ResponseEntity.ok(reservaServicio.frecuenciaReservasPorDeporteSedeEntreFechas(fechaMin, fechaMax));
-    }
+
 
     // HU08 - ED21: Cancelaciones por día (mes y año como parámetros)
     @GetMapping("/reservas-canceladas/periodo")
@@ -222,4 +219,15 @@ public class ReservaControlador {
     public ResponseEntity<List<ReservaDTO>> obtenerSolicitadasReservas(@PathVariable Integer idUsuario) {
         return ResponseEntity.ok(reservaServicio.obtenerSolicitadasReservas(idUsuario));
     }
+
+    @GetMapping("/reservas-filtros")
+    public ResponseEntity<List<Reserva>> filtrarReservas(
+            @RequestParam(required = false) Boolean estado,
+            @RequestParam(required = false) Integer idSede,
+            @RequestParam(required = false) LocalDate fecha,
+            @RequestParam(required = false) Integer idTipoDeporte
+    ){
+        return ResponseEntity.ok(reservaServicio.filtrarReservas(estado, idSede, fecha, idTipoDeporte));
+    }
+
 }
