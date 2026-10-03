@@ -220,14 +220,10 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.obtenerSolicitadasReservas(idUsuario));
     }
 
-    @GetMapping("/reservas-filtros")
-    public ResponseEntity<List<Reserva>> filtrarReservas(
-            @RequestParam(required = false) Boolean estado,
-            @RequestParam(required = false) Integer idSede,
-            @RequestParam(required = false) LocalDate fecha,
-            @RequestParam(required = false) Integer idTipoDeporte
-    ){
-        return ResponseEntity.ok(reservaServicio.filtrarReservas(estado, idSede, fecha, idTipoDeporte));
+    // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
+    @GetMapping("/api/reservas/sede/tipoCancha/participacion")
+    public List<DeporteParticipacionDTO> listarDeporteParticipacion(){
+        return reservaServicio.listarDeporteParticipacion();
     }
 
 }

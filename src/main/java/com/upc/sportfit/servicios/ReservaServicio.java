@@ -493,9 +493,11 @@ public class ReservaServicio {
         return reservaDTOs;
     }
 
-    // HU05 - ED31
-    public List<Reserva> filtrarReservas(Boolean estado, Integer idSede, LocalDate fecha, Integer idTipoDeporte) {
-        return reservaRepositorio.filtrarReservas(estado, idSede, fecha, idTipoDeporte);
+    // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
+    public List<DeporteParticipacionDTO> listarDeporteParticipacion() {
+        Integer mes = LocalDate.now().getMonthValue();
+        Integer anio = LocalDate.now().getYear();
+        return reservaRepositorio.listarDeporteParticipacion(mes, anio);
     }
 
 

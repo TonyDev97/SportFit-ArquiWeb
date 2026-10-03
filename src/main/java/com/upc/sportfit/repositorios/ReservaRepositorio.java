@@ -150,9 +150,15 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     // HU10 - ED27 ED28 - Obtener próximas reservas de un cliente
     List<Reserva> findByUsuario_IdUsuarioAndEstado(Integer idUsuario, String estado);
 
-    // HU02 - ED31 - Filtros de reservas
-    @Query("select r from Reserva r where (:estado IS NULL OR r.estado = :estado) AND (:idSede IS NULL OR r.sedeCancha.sede.idSede = :idSede) AND (:fecha IS NULL OR r.fReserva = :fecha) AND (:idTipoDeporte IS NULL OR r.sedeCancha.cancha.idTipoCancha = :idTipoDeporte)")
-    List<Reserva> filtrarReservas(@Param("estado") Boolean estado,@Param("idSede") Integer idSede,@Param("fecha") LocalDate fecha,@Param("idTipoDeporte") Integer idTipoDeporte);
+    // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.DeporteParticipacionDTO(r.sedeCancha.cancha.deporte, COUNT(r)) " +
+            "FROM Reserva r " +
+            "WHERE r.estado IN ('confirmada', 'completada') " +
+            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
+            "GROUP BY r.sedeCancha.cancha.deporte " +
+            "ORDER BY COUNT(r) DESC")
+    List<DeporteParticipacionDTO> listarDeporteParticipacion(@Param("mes") Integer mes, @Param("anio") Integer anio);
 
 
 
