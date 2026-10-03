@@ -5,6 +5,7 @@ import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,22 +17,26 @@ public class UsuarioControlador {
     private UsuarioServicio usuarioServicio;
 
     @PostMapping("/usuario/cliente")
+    @PreAuthorize("permitAll()")
     public UsuarioDTO insertar(@RequestBody UsuarioDTO usuarioDTO){
         return usuarioServicio.insertar(usuarioDTO);
     }
 
     // Validado
     @PutMapping("/usuario-actualizar")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO){
         return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO));
     }
 
     @PutMapping("/usuario/{id}/estado")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Usuario cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
         return usuarioServicio.cambiarEstado(id, estado);
     }
 
     @PutMapping("/usuario/administrador-password/{idAdmin}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> cambiarPassword(
             @PathVariable Integer idAdmin,
             @RequestBody String password){
@@ -41,39 +46,46 @@ public class UsuarioControlador {
 
     // Buscar clientes
     @GetMapping("/usuario/clientes")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<Usuario> buscarClientes(){
         return usuarioServicio.listarTodo();
     }
 
     // Validado
     @GetMapping("/usuario/clientes-nombre/{nombre}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<UsuarioDTO> buscarClientesNombreContiene(@PathVariable String nombre){
         return usuarioServicio.buscarClientesNombreContiene(nombre);
     }
 
     // Validado
     @GetMapping("/usuario/clientes-dni/{dni}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<UsuarioDTO> buscarClientesDniInicia(@PathVariable String dni){
         return usuarioServicio.buscarClientesDniInicia(dni);
     }
 
     // Validado
     @GetMapping("/usuario/clientes-estado/{estado}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesEstado(@PathVariable Boolean estado){
         return ResponseEntity.ok(usuarioServicio.buscarClientesEstado(estado));
     }
 
     @GetMapping("/usuarios-clientes-telefono/{telefono}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesTelefonoInicia(@PathVariable String telefono){
         return ResponseEntity.ok(usuarioServicio.buscarClientesTelefonoInicia(telefono));
     }
 
     @GetMapping("/api/usuarios-clientes-correo/{dominio}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClienteCorreoDominio(@PathVariable String dominio){
         return ResponseEntity.ok(usuarioServicio.buscarClienteCorreoDominio(dominio));
     }
 
     @GetMapping("/api/usuario-clientes-reservas/{cantidadReservas}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesCantidadReservas(@PathVariable Integer cantidadReservas){
         return ResponseEntity.ok(usuarioServicio.buscarClientesCantidadReservas(cantidadReservas));
     }
