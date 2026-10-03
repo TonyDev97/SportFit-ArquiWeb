@@ -292,7 +292,7 @@ public class ReservaServicio {
         return reservas.subList(0, Math.min(top, reservas.size()));
     }
 
-    // HU09 - ED86: Reporte consolidado de reservas por cliente
+    // HU09 - ED87: Reporte consolidado de reservas por cliente
     public List<ReservaClienteDTO> obtenerReservasPorClienteConsolidado(
             LocalDate fechaDesde,
             LocalDate fechaHasta,
@@ -444,5 +444,41 @@ public class ReservaServicio {
                 .toList();
     }
 
+    //H10 - ED24 - Obtener el número de reservas de un cliente
+    public Integer obtenerCantidadReservasPorCliente(Integer idUsuario) {
+        Long cantidad = reservaRepositorio.contarReservasPorCliente(idUsuario);
+        return cantidad.intValue();
+    }
 
+    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    public Integer obtenerCantidadReservasProximas(Integer idUsuario) {
+        Long cantidad = reservaRepositorio.contarReservasProximas(idUsuario);
+        return cantidad.intValue();
+    }
+
+    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    public Integer obtenerCantidadReservasCanceladas(Integer idUsuario) {
+        Long cantidad = reservaRepositorio.contarReservasCanceladas(idUsuario);
+        return cantidad.intValue();
+    }
+
+    // HU10 - ED27 - Obtener próximas reservas de un cliente
+    public List<ReservaDTO> obtenerProximasReservas(Integer idUsuario) {
+        List<Reserva> reservas = reservaRepositorio.findByUsuario_IdUsuarioAndEstado(idUsuario, "confirmada");
+        List<ReservaDTO> reservaDTOs = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            reservaDTOs.add(modelMapper.map(reserva, ReservaDTO.class));
+        }
+        return reservaDTOs;
+    }
+
+    // HU10 - ED28 - Obtener reservas solicitadas de un cliente
+    public List<ReservaDTO> obtenerSolicitadasReservas(Integer idUsuario) {
+        List<Reserva> reservas = reservaRepositorio.findByUsuario_IdUsuarioAndEstado(idUsuario, "solicitada");
+        List<ReservaDTO> reservaDTOs = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            reservaDTOs.add(modelMapper.map(reserva, ReservaDTO.class));
+        }
+        return reservaDTOs;
+    }
 }

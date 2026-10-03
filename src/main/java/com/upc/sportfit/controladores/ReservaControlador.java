@@ -42,6 +42,7 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaActualizada);
     }
 
+    //ED16 - HU4 HU10 - Obtener reservas del cliente
     @GetMapping("/reserva/usuario/{idUsuario}")
     public List<ReservaDTO> listarReservasCliente(@PathVariable Integer idUsuario){
         return reservaServicio.listarReservasCliente(idUsuario);
@@ -138,7 +139,7 @@ public class ReservaControlador {
     }
 
 
-    // HU09 - ED86: Reporte consolidado de reservas por cliente
+    // HU09 - ED87: Reporte consolidado de reservas por cliente
     @GetMapping("/reportes/reservas-por-cliente")
     public ResponseEntity<List<ReservaClienteDTO>> obtenerReservasPorClienteConsolidado(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
@@ -192,6 +193,33 @@ public class ReservaControlador {
         );
     }
 
+    //HU10 - ED24 - Obtener número de reservas de un cliente cliente (dashboard - tarjeta) - Dilan
+    @GetMapping("/reservas-cantidad/usuario/{idUsuario}")
+    public ResponseEntity<Integer> obtenerCantidadReservasPorCliente(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasPorCliente(idUsuario));
+    }
 
+    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    @GetMapping("/reservas-cantidad-proximas/usuario/{idUsuario}")
+    public ResponseEntity<Integer> obtenerCantidadReservasProximasPorCliente(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasProximas(idUsuario));
+    }
+    //Se puede juntar ED25 con ED26 solo mandando el estado y el usuario
+    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    @GetMapping("/reservas-cantidad-canceladas/usuario/{idUsuario}")
+    public ResponseEntity<Integer> obtenerCantidadReservasCanceladas(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasCanceladas(idUsuario));
+    }
 
+    //HU10 - ED27 - Obtener proximas reservas de un cliente (dashboard - mostrar) - Dilan
+    @GetMapping("/reservas-proximas/usuario/{idUsuario}")
+    public ResponseEntity<List<ReservaDTO>> obtenerProximasReservas(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerProximasReservas(idUsuario));
+    }
+
+    //HU10 - ED28 - Obtener las reservas solicitadas de un cliente (dashboard - mostrar) - Dilan
+    @GetMapping("/reservas-solicitadas/usuario/{idUsuario}")
+    public ResponseEntity<List<ReservaDTO>> obtenerSolicitadasReservas(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(reservaServicio.obtenerSolicitadasReservas(idUsuario));
+    }
 }

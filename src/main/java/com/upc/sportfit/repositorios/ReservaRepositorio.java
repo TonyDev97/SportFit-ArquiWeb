@@ -114,7 +114,7 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             @Param("idCancha") Integer idCancha
     );
 
-    // HU09 - ED86: Reporte consolidado de reservas por cliente con filtros dinámicos
+    // HU09 - 87: Reporte consolidado de reservas por cliente con filtros dinámicos
     @Query("SELECT new com.upc.sportfit.dtos.reportes.ReservaClienteDTO(" +
             "CAST(u.idUsuario AS string), " +
             "CONCAT(CONCAT(u.nombre, ' '), u.apellido), " +
@@ -135,4 +135,24 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             @Param("maxReservas") Integer maxReservas,
             @Param("top") Integer top
     );
+
+    //HU10 - ED24 Obtener el número de reservas de un cliente
+    @Query("SELECT COUNT(r) FROM Reserva r WHERE r.usuario.idUsuario = :idUsuario")
+    Long contarReservasPorCliente(Integer idUsuario);
+
+    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    @Query("SELECT COUNT(r) FROM Reserva r " +
+            "WHERE r.usuario.idUsuario = :idUsuario " +
+            "AND r.estado = 'confirmada'")
+    Long contarReservasProximas(@Param("idUsuario") Integer idUsuario);
+
+    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    @Query("SELECT COUNT(r) FROM Reserva r " +
+            "WHERE r.usuario.idUsuario = :idUsuario " +
+            "AND r.estado = 'cancelada'")
+    Long contarReservasCanceladas(@Param("idUsuario") Integer idUsuario);
+
+    // HU10 - ED27 ED28 - Obtener próximas reservas de un cliente
+    List<Reserva> findByUsuario_IdUsuarioAndEstado(Integer idUsuario, String estado);
+
 }
