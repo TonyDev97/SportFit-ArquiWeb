@@ -5,9 +5,9 @@ INSERT INTO roles (id, nombre) VALUES (1, 'CLIENTE');
 INSERT INTO roles (id, nombre) VALUES (2, 'ADMINISTRADOR');
 
 -- Password: admin123 (BCrypt encoded)
-INSERT INTO users (id, username, password, role_id) VALUES (1, 'admin', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 2);
+INSERT INTO users (id, username, password, role_id) VALUES (1, 'admin', '$2a$12$mY87ekM5Y.vBC0x10edqbeZ/UzuhGLo1IZQSPldWHQ.ZHgUF6j2QG', 2);
 -- Password: cliente123 (BCrypt encoded)
-INSERT INTO users (id, username, password, role_id) VALUES (2, 'cliente', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 1);
+INSERT INTO users (id, username, password, role_id) VALUES (2, 'cliente', '$2a$12$Zhd/sqdj7vpQnNbW8tMm.OQCBHXnfUP9d3WOHIjQw1TIV1tolXJ5a', 1);
 
 -- =========================================================
 -- ROLES (business)

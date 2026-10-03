@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+    container_name: sportfit-app
+    ports:
+      - "8080:8080"
+    networks:
+      - sportfit-network
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db_sportfit
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgre
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - JWT_SECRET=${JWT_SECRET}
+      - IP_FRONTEND=http://localhost:4200
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: sportfit-db
+    volumes:
+      - sportfit-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - sportfit-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgre
+      - POSTGRES_DB=db_sportfit
+    ports:
+      - "5433:5432"
+
+volumes:
+  sportfit-db-data:
+
+networks:
+  sportfit-network:
+    name: sportfit-network
