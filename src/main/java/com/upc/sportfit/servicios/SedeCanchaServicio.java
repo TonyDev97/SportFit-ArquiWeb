@@ -62,8 +62,24 @@ public class SedeCanchaServicio {
         return sedeCanchaRepositorio.save(sedeCancha);
     }
 
+    // HU14 - ED61: Actualizar aplicando las validaciones existentes.
+    @Transactional
     public SedeCancha actualizar(SedeCancha sedeCancha) {
-        return sedeCanchaRepositorio.save(sedeCancha);
+
+        if (sedeCancha == null || sedeCancha.getIdSedeCancha() == null) {
+            throw new IllegalArgumentException("Debe indicar el espacio");
+        }
+
+        SedeCanchaDTO datos = modelMapper.map(
+                sedeCancha, SedeCanchaDTO.class
+        );
+
+        actualizarEspacio(sedeCancha.getIdSedeCancha(), datos);
+
+        return sedeCanchaRepositorio
+                .findById(sedeCancha.getIdSedeCancha())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("El espacio no existe"));
     }
 
     public void eliminar(Integer id) {

@@ -22,10 +22,11 @@ public class IncidenciaServicio {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
-    public Incidencia InsertarIncidencia(Incidencia incidencia){
-
-        return incidenciaRepositorio.save(incidencia);
+    @Transactional
+    public Incidencia InsertarIncidencia(Incidencia incidencia) {
+        return registrarIncidenciaCliente(incidencia);
     }
+
     public List<Incidencia> listarIncidencias(){
 
         return incidenciaRepositorio.findAll();
@@ -41,11 +42,9 @@ public class IncidenciaServicio {
     public List<Incidencia> listarIncidenciasPorEstado(String estado){
         return incidenciaRepositorio.findByEstado(estado);
     }
+    @Transactional
     public Incidencia editarIncidencia(Incidencia incidencia) {
-        if (incidenciaRepositorio.existsById(incidencia.getIdIncidencia())) {
-            return incidenciaRepositorio.save(incidencia);
-        }
-        return null;
+        return responderIncidenciaPendiente(incidencia);
     }
 
     public List<Incidencia> listarPorUsuario(Integer idUsuario) {
@@ -66,7 +65,72 @@ public class IncidenciaServicio {
         return incidenciaRepositorio.filtrarParaAdministrador(tipo, inicio, fin);
     }
 
-    // --- MÉTODOS PRIVADOS DE VALIDACIÓN ---
+    // HU12 - ED36: Registrar una incidencia de un cliente activo.
+    @Transactional
+    public Incidencia registrarIncidenciaCliente(Incidencia datos) {
+
+        if (datos == null
+                || datos.getUsuario() == null
+                || datos.getUsuario().getIdUsuario() == null) {
+            throw new IllegalArgumentException("Debe indicar el cliente");
+        }
+
+        validarTipo(datos.getTipo());
+        validarTexto(datos.getAsunto(), "El asunto", 100);
+        validarTexto(datos.getDescripcion(), "La descripción", 300);
+
+        Usuario cliente = usuarioRepositorio
+                .findById(datos.getUsuario().getIdUsuario())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("El cliente no existe"));
+
+        if (!Boolean.TRUE.equals(cliente.getActivo())
+                || cliente.getRol() == null
+                || !"CLIENTE".equals(cliente.getRol().getNombre())) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un cliente activo");
+        }
+
+        Incidencia nueva = new Incidencia();
+        nueva.setTipo(datos.getTipo());
+        nueva.setAsunto(datos.getAsunto().trim());
+        nueva.setDescripcion(datos.getDescripcion().trim());
+        nueva.setUsuario(cliente);
+        nueva.setEstado("Pendiente");
+        nueva.setFCreacion(Instant.now());
+
+        return incidenciaRepositorio.save(nueva);
+    }
+
+    // HU12 - ED41: Responder una incidencia pendiente.
+    @Transactional
+    public Incidencia responderIncidenciaPendiente(Incidencia datos) {
+
+        if (datos == null || datos.getIdIncidencia() == null) {
+            throw new IllegalArgumentException("Debe indicar la incidencia");
+        }
+
+        validarTexto(datos.getRespuestaAdmin(), "La respuesta", 300);
+
+        Incidencia existente = incidenciaRepositorio
+                .findById(datos.getIdIncidencia())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("La incidencia no existe"));
+
+        if (!"Pendiente".equals(existente.getEstado())) {
+            throw new IllegalArgumentException(
+                    "Solo se pueden responder incidencias pendientes");
+        }
+
+        existente.setRespuestaAdmin(datos.getRespuestaAdmin().trim());
+        existente.setFRespuesta(Instant.now());
+        existente.setEstado("Atendido");
+
+        return incidenciaRepositorio.save(existente);
+    }
+
+
+    //MÉTODOS PRIVADOS DE VALIDACIÓN
 
     private void validarUsuarioExistente(Integer idUsuario) {
         if (idUsuario == null || !usuarioRepositorio.existsById(idUsuario)) {

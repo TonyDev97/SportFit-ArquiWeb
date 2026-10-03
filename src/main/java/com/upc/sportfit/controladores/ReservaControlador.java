@@ -152,7 +152,7 @@ public class ReservaControlador {
     }
 
 
-    // HU12 - Listar Reservas DTO por estado opcional
+    // HU13: Listar reservas con filtro opcional por estado.
     @GetMapping("/reservas/dto")
     public ResponseEntity<List<ReservaDTO>> listarReservasDTO(
             @RequestParam(required = false) String estado) {
@@ -162,7 +162,7 @@ public class ReservaControlador {
         );
     }
 
-    // HU13 - Consultar Detalle de Solicitud de Reserva y Pagos
+    // ED11:  Consultar Detalle de Solicitud de Reserva y Pagos
     @GetMapping("/reserva/{idReserva}")
     public ResponseEntity<SolicitudReservaDTO> consultarSolicitud(
             @PathVariable Integer idReserva) {
@@ -172,7 +172,7 @@ public class ReservaControlador {
         );
     }
 
-    // HU13 - Cambiar Estado de la Solicitud (Aceptar / Rechazar)
+    // HU13 - Cambiar Estado de reserva (Aceptar / Rechazar)
     @PutMapping("/reservas/{id_reserva}/estado")
     public ResponseEntity<ReservaDTO> cambiarEstadoSolicitud(
             @PathVariable("id_reserva") Integer idReserva,

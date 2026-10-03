@@ -332,17 +332,23 @@ public class ReservaServicio {
         return resultados;
     }
 
-    // HU12 - Listar Solicitudes de Reserva por estado
+    // HU13: Listar reservas con filtro opcional por estado.
     public List<ReservaDTO> listarReservasDTO(String estado) {
-        List<Reserva> reservas;
-        if (estado == null) {
-            reservas = reservaRepositorio.findAll();
-        } else {
-            reservas = reservaRepositorio.findByEstado(estado);
+
+        List<Reserva> reservas = reservaRepositorio.findAll();
+        List<ReservaDTO> resultado = new ArrayList<>();
+
+        for (Reserva reserva : reservas) {
+            if (estado == null
+                    || estado.equalsIgnoreCase(reserva.getEstado())) {
+
+                resultado.add(
+                        modelMapper.map(reserva, ReservaDTO.class)
+                );
+            }
         }
-        return reservas.stream()
-                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
-                .toList();
+
+        return resultado;
     }
 
     // HU13 - Consultar Detalle de Solicitud de Reserva y Pagos
@@ -385,8 +391,11 @@ public class ReservaServicio {
         Reserva reserva = reservaRepositorio.findById(idReserva)
                 .orElseThrow(() -> new NoSuchElementException("No existe la reserva con ID " + idReserva));
 
-        if (!"Solicitada".equals(reserva.getEstado())) {
-            throw new IllegalArgumentException("Solo se pueden atender reservas en estado Solicitada");
+        if (!"Solicitada".equals(reserva.getEstado())
+                && !"solicitada".equals(reserva.getEstado())) {
+
+            throw new IllegalArgumentException(
+                    "Solo se pueden atender reservas en estado Solicitada");
         }
 
         List<Pago> pagos = pagoRepositorio.findByReserva_IdReserva(idReserva);
@@ -415,7 +424,8 @@ public class ReservaServicio {
 
             for (Reserva otra : reservasDelDia) {
                 if (!otra.getIdReserva().equals(reserva.getIdReserva())
-                        && "Confirmada".equals(otra.getEstado())
+                        && ("Confirmada".equals(otra.getEstado())
+                        || "confirmada".equals(otra.getEstado()))
                         && otra.getHInicio().isBefore(reserva.getHFin())
                         && otra.getHFin().isAfter(reserva.getHInicio())) {
                     throw new IllegalArgumentException("Ya existe una reserva confirmada en ese horario");
@@ -423,7 +433,11 @@ public class ReservaServicio {
             }
         }
 
-        reserva.setEstado(dto.getEstado());
+        if ("Confirmada".equals(dto.getEstado())) {
+            reserva.setEstado("confirmada");
+        } else {
+            reserva.setEstado("rechazada");
+        }
         reserva.setModificadoPor(administrador.getCorreo());
         reserva.setFModificacion(Instant.now());
 
