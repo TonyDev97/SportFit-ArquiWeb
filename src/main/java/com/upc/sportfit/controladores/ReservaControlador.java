@@ -227,11 +227,17 @@ public class ReservaControlador {
     }
 
     // ED29: Tendencia anual de reservas por deporte y mes
-    @GetMapping("/reservas-tendencia-anual/{anio}")
-    public List<TendenciaAnualDTO> listarTendenciaAnual(@PathVariable Integer anio){
+    @GetMapping("/reservas-tendencia-anual")
+    public List<TendenciaAnualDTO> listarTendenciaAnual(@RequestParam (required = false) Integer anio){
         return reservaServicio.listarTendenciaAnual(anio);
     }
 
     // ED30
+    @GetMapping("/reservas-banners")
+    public BannerReservasDTO cargarBannerReservas(){
+        return reservaServicio.cargarBannerReservas();
+    }
+
+
 
 }

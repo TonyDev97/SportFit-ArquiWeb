@@ -1,5 +1,6 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.controladores.BannerReservasDTO;
 import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Pago;
@@ -18,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class ReservaServicio {
@@ -500,8 +499,36 @@ public class ReservaServicio {
         return reservaRepositorio.listarDeporteParticipacion(mes, anio);
     }
 
+    // ED29
     public List<TendenciaAnualDTO> listarTendenciaAnual(Integer anio){
+        if (anio == null) {
+            anio = LocalDate.now().getYear();
+        }
         return reservaRepositorio.listarTendenciaAnual(anio);
+    }
+
+    // ED30: Banner del dashboard (total de reservas, deporte popular y sede popular del mes)
+    public BannerReservasDTO cargarBannerReservas() {
+        Integer mes = 9;
+        List<ReservaDeporteSedeDTO> datos = reservaRepositorio.frecuenciaReservasPorDeporteSede(mes);
+        if (datos.isEmpty()) {
+            throw new RuntimeException("No hay reservas para el período seleccionado");
+        }
+
+        Map<String, Integer> porDeporte = new HashMap<>();
+        Map<String, Integer> porSede = new HashMap<>();
+        Integer total = 0;
+        for (ReservaDeporteSedeDTO dato : datos) {
+            porDeporte.merge(dato.getDeporte(), dato.getFrecuencia(), Integer::sum);
+            porSede.merge(dato.getSede(), dato.getFrecuencia(), Integer::sum);
+            total += dato.getFrecuencia();
+        }
+
+        BannerReservasDTO banner = new BannerReservasDTO();
+        banner.setReservasMes(total);
+        banner.setDeportePopular(Collections.max(porDeporte.entrySet(), Map.Entry.comparingByValue()).getKey());
+        banner.setSedePopular(Collections.max(porSede.entrySet(), Map.Entry.comparingByValue()).getKey());
+        return banner;
     }
 
 }
