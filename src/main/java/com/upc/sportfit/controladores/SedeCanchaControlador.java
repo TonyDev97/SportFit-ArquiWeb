@@ -21,7 +21,7 @@ public class SedeCanchaControlador {
     public List<SedeCancha> listarCanchasPorSede(@PathVariable Integer idSede) {
         return sedeCanchaServicio.listarPorSedeActivas(idSede);
     }
-    //VALIDADO NICOLE
+    //VALIDADO NICOLE ED58
     @GetMapping("/cancha/sede/{idSede}/deporte/{idTipoCancha}")
     public ResponseEntity<List<SedeCanchaDTO>> BuscarPorDeporteYSede(
             @PathVariable("idSede") Integer idSede,
