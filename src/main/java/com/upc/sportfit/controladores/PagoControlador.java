@@ -25,7 +25,7 @@ public class PagoControlador {
         return pagoServicio.listarPagos();
     }
 
-    //VALIDADO NICOLE
+    //VALIDADO NICOLE ED03
     @PostMapping("/pago")
     public ResponseEntity<PagoDTO> registrar(@RequestBody PagoDTO pagoDTO) {
         PagoDTO nuevoPago = pagoServicio.registrarPago(pagoDTO);

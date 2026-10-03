@@ -29,7 +29,7 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.listarReservas());
     }
 
-    //VALIDADO NICOLE
+    //VALIDADO NICOLE ED81
     @GetMapping("/reservas/horarios")
     public ResponseEntity<List<ReservaHorarioDTO>> ListarReservasPorFechaDeporteSede(@RequestParam LocalDate fecha, @RequestParam Integer idDeporte, @RequestParam Integer idSede) {
         return ResponseEntity.ok(reservaServicio.ListarReservasPorFechaDeporteSede(fecha, idDeporte, idSede));
@@ -75,12 +75,12 @@ public class ReservaControlador {
         reservaServicio.eliminarReserva(id);
     }
 
-    //VALIDADO
+    // usan?
     @GetMapping("reservas/sede/{id_sede}")
     public ResponseEntity<List<ReservaDTO>> listarReservasSede(@PathVariable Integer id_sede){
         return ResponseEntity.ok(reservaServicio.listarReservasSede(id_sede));
     }
-    //VALIDADO
+    // no uso
     @GetMapping("reservas/deporte/{deporte}")
     public ResponseEntity<List<ReservaDTO>> listarReservasDeporte(@PathVariable String deporte){
         return ResponseEntity.ok(reservaServicio.listarReservasDeporte(deporte));
