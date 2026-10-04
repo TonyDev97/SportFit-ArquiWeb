@@ -7,29 +7,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistroRequestDTO {
-    @NotBlank
-    @Email
-    private String correo;
-
-    @NotBlank
-    @Size(min = 6)
-    private String password;
-
-    @NotBlank
+    private Integer idUsuario;
     private String nombre;
-
-    @NotBlank
     private String apellido;
-
-    @NotBlank
-    @Size(min = 8, max = 8)
     private String dni;
-
-    @NotBlank
-    @Size(min = 9, max = 9)
     private String telefono;
+    private String correo;
+    private String contrasenaHash;
+    private Boolean activo;
+    private String imgUsuario;
+    private Instant fCreacion;
+    private Instant fModificacion;
 }
+/*
+*/
