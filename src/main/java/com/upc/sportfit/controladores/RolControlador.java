@@ -13,7 +13,7 @@ import java.util.List;
 public class RolControlador {
     @Autowired
     private RolServicio rolServicio;
-
+    /*
     @PostMapping("/rol")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Rol insertar(Rol rol){
@@ -30,5 +30,5 @@ public class RolControlador {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Rol actualizar(Rol rol){
         return rolServicio.actualizar(rol);
-    }
+    } */
 }

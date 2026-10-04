@@ -14,7 +14,7 @@ import java.util.List;
 public class TipoCanchaControlador {
     @Autowired
     private TipoCanchaServicio tipoCanchaServicio;
-
+    /*
     @PostMapping("/tipoCancha")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public TipoCancha insertar(@RequestBody TipoCancha tipoCancha) {
@@ -51,4 +51,6 @@ public class TipoCanchaControlador {
     public List<TipoCancha> buscarPorDeporte(@PathVariable String deporte) {
         return tipoCanchaServicio.buscarPorDeporte(deporte);
     }
+    */
+
 }

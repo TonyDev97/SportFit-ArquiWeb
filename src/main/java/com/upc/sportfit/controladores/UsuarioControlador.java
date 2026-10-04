@@ -16,12 +16,45 @@ public class UsuarioControlador {
     @Autowired
     private UsuarioServicio usuarioServicio;
 
-    @PostMapping("/usuario/cliente")
-    @PreAuthorize("permitAll()")
-    public UsuarioDTO insertar(@RequestBody UsuarioDTO usuarioDTO){
-        return usuarioServicio.insertar(usuarioDTO);
+    // ED48
+    @GetMapping("/api/usuario-clientes-reservas/{cantidadReservas}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesCantidadReservas(@PathVariable Integer cantidadReservas){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesCantidadReservas(cantidadReservas));
     }
 
+    // ED51 - Buscar clientes
+    @GetMapping("/usuario/clientes")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<Usuario> buscarClientes(){
+        return usuarioServicio.listarTodo();
+    }
+
+    // ED52
+    // Validado
+    @GetMapping("/usuario/clientes-nombre/{nombre}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<UsuarioDTO> buscarClientesNombreContiene(@PathVariable String nombre){
+        return usuarioServicio.buscarClientesNombreContiene(nombre);
+    }
+
+    // ED53
+    // Validado
+    @GetMapping("/usuario/clientes-dni/{dni}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<UsuarioDTO> buscarClientesDniInicia(@PathVariable String dni){
+        return usuarioServicio.buscarClientesDniInicia(dni);
+    }
+
+    // ED54
+    // Validado
+    @GetMapping("/usuario/clientes-estado/{estado}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesEstado(@PathVariable Boolean estado){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesEstado(estado));
+    }
+
+    // ED55
     // Validado
     @PutMapping("/usuario-actualizar")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
@@ -29,12 +62,8 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO));
     }
 
-    @PutMapping("/usuario/{id}/estado")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public Usuario cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
-        return usuarioServicio.cambiarEstado(id, estado);
-    }
 
+    // ED56
     @PutMapping("/usuario/administrador-password/{idAdmin}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> cambiarPassword(
@@ -43,53 +72,33 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuarioServicio.cambiarPassword(idAdmin, password));
     }
 
-
-    // Buscar clientes
-    @GetMapping("/usuario/clientes")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Usuario> buscarClientes(){
-        return usuarioServicio.listarTodo();
+    // ED57
+    @PostMapping("/usuario/cliente")
+    @PreAuthorize("permitAll()")
+    public UsuarioDTO insertar(@RequestBody UsuarioDTO usuarioDTO){
+        return usuarioServicio.insertar(usuarioDTO);
     }
 
-    // Validado
-    @GetMapping("/usuario/clientes-nombre/{nombre}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<UsuarioDTO> buscarClientesNombreContiene(@PathVariable String nombre){
-        return usuarioServicio.buscarClientesNombreContiene(nombre);
-    }
-
-    // Validado
-    @GetMapping("/usuario/clientes-dni/{dni}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<UsuarioDTO> buscarClientesDniInicia(@PathVariable String dni){
-        return usuarioServicio.buscarClientesDniInicia(dni);
-    }
-
-    // Validado
-    @GetMapping("/usuario/clientes-estado/{estado}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<UsuarioDTO>> buscarClientesEstado(@PathVariable Boolean estado){
-        return ResponseEntity.ok(usuarioServicio.buscarClientesEstado(estado));
-    }
-
+    // ED58
     @GetMapping("/usuarios-clientes-telefono/{telefono}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesTelefonoInicia(@PathVariable String telefono){
         return ResponseEntity.ok(usuarioServicio.buscarClientesTelefonoInicia(telefono));
     }
 
+    // ED59
     @GetMapping("/api/usuarios-clientes-correo/{dominio}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClienteCorreoDominio(@PathVariable String dominio){
         return ResponseEntity.ok(usuarioServicio.buscarClienteCorreoDominio(dominio));
     }
 
-    @GetMapping("/api/usuario-clientes-reservas/{cantidadReservas}")
+    // ED60
+    @PutMapping("/usuario/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<UsuarioDTO>> buscarClientesCantidadReservas(@PathVariable Integer cantidadReservas){
-        return ResponseEntity.ok(usuarioServicio.buscarClientesCantidadReservas(cantidadReservas));
+    public Usuario cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
+        return usuarioServicio.cambiarEstado(id, estado);
     }
-
 
 
     // NO SE VAN A USAR

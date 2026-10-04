@@ -15,12 +15,13 @@ public class SedeControlador {
     @Autowired
     private SedeServicio sedeServicio;
 
-    @GetMapping("/sede")
+    @GetMapping("/sedes")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<Sede> listar() {
         return sedeServicio.listar();
     }
 
+    /*
     @GetMapping("/sede/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public Sede buscarPorId(@PathVariable Integer id) {
@@ -51,5 +52,7 @@ public class SedeControlador {
     public void eliminar(@PathVariable Integer id) {
         sedeServicio.eliminar(id);
     }
+     */
+
 }
 

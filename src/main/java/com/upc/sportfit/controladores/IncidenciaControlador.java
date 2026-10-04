@@ -19,49 +19,7 @@ public class IncidenciaControlador {
     @Autowired
     private IncidenciaServicio incidenciaServicio;
 
-    //ED36: Registrar incidencia
-    @PostMapping("/incidencia")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public Incidencia insertar(@RequestBody Incidencia incidencia) {
-        return incidenciaServicio.InsertarIncidencia(incidencia);
-    }
-
-    //ED39: Consultar todas las incidencias.
-    @GetMapping("/incidencias")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Incidencia> listar() {
-        return incidenciaServicio.listarIncidencias();
-    }
-
-    //ED46: Consultar una incidencia por ID.
-    @GetMapping("/incidencia-id/{id}")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public Incidencia BuscarIncidenciaPorId(@PathVariable Integer id){
-        return incidenciaServicio.BuscarIncidenciaPorId(id);
-    }
-
-    //ED47: Listar incidencias por tipo.
-    @GetMapping("/incidencias-tipo/{tipo}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Incidencia> listarPorTipo(@PathVariable String tipo) {
-        return incidenciaServicio.listarIncidenciasPorTipo(tipo);
-    }
-
-    //ED48: Listar incidencias por estado.
-    @GetMapping("/incidencias-estado/{estado}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Incidencia> listarPorEstado(@PathVariable String estado) {
-        return incidenciaServicio.listarIncidenciasPorEstado(estado);
-    }
-
-    //ED41: Responder Incidencia pendiente
-    @PutMapping("/incidencia-actualizar")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public Incidencia actualizar(@RequestBody Incidencia incidencia) {
-        return incidenciaServicio.editarIncidencia(incidencia);
-    }
-
-    //ED37: Consultar el historial de incidencias de un cliente.
+    //ED27: Consultar el historial de incidencias de un cliente.
     @GetMapping("/incidencia/usuario/{idUsuario}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<Incidencia> listarPorUsuario(
@@ -70,7 +28,7 @@ public class IncidenciaControlador {
         return incidenciaServicio.listarPorUsuario(idUsuario);
     }
 
-    //ED38: Filtrar incidencias del cliente por tipo y rango de fechas
+    //ED28: Filtrar incidencias del cliente por tipo y rango de fechas
     @GetMapping("/incidencia/usuario/{idUsuario}/filtro")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<Incidencia> filtrarPorUsuario(
@@ -88,7 +46,35 @@ public class IncidenciaControlador {
         );
     }
 
-    //ED89: Filtrar incidencias del administrador por tipo y fechas.
+    //ED29: Consultar todas las incidencias.
+    @GetMapping("/incidencias")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<Incidencia> listar() {
+        return incidenciaServicio.listarIncidencias();
+    }
+
+    //ED30: Consultar una incidencia por ID.
+    @GetMapping("/incidencia-id/{id}")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    public Incidencia BuscarIncidenciaPorId(@PathVariable Integer id){
+        return incidenciaServicio.BuscarIncidenciaPorId(id);
+    }
+
+    //ED31: Listar incidencias por tipo.
+    @GetMapping("/incidencias-tipo/{tipo}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<Incidencia> listarPorTipo(@PathVariable String tipo) {
+        return incidenciaServicio.listarIncidenciasPorTipo(tipo);
+    }
+
+    //ED32: Listar incidencias por estado.
+    @GetMapping("/incidencias-estado/{estado}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<Incidencia> listarPorEstado(@PathVariable String estado) {
+        return incidenciaServicio.listarIncidenciasPorEstado(estado);
+    }
+
+    //ED33: Filtrar incidencias del administrador por tipo y fechas.
     @GetMapping("/incidencias/filtro")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<Incidencia> filtrarAdministrador(
@@ -104,4 +90,19 @@ public class IncidenciaControlador {
                 tipo, fechaInicio, fechaFin
         );
     }
+
+    //ED34: Registrar incidencia
+    @PostMapping("/incidencia")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    public Incidencia insertar(@RequestBody Incidencia incidencia) {
+        return incidenciaServicio.InsertarIncidencia(incidencia);
+    }
+
+    //ED35: Responder Incidencia pendiente
+    @PutMapping("/incidencia-actualizar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public Incidencia actualizar(@RequestBody Incidencia incidencia) {
+        return incidenciaServicio.editarIncidencia(incidencia);
+    }
+
 }

@@ -23,19 +23,48 @@ public class PagoControlador {
     @Autowired
     private PagoServicio pagoServicio;
 
-    @GetMapping("/pagos")
+    // ED20
+    @GetMapping("/pagos-detalles/reserva/sede")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Pago> listar() {
-        return pagoServicio.listarPagos();
+    public List<DetalleSedeDTO> listarDetalleSede(@RequestParam(name = "mes", required = true) Integer mes,
+                                                  @RequestParam(name = "anio", required = true) Integer anio,
+                                                  @RequestParam(name = "sedeId", required = false) Integer sedeId)  {
+        return pagoServicio.listarDetalleSede(mes, anio, sedeId);
     }
 
-    //VALIDADO NICOLE ED03
+    // ED41 - HU07 : Reporte de Ingresos (gráfico lineal + tarjetas métricas)
+    @GetMapping("/pago/reporte/ingresos")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<IngresoDiarioDTO>> obtenerIngresosPorPeriodo(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(pagoServicio.obtenerIngresosPorPeriodo(mes, anio));
+    }
+
+    // ED42 - HU07: Distribución por Método de Pago (gráfico circular)
+    @GetMapping("/pago/reporte/metodos-pago")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<DistribucionPagoDTO>> obtenerDistribucionPorMetodoPago(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio) {
+        return ResponseEntity.ok(pagoServicio.obtenerDistribucionPorMetodoPago(mes, anio));
+    }
+
+    // ED44
     @PostMapping("/pago")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<PagoDTO> registrar(@RequestBody PagoDTO pagoDTO) {
         PagoDTO nuevoPago = pagoServicio.registrarPago(pagoDTO);
         return ResponseEntity.ok(nuevoPago);
     }
+
+    /*
+    @GetMapping("/pagos")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<Pago> listar() {
+        return pagoServicio.listarPagos();
+    }
+
 
     @GetMapping("/pago/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
@@ -55,32 +84,6 @@ public class PagoControlador {
         pagoServicio.eliminarPago(id);
     }
 
-    // HU07 - ED20: Reporte de Ingresos (gráfico lineal + tarjetas métricas)
-    @GetMapping("/pago/reporte/ingresos")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<IngresoDiarioDTO>> obtenerIngresosPorPeriodo(
-            @RequestParam(required = false) Integer mes,
-            @RequestParam(required = true) Integer anio) {
-        return ResponseEntity.ok(pagoServicio.obtenerIngresosPorPeriodo(mes, anio));
-    }
-
-    // HU07 - ED83: Distribución por Método de Pago (gráfico circular)
-    @GetMapping("/pago/reporte/metodos-pago")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<DistribucionPagoDTO>> obtenerDistribucionPorMetodoPago(
-            @RequestParam(required = false) Integer mes,
-            @RequestParam(required = true) Integer anio) {
-        return ResponseEntity.ok(pagoServicio.obtenerDistribucionPorMetodoPago(mes, anio));
-    }
-
-    // ED 86
-    @GetMapping("/pagos-detalles/reserva/sede")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<DetalleSedeDTO> listarDetalleSede(@RequestParam(name = "mes", required = true) Integer mes,
-                                                  @RequestParam(name = "anio", required = true) Integer anio,
-                                                  @RequestParam(name = "sedeId", required = false) Integer sedeId)  {
-        return pagoServicio.listarDetalleSede(mes, anio, sedeId);
-    }
-
+*/
 
 }

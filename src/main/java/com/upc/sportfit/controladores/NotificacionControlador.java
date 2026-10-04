@@ -18,7 +18,7 @@ public class NotificacionControlador {
     @Autowired
     private NotificacionServicio notificacionServicio;
 
-    //ED 32 - H11 - Obtener las notificaciones del usuario por ID usuario
+    //ED 36 - H11 - Obtener las notificaciones del usuario por ID usuario
     @GetMapping("/notificacion/cliente/{idUsuario}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<NotificacionDTO>> listarPorIdUsuario(
@@ -26,20 +26,35 @@ public class NotificacionControlador {
         return ResponseEntity.ok(notificacionServicio.obtenerNotificacionesUsuario(idUsuario));
     }
 
-    //ED33 - HU11 - eliminar notificacion
+    //ED37 - HU11 - eliminar notificacion
     @GetMapping("/notificacion/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public Notificacion listarId(@PathVariable("id") Integer id) {
         return notificacionServicio.listarNotificacionPorId(id);
     }
 
-    //ED34 - HU11 - Marcar notificación como leida
+    //ED38 HU? - registrar notificación
+    @PostMapping("/notificacion")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public Notificacion registrar(@RequestBody Notificacion notificacion) {
+        return notificacionServicio.registrarNotificacion(notificacion);
+    }
+
+    //ED39 - HU11 - Marcar notificación como leida
     @PutMapping("/notificacion-leida/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<Notificacion> marcarComoLeida(@PathVariable Integer id) {
         return ResponseEntity.ok(notificacionServicio.marcarComoLeida(id));
     }
 
+    //ED 40 - HU11 - eliminar notificación
+    @DeleteMapping("/notificacion-eliminar/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public void eliminar(@PathVariable("id") Integer id) {
+        notificacionServicio.eliminarNotificacion(id);
+    }
+
+    /*
     //ED pruebas swagger postman no usado en HUs
     @GetMapping("/notificaciones")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -47,24 +62,12 @@ public class NotificacionControlador {
         return notificacionServicio.listarNotificaciones();
     }
 
-    //ED50 HU? - registrar notificación
-    @PostMapping("/notificacion")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public Notificacion registrar(@RequestBody Notificacion notificacion) {
-        return notificacionServicio.registrarNotificacion(notificacion);
-    }
-
     //ED pruebas swagger postman no usado en HUs
     @PutMapping("notificacion-actualizar")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Notificacion actualizar(@RequestBody Notificacion notificacion) {
         return notificacionServicio.registrarNotificacion(notificacion);
-    }
+    }*/
 
-    //ED 35 - HU11 - eliminar notificación
-    @DeleteMapping("/notificacion-eliminar/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public void eliminar(@PathVariable("id") Integer id) {
-        notificacionServicio.eliminarNotificacion(id);
-    }
+
 }

@@ -17,13 +17,14 @@ public class CancelacionControlador {
     @Autowired
     private CancelacionServicio cancelacionServicio;
 
-    //VALIDADO ED42
+    //VALIDADO ED26
     @PostMapping("/cancelacion")
     public ResponseEntity<CancelacionDTO> registrar(@RequestBody CancelacionDTO cancelacionDTO) {
         CancelacionDTO cancelacionCreada = cancelacionServicio.registrar(cancelacionDTO);
         return ResponseEntity.ok(cancelacionCreada);
     }
 
+    /*
     @GetMapping("/cancelaciones")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<CancelacionDTO>> listar() {
@@ -44,5 +45,5 @@ public class CancelacionControlador {
         cancelacionServicio.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-
+*/
 }
