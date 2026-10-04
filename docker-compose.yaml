@@ -1,41 +1,38 @@
 services:
   app:
+    image: 'docker-spring-boot-postgres:latest'
     build:
       context: .
     container_name: sportfit-app
     ports:
-      - "8080:8080"
+      - "6868:8080"
     networks:
-      - sportfit-network
+      - springcloud
     depends_on:
       - db
     environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db_sportfit
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgre
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - JWT_SECRET=${JWT_SECRET}
-      - IP_FRONTEND=http://localhost:4200
-    restart: unless-stopped
-
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
   db:
     image: postgres:16-alpine
-    container_name: sportfit-db
     volumes:
-      - sportfit-db-data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     restart: always
+    container_name: sportfit-db
     networks:
-      - sportfit-network
+      - springcloud
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgre
+      - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=db_sportfit
     ports:
       - "5433:5432"
-
 volumes:
-  sportfit-db-data:
-
+  db_data:
 networks:
-  sportfit-network:
-    name: sportfit-network
+  springcloud:
+    name: springcloud

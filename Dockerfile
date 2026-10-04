@@ -1,21 +1,17 @@
-FROM eclipse-temurin:21-jdk AS build
+# ===== Build stage =====
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copiar archivos de Maven
-COPY mvnw .
-COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-# Dar permisos y compilar
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests -B
 
-# Imagen final
+# ===== Runtime stage =====
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar backend.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-Xmx2048M", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "backend.jar"]
