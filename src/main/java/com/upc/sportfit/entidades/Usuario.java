@@ -45,7 +45,7 @@ public class Usuario {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "correo", nullable = false, length = 100)
+    @Column(name = "correo", nullable = false, length = 100, unique = true)
     private String correo;
 
     @Size(max = 255)
@@ -80,8 +80,7 @@ public class Usuario {
     private Instant fModificacion;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_rol", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "id_rol", nullable = false, unique = true)
     private Rol rol;
-
 }

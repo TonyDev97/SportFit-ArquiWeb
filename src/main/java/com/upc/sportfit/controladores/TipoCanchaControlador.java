@@ -3,6 +3,7 @@ package com.upc.sportfit.controladores;
 import com.upc.sportfit.entidades.TipoCancha;
 import com.upc.sportfit.servicios.TipoCanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,35 +14,43 @@ import java.util.List;
 public class TipoCanchaControlador {
     @Autowired
     private TipoCanchaServicio tipoCanchaServicio;
-
+    /*
     @PostMapping("/tipoCancha")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public TipoCancha insertar(@RequestBody TipoCancha tipoCancha) {
         return tipoCanchaServicio.insertar(tipoCancha);
     }
 
     @GetMapping("/tipoCanchas")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<TipoCancha> listar() {
         return tipoCanchaServicio.listar();
     }
 
 
     @PutMapping("/tipoCancha-actualizar/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public TipoCancha actualizar(@RequestBody TipoCancha tipoCancha) {
         return tipoCanchaServicio.actualizar(tipoCancha);
     }
 
     @DeleteMapping("/tipoCancha-eliminar/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public void eliminar(@PathVariable Integer id) {
         tipoCanchaServicio.eliminar(id);
     }
 
     @GetMapping("/tipoCancha-id/{id}")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public TipoCancha buscarPorId(@PathVariable Integer id) {
         return tipoCanchaServicio.buscarPorId(id);
     }
 
     @GetMapping("/tipoCancha-deporte/{deporte}")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<TipoCancha> buscarPorDeporte(@PathVariable String deporte) {
         return tipoCanchaServicio.buscarPorDeporte(deporte);
     }
+    */
+
 }

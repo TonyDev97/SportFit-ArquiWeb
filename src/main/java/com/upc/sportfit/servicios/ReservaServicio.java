@@ -1,6 +1,6 @@
 package com.upc.sportfit.servicios;
 
-import com.upc.sportfit.controladores.BannerReservasDTO;
+import com.upc.sportfit.dtos.BannerReservasDTO;
 import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Pago;
@@ -12,7 +12,6 @@ import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
 import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
