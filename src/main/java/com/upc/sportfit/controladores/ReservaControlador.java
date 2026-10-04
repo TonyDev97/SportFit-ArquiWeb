@@ -55,7 +55,7 @@ public class ReservaControlador {
         return reservaServicio.listarReservaConfirmada();
     }
 
-    //VALIDADO
+    //VALIDADO ED15
     @PostMapping("/reserva")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<ReservaDTO> registrarReserva(@RequestBody ReservaDTO reservaDTO) {

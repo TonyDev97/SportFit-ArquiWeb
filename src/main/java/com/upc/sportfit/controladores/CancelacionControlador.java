@@ -1,8 +1,10 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.CancelacionDTO;
 import com.upc.sportfit.entidades.Cancelacion;
 import com.upc.sportfit.servicios.CancelacionServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,29 +16,33 @@ import java.util.List;
 public class CancelacionControlador {
     @Autowired
     private CancelacionServicio cancelacionServicio;
-    //VALIDADO
+
+    //VALIDADO ED42
     @PostMapping("/cancelacion")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public Cancelacion registrar(@RequestBody Cancelacion cancelacion) {
-        return cancelacionServicio.registrar(cancelacion);
+    public ResponseEntity<CancelacionDTO> registrar(@RequestBody CancelacionDTO cancelacionDTO) {
+        CancelacionDTO cancelacionCreada = cancelacionServicio.registrar(cancelacionDTO);
+        return ResponseEntity.ok(cancelacionCreada);
     }
 
     @GetMapping("/cancelaciones")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Cancelacion> listar(){
-        return cancelacionServicio.listar();
+    public ResponseEntity<List<CancelacionDTO>> listar() {
+        List<CancelacionDTO> lista = cancelacionServicio.listar();
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/cancelaciones/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public Cancelacion listarPorId(@PathVariable Integer id){
-        return cancelacionServicio.listarPorId(id);
+    public ResponseEntity<CancelacionDTO> listarPorId(@PathVariable Integer id) {
+        CancelacionDTO dto = cancelacionServicio.listarPorId(id);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/cancelacion/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public void eliminar(@PathVariable Integer id){
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         cancelacionServicio.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

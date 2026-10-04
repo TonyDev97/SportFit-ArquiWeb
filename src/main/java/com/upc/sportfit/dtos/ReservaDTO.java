@@ -24,18 +24,13 @@ import java.time.LocalTime;
 public class ReservaDTO {
 
     private Integer idReserva;
-    @JsonProperty("fReserva")
     private LocalDate fReserva;
-    @JsonProperty("fInicio")
     private LocalTime hInicio;
-    @JsonProperty("fFin")
     private LocalTime hFin;
     private String estado;
     private String creadoPor;
-    @JsonProperty("fCreacion")
     private Instant fCreacion;
     private String modificadoPor;
-    @JsonProperty("fModificacion")
     private Instant fModificacion;
     private UsuarioDTO usuario;
     private SedeCanchaDTO sedeCancha;

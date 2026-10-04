@@ -15,10 +15,8 @@ import java.math.BigDecimal;
 public class PagoDTO {
 
     private Integer idPago;
-    @JsonProperty("montoTotal")
     private BigDecimal montoTotal;
     private String metodo;
-    @JsonProperty("urlComprobante")
     private String urlComprobante;
     private ReservaDTO reserva;
 }
