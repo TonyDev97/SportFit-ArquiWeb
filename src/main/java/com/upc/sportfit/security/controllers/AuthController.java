@@ -67,8 +67,9 @@ public class AuthController {
         return ResponseEntity.ok().headers(responseHeaders).body(authResponseDTO);
     }
 
-    @PostMapping("/auth/register")
-    @PreAuthorize("permitAll()")
+
+    //Modificar esto
+    @PostMapping("auth/register")
     public ResponseEntity<AuthResponseDTO> registrar(@Valid @RequestBody RegistroRequestDTO dto) {
         // Verificar si el correo ya existe
         if (usuarioServicio.buscarPorCorreo(dto.getCorreo()).isPresent()) {
@@ -82,9 +83,10 @@ public class AuthController {
         // Crear usuario
         Usuario usuario = new Usuario();
         usuario.setCorreo(dto.getCorreo());
-        usuario.setContrasenaHash(passwordEncoder.encode(dto.getPassword()));
+        usuario.setContrasenaHash(passwordEncoder.encode(dto.getContrasenaHash()));
         usuario.setNombre(dto.getNombre());
         usuario.setApellido(dto.getApellido());
+        usuario.setImgUsuario(dto.getImgUsuario());
         usuario.setDni(dto.getDni());
         usuario.setTelefono(dto.getTelefono());
         usuario.setActivo(true);

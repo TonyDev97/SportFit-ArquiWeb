@@ -11,3 +11,4 @@ public class AuthRequestDTO {
     private String correo;
     private String password;
 }
+
