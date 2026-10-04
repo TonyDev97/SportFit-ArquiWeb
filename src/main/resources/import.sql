@@ -12,8 +12,8 @@ INSERT INTO rol (id_rol, nombre, descripcion) VALUES (2, 'ROLE_ADMINISTRADOR', '
 -- =========================================================
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Admin', 'Sistema', '00000000', '000000000', 'admin@sportfit.com', '$2a$10$mjtz6jbcUGJekzBSgDE0uOxp4xYVTmSLXai2EFhEOv5BoKrdXDOxG', true, 'import.sql', CURRENT_TIMESTAMP, 2);
 
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Cliente', 'Prueba', '00000001', '000000001', 'cliente@sportfit.com', '$2a$10$73qbe7brB/2QaIvYyq44Suf5aE2txQ6OhqwjAAAzEnBtlZnZZEJSW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Cliente', 'Prueba', '00000001', '000000001', 'cliente@sportfit.com', '$2a$10$73qbe7brB/2QaIvYyq44Suf5aE2txQ6OhqwjAAAzEnBtlZnZZEJSW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 -- =========================================================
 -- USUARIOS DE NEGOCIO (existentes)
 -- Password: 123456 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
@@ -111,7 +111,7 @@ INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (30.0
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (50.00, 'Tarjeta', 'https://comprobantes/014', 20);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (35.00, 'Yape', 'https://comprobantes/015', 22);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (45.00, 'Tarjeta', 'https://comprobantes/016', 23);
-INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (33.00, 'Plin', 'https://comprobantes/017', 23);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (33.00, 'Plin', 'https://comprobantes/017', 15);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (38.00, 'Tarjeta', 'https://comprobantes/018', 24);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (30.00, 'Yape', 'https://comprobantes/019', 25);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (45.00, 'Tarjeta', 'https://comprobantes/020', 4);

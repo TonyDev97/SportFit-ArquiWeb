@@ -80,7 +80,7 @@ public class Usuario {
     private Instant fModificacion;
 
     @NotNull
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "id_rol", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "id_rol", nullable = false)
     private Rol rol;
 }
