@@ -1,7 +1,7 @@
 package com.upc.sportfit.security.services;
 
-import com.upc.sportfit.security.entities.User;
-import com.upc.sportfit.security.repositories.UserRepository;
+import com.upc.sportfit.entidades.Usuario;
+import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,26 +15,30 @@ import java.util.Set;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UsuarioRepositorio usuarioRepositorio;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UsuarioRepositorio usuarioRepositorio) {
+        this.usuarioRepositorio = usuarioRepositorio;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepositorio.findByCorreo(correo)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + correo));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
-        if (user.getRole() != null) {
-            authorities.add(new SimpleGrantedAuthority(user.getRole().getNombre()));
+        if (usuario.getRol() != null) {
+            authorities.add(new SimpleGrantedAuthority(usuario.getRol().getNombre()));
         }
 
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
+                .withUsername(usuario.getCorreo())
+                .password(usuario.getContrasenaHash())
                 .authorities(authorities)
+                .accountExpired(false)
+                .accountLocked(false)
+                .credentialsExpired(false)
+                .disabled(!usuario.getActivo())
                 .build();
     }
 }

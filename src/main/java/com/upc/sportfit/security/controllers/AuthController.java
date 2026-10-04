@@ -34,10 +34,10 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponseDTO> createAuthenticationToken(@RequestBody AuthRequestDTO authRequest) throws Exception {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(authRequest.getCorreo(), authRequest.getPassword())
         );
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getCorreo());
         final String token = jwtUtil.generateToken(userDetails);
 
         Set<String> roles = userDetails.getAuthorities()

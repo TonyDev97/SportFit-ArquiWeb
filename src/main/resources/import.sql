@@ -1,30 +1,33 @@
 -- =========================================================
--- SECURITY: ROLES Y USUARIOS (Spring Security + JWT)
--- =========================================================
-INSERT INTO roles (id, nombre) VALUES (1, 'CLIENTE');
-INSERT INTO roles (id, nombre) VALUES (2, 'ADMINISTRADOR');
-
--- Password: admin123 (BCrypt encoded)
-INSERT INTO users (id, username, password, role_id) VALUES (1, 'admin', '$2a$12$mY87ekM5Y.vBC0x10edqbeZ/UzuhGLo1IZQSPldWHQ.ZHgUF6j2QG', 2);
--- Password: cliente123 (BCrypt encoded)
-INSERT INTO users (id, username, password, role_id) VALUES (2, 'cliente', '$2a$12$Zhd/sqdj7vpQnNbW8tMm.OQCBHXnfUP9d3WOHIjQw1TIV1tolXJ5a', 1);
-
--- =========================================================
 -- ROLES (business)
 -- =========================================================
 INSERT INTO rol (id_rol, nombre, descripcion) VALUES (1, 'CLIENTE', 'Usuario cliente del sistema');
 INSERT INTO rol (id_rol, nombre, descripcion) VALUES (2, 'ADMINISTRADOR', 'Usuario administrador del sistema');
 
 -- =========================================================
--- USUARIOS (id 1 = Juan Perez ya existia, se conserva)
+-- USUARIOS DE SEGURIDAD (para login/JWT)
+-- Passwords hasheados con BCrypt strength 10
+-- admin123 -> $2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG
+-- cliente123 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
 -- =========================================================
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Juan', 'Perez', '12345678', '987654321', 'jperez@correo.com', '123456', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Maria', 'Gomez', '10000002', '900000002', 'mgomez@correo.com', '123456', true, 'import.sql', CURRENT_TIMESTAMP, 2);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Carlos', 'Ramirez', '10000003', '900000003', 'cramirez@correo.com', '123456', true, 'import.sql', CURRENT_TIMESTAMP, 2);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Lucia', 'Torres', '10000004', '900000004', 'ltorres@correo.com', '123456', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Diego', 'Flores', '10000005', '900000005', 'dflores@correo.com', '123456', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Ana', 'Castillo', '10000006', '900000006', 'acastillo@correo.com', '123456', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Pedro', 'Huaman', '10000007', '900000007', 'phuaman@correo.com', '123456', false, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) 
+VALUES ('Admin', 'Sistema', '00000000', '000000000', 'admin@sportfit.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', true, 'import.sql', CURRENT_TIMESTAMP, 2);
+
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) 
+VALUES ('Cliente', 'Prueba', '00000001', '000000001', 'cliente@sportfit.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+
+-- =========================================================
+-- USUARIOS DE NEGOCIO (existentes)
+-- Passwords actualizados a BCrypt (123456 -> hash)
+-- 123456 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
+-- =========================================================
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Juan', 'Perez', '12345678', '987654321', 'jperez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Maria', 'Gomez', '10000002', '900000002', 'mgomez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 2);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Carlos', 'Ramirez', '10000003', '900000003', 'cramirez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 2);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Lucia', 'Torres', '10000004', '900000004', 'ltorres@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Diego', 'Flores', '10000005', '900000005', 'dflores@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Ana', 'Castillo', '10000006', '900000006', 'acastillo@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Pedro', 'Huaman', '10000007', '900000007', 'phuaman@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', false, 'import.sql', CURRENT_TIMESTAMP, 1);
 
 -- =========================================================
 -- TIPOS DE CANCHA

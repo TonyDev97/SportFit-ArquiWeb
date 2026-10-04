@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
@@ -34,5 +35,7 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
 
     @Query("select r.usuario from Reserva r where r.usuario.rol.idRol = 1 group by r.usuario having count(r) = :cantidad_reservas")
     List<Usuario> buscarClientesCantidadReservas(@Param("cantidad_reservas")  Integer cantidadResevas);
+
+    Optional<Usuario> findByCorreo(String correo);
 
 }
