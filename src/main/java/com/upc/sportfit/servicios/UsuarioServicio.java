@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioServicio {
@@ -34,6 +35,14 @@ public class UsuarioServicio {
         usuario.setCreadoPor("API");
         usuarioRepositorio.save(usuario);
         return modelMapper.map(usuario,UsuarioDTO.class);
+    }
+
+    public Usuario insertar(Usuario usuario){
+        return usuarioRepositorio.save(usuario);
+    }
+
+    public Optional<Usuario> buscarPorCorreo(String correo){
+        return usuarioRepositorio.findByCorreo(correo);
     }
 
     public List<Usuario> listarTodo(){

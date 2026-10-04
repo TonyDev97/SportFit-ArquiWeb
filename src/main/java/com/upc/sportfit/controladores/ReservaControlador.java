@@ -1,7 +1,6 @@
 package com.upc.sportfit.controladores;
 
-import com.upc.sportfit.dtos.ReservaDTO;
-import com.upc.sportfit.dtos.ReservaHorarioDTO;
+import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.servicios.ReservaServicio;
@@ -10,8 +9,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.upc.sportfit.dtos.EstadoReservaDTO;
-import com.upc.sportfit.dtos.SolicitudReservaDTO;
 
 import java.time.LocalDate;
 import java.util.List;

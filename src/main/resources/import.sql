@@ -1,25 +1,22 @@
 -- =========================================================
 -- ROLES (business)
 -- =========================================================
-INSERT INTO rol (id_rol, nombre, descripcion) VALUES (1, 'CLIENTE', 'Usuario cliente del sistema');
-INSERT INTO rol (id_rol, nombre, descripcion) VALUES (2, 'ADMINISTRADOR', 'Usuario administrador del sistema');
+INSERT INTO rol (id_rol, nombre, descripcion) VALUES (1, 'ROLE_CLIENTE', 'Usuario cliente del sistema');
+INSERT INTO rol (id_rol, nombre, descripcion) VALUES (2, 'ROLE_ADMINISTRADOR', 'Usuario administrador del sistema');
 
 -- =========================================================
 -- USUARIOS DE SEGURIDAD (para login/JWT)
 -- Passwords hasheados con BCrypt strength 10
--- admin123 -> $2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG
--- cliente123 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
+-- admin123 -> $2a$10$mjtz6jbcUGJekzBSgDE0uOxp4xYVTmSLXai2EFhEOv5BoKrdXDOxG
+-- cliente123 -> $2a$10$73qbe7brB/2QaIvYyq44Suf5aE2txQ6OhqwjAAAzEnBtlZnZZEJSW
 -- =========================================================
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) 
-VALUES ('Admin', 'Sistema', '00000000', '000000000', 'admin@sportfit.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', true, 'import.sql', CURRENT_TIMESTAMP, 2);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Admin', 'Sistema', '00000000', '000000000', 'admin@sportfit.com', '$2a$10$mjtz6jbcUGJekzBSgDE0uOxp4xYVTmSLXai2EFhEOv5BoKrdXDOxG', true, 'import.sql', CURRENT_TIMESTAMP, 2);
 
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) 
-VALUES ('Cliente', 'Prueba', '00000001', '000000001', 'cliente@sportfit.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Cliente', 'Prueba', '00000001', '000000001', 'cliente@sportfit.com', '$2a$10$73qbe7brB/2QaIvYyq44Suf5aE2txQ6OhqwjAAAzEnBtlZnZZEJSW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 
 -- =========================================================
 -- USUARIOS DE NEGOCIO (existentes)
--- Passwords actualizados a BCrypt (123456 -> hash)
--- 123456 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
+-- Password: 123456 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
 -- =========================================================
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Juan', 'Perez', '12345678', '987654321', 'jperez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Maria', 'Gomez', '10000002', '900000002', 'mgomez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 2);
@@ -145,9 +142,6 @@ INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuar
 -- tipos: Tecnico | Instalaciones | Preguntas
 -- estados: Abierta | En proceso | Cerrada
 -- =========================================================
-INSERT INTO incidencia (tipo, asunto, descripcion, estado, f_creacion, id_usuario) VALUES ('Técnico', 'Tablero de basket sin subir', 'El tablero de la cancha de basket de San Miguel no sube del todo', 'Abierta', CURRENT_TIMESTAMP, 4);
-INSERT INTO incidencia (tipo, asunto, descripcion, estado, f_creacion, id_usuario) VALUES ('Técnico', 'Punto de la red de voley', 'La red de la cancha de voley de Surco tiene un punto que cede', 'En proceso', CURRENT_TIMESTAMP, 6);
-INSERT INTO incidencia (tipo, asunto, descripcion, estado, f_creacion, id_usuario) VALUES ('Instalaciones', 'Pasto del futbol en mal estado', 'El pasto de la cancha de futbol de Surco tiene un roto que hay que reparar', 'Cerrada', CURRENT_TIMESTAMP, 7);
-INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Instalaciones', 'Duchas sin agua caliente', 'Las duchas de la sede San Miguel salen con agua fria', 'Cerrada', 'Revisamos la caldera y ya se normalizo el agua caliente', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5);
-INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Preguntas', 'Horario de la sede Barranco', 'La sede Barranco cierra a las 10pm los domingos?', 'Cerrada', 'Si, la sede Barranco cierra a las 22:00 los domingos', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
-INSERT INTO incidencia (tipo, asunto, descripcion, estado, f_creacion, id_usuario) VALUES ('Preguntas', 'Uso de cancha sin pago', 'Se puede usar la cancha sin pagar la reserva del dia?', 'Abierta', CURRENT_TIMESTAMP, 5);
+-- Nota: Se omiten inserts de incidencias con FK a usuarios que pueden no existir
+-- para evitar violaciones de FK durante la carga inicial.
+-- Las incidencias se pueden crear via API una vez que existan los usuarios.
