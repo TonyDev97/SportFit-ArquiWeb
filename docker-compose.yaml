@@ -4,6 +4,7 @@ services:
     build:
       context: .
     container_name: sportfit-app
+    restart: always
     ports:
       - "6868:8080"
     networks:
