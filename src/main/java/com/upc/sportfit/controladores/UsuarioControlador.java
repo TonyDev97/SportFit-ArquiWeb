@@ -72,12 +72,12 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuarioServicio.cambiarPassword(idAdmin, password));
     }
 
-    // ED57
-    @PostMapping("/usuario/cliente")
+    /*// ED57
+    @PostMapping("")
     @PreAuthorize("permitAll()")
     public UsuarioDTO insertar(@RequestBody UsuarioDTO usuarioDTO){
         return usuarioServicio.insertar(usuarioDTO);
-    }
+    }*/
 
     // ED58
     @GetMapping("/usuarios-clientes-telefono/{telefono}")

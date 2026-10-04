@@ -67,7 +67,7 @@ public class AuthController {
         return ResponseEntity.ok().headers(responseHeaders).body(authResponseDTO);
     }
 
-    @PostMapping("/auth/register")
+    @PostMapping("/usuario/cliente")
     @PreAuthorize("permitAll()")
     public ResponseEntity<AuthResponseDTO> registrar(@Valid @RequestBody RegistroRequestDTO dto) {
         // Verificar si el correo ya existe
