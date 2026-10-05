@@ -19,6 +19,7 @@ public class CancelacionControlador {
 
     //VALIDADO ED26
     @PostMapping("/cancelacion")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<CancelacionDTO> registrar(@RequestBody CancelacionDTO cancelacionDTO) {
         CancelacionDTO cancelacionCreada = cancelacionServicio.registrar(cancelacionDTO);
         return ResponseEntity.ok(cancelacionCreada);
