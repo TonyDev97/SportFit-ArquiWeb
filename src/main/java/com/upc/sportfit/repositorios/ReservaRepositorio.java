@@ -46,7 +46,7 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     // HU08 - ED21: Cancelaciones por día en un mes/año
     @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r)) " +
             "FROM Reserva r " +
-            "WHERE r.estado = 'Cancelada' " +
+            "WHERE r.estado = 'cancelada' " +
             "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
             "GROUP BY r.fReserva " +
             "ORDER BY r.fReserva")
@@ -55,14 +55,14 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     // HU08 - ED23: Total de reservas canceladas en un mes/año
     @Query("SELECT new com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO(COUNT(r)) " +
             "FROM Reserva r " +
-            "WHERE r.estado = 'Cancelada' " +
+            "WHERE r.estado = 'cancelada' " +
             "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin")
     TotalCancelacionesDTO obtenerTotalCancelaciones(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 
     //HU08 -ED84 Obenetmos la sitribucion por motivos de cancelacion
     @Query("SELECT new com.upc.sportfit.dtos.reportes.MotivoCancelacionDTO(c.tipoCancelacion, COUNT(c)) " +
             "FROM Cancelacion c JOIN c.reserva r " +
-            "WHERE r.estado = 'Cancelada' " +
+            "WHERE r.estado = 'cancelada' " +
             "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
             "GROUP BY c.tipoCancelacion " +
             "ORDER BY COUNT(c) DESC")
@@ -71,7 +71,7 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     //HU08 - ED85 Obtenemos tendencias anuales de cancelaciones
     @Query("SELECT new com.upc.sportfit.dtos.reportes.TendenciaCancelacionDTO(EXTRACT(MONTH FROM r.fReserva), c.tipoCancelacion, COUNT(c)) " +
             "FROM Cancelacion c JOIN c.reserva r " +
-            "WHERE r.estado = 'Cancelada' " +
+            "WHERE r.estado = 'cancelada' " +
             "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
             "GROUP BY EXTRACT(MONTH FROM r.fReserva), c.tipoCancelacion " +
             "ORDER BY EXTRACT(MONTH FROM r.fReserva)")
@@ -116,12 +116,12 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "MAX(r.fReserva), " +
             "COUNT(r.idReserva)) " +
             "FROM Reserva r JOIN r.usuario u " +
-            "WHERE r.estado = 'Confirmada' " +
-            "AND (:fechaDesde IS NULL OR r.fReserva >= :fechaDesde) " +
-            "AND (:fechaHasta IS NULL OR r.fReserva <= :fechaHasta) " +
+            "WHERE r.estado = 'confirmada' " +
+            "AND (CAST(:fechaDesde AS date) IS NULL OR r.fReserva >= :fechaDesde) " +
+            "AND (CAST(:fechaHasta AS date) IS NULL OR r.fReserva <= :fechaHasta) " +
             "GROUP BY u.idUsuario, u.nombre, u.apellido " +
-            "HAVING (:minReservas IS NULL OR COUNT(r.idReserva) >= :minReservas) " +
-            "AND (:maxReservas IS NULL OR COUNT(r.idReserva) <= :maxReservas) " +
+            "HAVING (CAST(:minReservas AS integer) IS NULL OR COUNT(r.idReserva) >= :minReservas) " +
+            "AND (CAST(:maxReservas AS integer) IS NULL OR COUNT(r.idReserva) <= :maxReservas) " +
             "ORDER BY COUNT(r.idReserva) DESC")
     List<ReservaClienteDTO> obtenerReservasPorClienteConsolidado(
             @Param("fechaDesde") LocalDate fechaDesde,
