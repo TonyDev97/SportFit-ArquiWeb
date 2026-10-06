@@ -36,3 +36,8 @@
 2026-10-05T23:39:57.148-05:00  INFO 28736 --- [crud] [restartedMain] com.upc.sportfit.SporfitApplication      : Started SporfitApplication in 7.635 seconds (process running for 15.111)
 2026-10-05T23:39:57.151-05:00  WARN 28736 --- [crud] [restartedMain] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
 2026-10-05T23:39:57.151-05:00  WARN 28736 --- [crud] [restartedMain] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-10-05T23:45:08.141-05:00  INFO 28736 --- [crud] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-05T23:45:08.145-05:00  INFO 28736 --- [crud] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-05T23:45:08.150-05:00  INFO 28736 --- [crud] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-05T23:45:08.153-05:00  INFO 28736 --- [crud] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-05T23:45:08.154-05:00  INFO 28736 --- [crud] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
