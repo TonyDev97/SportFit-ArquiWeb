@@ -5,6 +5,7 @@ import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Pago;
 import com.upc.sportfit.entidades.Reserva;
+import com.upc.sportfit.entidades.SedeCancha;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.PagoRepositorio;
 import com.upc.sportfit.repositorios.ReservaRepositorio;
@@ -69,15 +70,47 @@ public class ReservaServicio {
     }
 
     // Actualizar reserva
+    @Transactional
     public ReservaDTO editarReserva(ReservaDTO reservaDTO){
-        return reservaRepositorio.findById(reservaDTO.getIdReserva())
-                .map(
-                        reserva -> {
-                            modelMapper.map(reserva, reservaDTO);
-                            return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
-                        }
-                )
+        if (reservaDTO.getIdReserva() == null) {
+            throw new RuntimeException("Debe especificar el id de la reserva");
+        }
+
+        Reserva reserva = reservaRepositorio.findById(reservaDTO.getIdReserva())
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + reservaDTO.getIdReserva()));
+
+        if (reservaDTO.getFReserva() != null) {
+            reserva.setFReserva(reservaDTO.getFReserva());
+        }
+        if (reservaDTO.getHInicio() != null) {
+            reserva.setHInicio(reservaDTO.getHInicio());
+        }
+        if (reservaDTO.getHFin() != null) {
+            reserva.setHFin(reservaDTO.getHFin());
+        }
+        if (reservaDTO.getEstado() != null) {
+            List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
+            String estadoIngresado = reservaDTO.getEstado().trim().toLowerCase();
+            if (!estadosValidos.contains(estadoIngresado)) {
+                throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
+            }
+            reserva.setEstado(estadoIngresado);
+        }
+        if (reservaDTO.getUsuario() != null && reservaDTO.getUsuario().getIdUsuario() != null) {
+            Usuario usuario = usuarioRepositorio.findById(reservaDTO.getUsuario().getIdUsuario())
+                    .orElseThrow(() -> new RuntimeException("No existe el usuario con ese id:" + reservaDTO.getUsuario().getIdUsuario()));
+            reserva.setUsuario(usuario);
+        }
+        if (reservaDTO.getSedeCancha() != null && reservaDTO.getSedeCancha().getIdSedeCancha() != null) {
+            SedeCancha sedeCancha = sedeCanchaRepositorio.findById(reservaDTO.getSedeCancha().getIdSedeCancha())
+                    .orElseThrow(() -> new RuntimeException("No existe la sede cancha con ese id:" + reservaDTO.getSedeCancha().getIdSedeCancha()));
+            reserva.setSedeCancha(sedeCancha);
+        }
+
+        reserva.setModificadoPor(reservaDTO.getModificadoPor());
+        reserva.setFModificacion(Instant.now());
+
+        return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
     }
 
     @Transactional
@@ -379,7 +412,7 @@ public class ReservaServicio {
 
         if (!Boolean.TRUE.equals(administrador.getActivo())
                 || administrador.getRol() == null
-                || !"ADMINISTRADOR".equalsIgnoreCase(administrador.getRol().getNombre())) {
+                || !"ROLE_ADMINISTRADOR".equalsIgnoreCase(administrador.getRol().getNombre())) {
             throw new IllegalArgumentException("Debe indicar un administrador activo");
         }
 

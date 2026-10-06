@@ -49,7 +49,7 @@ public class NotificacionControlador {
 
     //ED 40 - HU11 - eliminar notificación
     @DeleteMapping("/notificacion-eliminar/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public void eliminar(@PathVariable("id") Integer id) {
         notificacionServicio.eliminarNotificacion(id);
     }
