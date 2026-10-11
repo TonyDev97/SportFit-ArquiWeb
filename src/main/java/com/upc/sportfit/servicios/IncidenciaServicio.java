@@ -86,7 +86,7 @@ public class IncidenciaServicio {
 
         if (!Boolean.TRUE.equals(cliente.getActivo())
                 || cliente.getRol() == null
-                || !"CLIENTE".equals(cliente.getRol().getNombre())) {
+                || !"ROLE_CLIENTE".equals(cliente.getRol().getNombre())) {
             throw new IllegalArgumentException(
                     "Debe indicar un cliente activo");
         }
