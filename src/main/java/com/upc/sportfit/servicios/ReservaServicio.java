@@ -412,7 +412,7 @@ public class ReservaServicio {
 
         if (!Boolean.TRUE.equals(administrador.getActivo())
                 || administrador.getRol() == null
-                || !"ADMINISTRADOR".equalsIgnoreCase(administrador.getRol().getNombre())) {
+                || !"ROLE_ADMINISTRADOR".equalsIgnoreCase(administrador.getRol().getNombre())) {
             throw new IllegalArgumentException("Debe indicar un administrador activo");
         }
 
