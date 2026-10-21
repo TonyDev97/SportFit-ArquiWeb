@@ -350,7 +350,7 @@ public class ReservaServicio {
         }
 
         List<ReservaClienteDTO> resultados = reservaRepositorio.obtenerReservasPorClienteConsolidado(
-                fechaDesde, fechaHasta, minReservas, maxReservas, top);
+                fechaDesde, fechaHasta, minReservas, maxReservas);
 
         // Aplicar límite top en Service si no se hizo en la query
         if (top != null && top > 0 && resultados.size() > top) {

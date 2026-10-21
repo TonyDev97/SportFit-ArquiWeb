@@ -117,18 +117,17 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "COUNT(r.idReserva)) " +
             "FROM Reserva r JOIN r.usuario u " +
             "WHERE r.estado = 'confirmada' " +
-            "AND (:fechaDesde IS NULL OR r.fReserva >= :fechaDesde) " +
-            "AND (:fechaHasta IS NULL OR r.fReserva <= :fechaHasta) " +
+            "AND (CAST(:fechaDesde AS date) IS NULL OR r.fReserva >= :fechaDesde) " +
+            "AND (CAST(:fechaHasta AS date) IS NULL OR r.fReserva <= :fechaHasta) " +
             "GROUP BY u.idUsuario, u.nombre, u.apellido " +
-            "HAVING (:minReservas IS NULL OR COUNT(r.idReserva) >= :minReservas) " +
-            "AND (:maxReservas IS NULL OR COUNT(r.idReserva) <= :maxReservas) " +
+            "HAVING (CAST(:minReservas AS integer) IS NULL OR COUNT(r.idReserva) >= :minReservas) " +
+            "AND (CAST(:maxReservas AS integer) IS NULL OR COUNT(r.idReserva) <= :maxReservas) " +
             "ORDER BY COUNT(r.idReserva) DESC")
     List<ReservaClienteDTO> obtenerReservasPorClienteConsolidado(
             @Param("fechaDesde") LocalDate fechaDesde,
             @Param("fechaHasta") LocalDate fechaHasta,
             @Param("minReservas") Integer minReservas,
-            @Param("maxReservas") Integer maxReservas,
-            @Param("top") Integer top
+            @Param("maxReservas") Integer maxReservas
     );
 
     //HU10 - ED24 Obtener el número de reservas de un cliente
