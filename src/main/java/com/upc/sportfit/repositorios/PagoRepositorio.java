@@ -32,7 +32,7 @@ public interface PagoRepositorio extends JpaRepository<Pago, Integer> {
     // HU08 - ED22: Monto perdido por cancelaciones en un mes/año (desde Pago, sin tocar Reserva)
     @Query("SELECT COALESCE(SUM(p.montoTotal), 0) " +
             "FROM Pago p JOIN p.reserva r " +
-            "WHERE r.estado = 'Cancelada' " +
+            "WHERE r.estado = 'cancelada' " +
             "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin")
     Number obtenerMontoPerdidoPorCancelaciones(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 

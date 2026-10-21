@@ -255,8 +255,8 @@ public class ReservaServicio {
 
     // HU08 - ED21: Cancelaciones por día
     public List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(Integer mes, Integer anio) {
-        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
-        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorPeriodo(rango[0], rango[1]);
+        validarYCalcularRangoFechas(mes, anio);
+        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorPeriodo(mes, anio);
         if (cancelaciones.isEmpty()) {
             throw new RuntimeException("No se encontraron cancelaciones para el período seleccionado");
         }
