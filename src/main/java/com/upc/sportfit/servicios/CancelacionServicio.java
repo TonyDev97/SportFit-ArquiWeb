@@ -32,6 +32,21 @@ public class CancelacionServicio {
     // Añadir una cancelación
     @Transactional
     public CancelacionDTO registrar(CancelacionDTO cancelacionDTO) {
+        //Comprobar el cuerpo y el motivo.
+        if (cancelacionDTO == null) {
+            throw new IllegalArgumentException(
+                    "Debe enviar los datos de la cancelación"
+            );
+        }
+
+        if (cancelacionDTO.getTipoCancelacion() == null
+                || cancelacionDTO.getTipoCancelacion().trim().isEmpty()
+                || cancelacionDTO.getTipoCancelacion().trim().length() > 25) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un tipo de cancelación de hasta 25 caracteres"
+            );
+        }
         if (cancelacionDTO.getReserva() == null || cancelacionDTO.getReserva().getIdReserva() == null) {
             throw new RuntimeException("Debe especificar una reserva válida");
         }
@@ -41,6 +56,13 @@ public class CancelacionServicio {
 
         Cancelacion cancelacion = modelMapper.map(cancelacionDTO, Cancelacion.class);
         cancelacion.setIdCancelacion(null);
+
+        //Normalizar el motivo y generar la fecha.
+        cancelacion.setTipoCancelacion(
+                cancelacionDTO.getTipoCancelacion().trim()
+        );
+
+        cancelacion.setFCancelacion(java.time.Instant.now());
 
         Cancelacion cancelacionGuardada = cancelacionRepositorio.save(cancelacion);
         return modelMapper.map(cancelacionGuardada, CancelacionDTO.class);

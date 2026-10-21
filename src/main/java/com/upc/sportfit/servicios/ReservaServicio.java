@@ -20,6 +20,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.*;
+import com.upc.sportfit.entidades.Notificacion;
+import com.upc.sportfit.repositorios.NotificacionRepositorio;
 
 @Service
 public class ReservaServicio {
@@ -42,17 +44,136 @@ public class ReservaServicio {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private NotificacionRepositorio notificacionRepositorio;
+
+    @Transactional
     // Registrar reserva
     public ReservaDTO registrarReserva(ReservaDTO reservaDTO){
+        // AGREGADO: validar los datos necesarios para registrar.
+        if (reservaDTO == null
+                || reservaDTO.getUsuario() == null
+                || reservaDTO.getUsuario().getIdUsuario() == null
+                || reservaDTO.getSedeCancha() == null
+                || reservaDTO.getSedeCancha().getIdSedeCancha() == null) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar el cliente y la cancha"
+            );
+        }
+
+        if (reservaDTO.getIdReserva() != null) {
+            throw new IllegalArgumentException(
+                    "No debe enviar idReserva al registrar una nueva reserva"
+            );
+        }
+
+        if (reservaDTO.getFReserva() == null
+                || reservaDTO.getHInicio() == null
+                || reservaDTO.getHFin() == null) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar fecha, hora de inicio y hora de fin"
+            );
+        }
+
+        if (!reservaDTO.getHInicio().isBefore(reservaDTO.getHFin())) {
+            throw new IllegalArgumentException(
+                    "La hora de inicio debe ser anterior a la hora de fin"
+            );
+        }
+
+        java.time.LocalDateTime inicioReserva =
+                reservaDTO.getFReserva().atTime(reservaDTO.getHInicio());
+
+        java.time.LocalDateTime ahora =
+                java.time.LocalDateTime.now(
+                        java.time.ZoneId.of("America/Lima")
+                );
+
+        if (!inicioReserva.isAfter(ahora)) {
+            throw new IllegalArgumentException(
+                    "La reserva debe comenzar en una fecha y hora futuras"
+            );
+        }
+
+        Usuario clienteValidado = usuarioRepositorio
+                .findById(reservaDTO.getUsuario().getIdUsuario())
+                .orElseThrow(() ->
+                        new NoSuchElementException("El cliente no existe")
+                );
+
+        if (!Boolean.TRUE.equals(clienteValidado.getActivo())
+                || clienteValidado.getRol() == null
+                || !"ROLE_CLIENTE".equals(
+                clienteValidado.getRol().getNombre())) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un cliente activo"
+            );
+        }
+
+        SedeCancha canchaValidada = sedeCanchaRepositorio
+                .findById(
+                        reservaDTO.getSedeCancha().getIdSedeCancha()
+                )
+                .orElseThrow(() ->
+                        new NoSuchElementException("La cancha no existe")
+                );
+
+        if (!Boolean.TRUE.equals(canchaValidada.getEstado())) {
+            throw new IllegalArgumentException(
+                    "No se puede reservar una cancha inactiva"
+            );
+        }
+
+        List<Reserva> reservasDelDia =
+                reservaRepositorio.listarReservaCancha(
+                        reservaDTO.getFReserva(),
+                        canchaValidada.getIdSedeCancha()
+                );
+
+        for (Reserva existente : reservasDelDia) {
+
+            boolean bloqueaHorario =
+                    "solicitada".equalsIgnoreCase(existente.getEstado())
+                            || "confirmada".equalsIgnoreCase(existente.getEstado());
+
+            boolean existeCruce =
+                    existente.getHInicio().isBefore(reservaDTO.getHFin())
+                            && existente.getHFin().isAfter(reservaDTO.getHInicio());
+
+            if (bloqueaHorario && existeCruce) {
+                throw new IllegalArgumentException(
+                        "El horario ya tiene una reserva solicitada o confirmada"
+                );
+            }
+        }
         List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
         String estadoIngresado = reservaDTO.getEstado();
 
         if (estadoIngresado == null || !estadosValidos.contains(estadoIngresado.trim().toLowerCase())) {
-            throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
+            throw new IllegalArgumentException(
+                    "Estado inválido. Solo se permite: "
+                            + String.join(", ", estadosValidos)
+            );
         }
 
+        // HU02 establece que la nueva reserva es una solicitud.
+        if (!"solicitada".equalsIgnoreCase(estadoIngresado.trim())) {
+            throw new IllegalArgumentException(
+                    "Una nueva reserva debe registrarse como solicitada"
+            );
+        }
         Reserva reserva = modelMapper.map(reservaDTO, Reserva.class);
+
         reserva.setEstado(estadoIngresado.trim().toLowerCase());
+
+        //Usar las entidades verificadas y generar la fecha.
+        reserva.setUsuario(clienteValidado);
+        reserva.setSedeCancha(canchaValidada);
+        reserva.setFCreacion(Instant.now());
+
         reserva = reservaRepositorio.save(reserva);
         return modelMapper.map(reserva, ReservaDTO.class);
     }
@@ -92,8 +213,10 @@ public class ReservaServicio {
             List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
             String estadoIngresado = reservaDTO.getEstado().trim().toLowerCase();
             if (!estadosValidos.contains(estadoIngresado)) {
-                throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
-            }
+                throw new IllegalArgumentException(
+                        "Estado inválido. Solo se permite: "
+                                + String.join(", ", estadosValidos)
+                );            }
             reserva.setEstado(estadoIngresado);
         }
         if (reservaDTO.getUsuario() != null && reservaDTO.getUsuario().getIdUsuario() != null) {
@@ -121,9 +244,88 @@ public class ReservaServicio {
             throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
         }
 
+        //Reutilizar la atención de solicitudes existente.
+        String estadoNormalizado = nuevoEstado.trim().toLowerCase();
+
+        if ("confirmada".equals(estadoNormalizado)
+                || "rechazada".equals(estadoNormalizado)) {
+
+            org.springframework.security.core.Authentication autenticacion =
+                    org.springframework.security.core.context
+                            .SecurityContextHolder.getContext()
+                            .getAuthentication();
+
+            boolean esAdministrador = autenticacion != null
+                    && autenticacion.isAuthenticated()
+                    && autenticacion.getAuthorities().stream()
+                    .anyMatch(autoridad ->
+                            "ROLE_ADMINISTRADOR".equals(
+                                    autoridad.getAuthority()
+                            )
+                    );
+
+            if (!esAdministrador) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN,
+                        "Solo un administrador puede atender solicitudes"
+                );
+            }
+
+            Usuario administradorAutenticado = usuarioRepositorio
+                    .findByCorreo(autenticacion.getName())
+                    .orElseThrow(() ->
+                            new NoSuchElementException(
+                                    "El administrador no existe"
+                            )
+                    );
+
+            EstadoReservaDTO datosEstado = new EstadoReservaDTO();
+
+            datosEstado.setEstado(
+                    "confirmada".equals(estadoNormalizado)
+                            ? "Confirmada"
+                            : "Rechazada"
+            );
+
+            datosEstado.setIdAdministrador(
+                    administradorAutenticado.getIdUsuario()
+            );
+
+            return cambiarEstadoSolicitud(idReserva, datosEstado);
+        }
+
         return reservaRepositorio.findById(idReserva)
                 .map(reserva -> {
+                    //Completar únicamente reservas finalizadas.
+                    if ("completada".equalsIgnoreCase(nuevoEstado.trim())) {
+
+                        if (!"confirmada".equalsIgnoreCase(
+                                reserva.getEstado())) {
+
+                            throw new IllegalArgumentException(
+                                    "Solo se puede completar una reserva confirmada"
+                            );
+                        }
+
+                        java.time.LocalDateTime finReserva =
+                                reserva.getFReserva()
+                                        .atTime(reserva.getHFin());
+
+                        java.time.LocalDateTime ahora =
+                                java.time.LocalDateTime.now(
+                                        java.time.ZoneId.of("America/Lima")
+                                );
+
+                        if (finReserva.isAfter(ahora)) {
+                            throw new IllegalArgumentException(
+                                    "La reserva todavía no ha finalizado"
+                            );
+                        }
+                    }
                     reserva.setEstado(nuevoEstado.trim().toLowerCase());
+
+                    //Registrar la fecha de modificación.
+                    reserva.setFModificacion(Instant.now());
                     return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
                 })
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con el id: " + idReserva));
@@ -148,6 +350,14 @@ public class ReservaServicio {
 
     public List<ReservaHorarioDTO> ListarReservasPorFechaDeporteSede(LocalDate fecha, Integer idDeporte, Integer idSede) {
         List<Reserva> reservas = reservaRepositorio.ListarReservasPorFechaDeporteSede(fecha, idDeporte, idSede);
+
+        //Solo estas reservas ocupan un horario.
+        reservas = reservas.stream()
+                .filter(reserva ->
+                        "solicitada".equalsIgnoreCase(reserva.getEstado())
+                                || "confirmada".equalsIgnoreCase(reserva.getEstado())
+                )
+                .toList();
 
         return reservas.stream()
                 .map(reserva -> {
@@ -192,15 +402,18 @@ public class ReservaServicio {
         return reservaRepositorio.findById(id)
                 .map(reserva -> {
                     if (!"confirmada".equalsIgnoreCase(reserva.getEstado())) {
-                        throw new RuntimeException("Solo se pueden cancelar reservas en estado 'confirmada'. Estado actual: " + reserva.getEstado());
-                    }
+                        throw new IllegalArgumentException(
+                                "Solo se pueden cancelar reservas en estado 'confirmada'. Estado actual: "
+                                        + reserva.getEstado()
+                        );                    }
 
                     reserva.setEstado("cancelada");
                     reserva.setFModificacion(Instant.now());
                     return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
                 })
-                .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id: " + id));
-    }
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No existe la reserva con ese id: " + id
+                ));    }
 
     public List<ReservaDTO> listarReservasSede(Integer id_sede) {
 
@@ -399,6 +612,7 @@ public class ReservaServicio {
     // HU13 - Cambiar Estado de la Solicitud (Aceptar / Rechazar con validaciones)
     @Transactional
     public ReservaDTO cambiarEstadoSolicitud(Integer idReserva, EstadoReservaDTO dto) {
+
         if (!"Confirmada".equals(dto.getEstado()) && !"Rechazada".equals(dto.getEstado())) {
             throw new IllegalArgumentException("El estado debe ser Confirmada o Rechazada");
         }
@@ -441,7 +655,19 @@ public class ReservaServicio {
         }
 
         if ("Confirmada".equals(dto.getEstado())) {
+            // Verificar el importe antes de confirmar.
+            if (pagos.size() != 1) {
+                throw new IllegalArgumentException(
+                        "La solicitud debe tener un único pago asociado"
+                );
+            }
+
+            pagoServicio.validarMontoReserva(
+                    reserva,
+                    pagos.get(0).getMontoTotal()
+            );
             if (!Boolean.TRUE.equals(reserva.getSedeCancha().getEstado())) {
+
                 throw new IllegalArgumentException("La cancha debe estar activa");
             }
 
@@ -470,6 +696,31 @@ public class ReservaServicio {
         reserva.setFModificacion(Instant.now());
 
         reserva = reservaRepositorio.save(reserva);
+
+        //Notificar el resultado de la solicitud.
+        Notificacion notificacion = new Notificacion();
+
+        notificacion.setTipo("Reserva");
+
+        notificacion.setTitulo(
+                "confirmada".equals(reserva.getEstado())
+                        ? "Reserva confirmada"
+                        : "Reserva rechazada"
+        );
+
+        notificacion.setMensaje(
+                "Su solicitud de reserva N.° "
+                        + reserva.getIdReserva()
+                        + " fue "
+                        + reserva.getEstado()
+                        + "."
+        );
+
+        notificacion.setUsuario(reserva.getUsuario());
+        notificacion.setFNotificacion(Instant.now());
+        notificacion.setLeido(false);
+
+        notificacionRepositorio.save(notificacion);
 
         return modelMapper.map(reserva, ReservaDTO.class);
     }

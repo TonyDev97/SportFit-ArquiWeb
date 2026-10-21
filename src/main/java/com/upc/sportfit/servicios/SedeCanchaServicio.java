@@ -36,7 +36,23 @@ public class SedeCanchaServicio {
 
     // VALIDADO NICOLE
     public List<SedeCanchaDTO> listarPorDeporteYSede(Integer idTipoCancha, Integer idSede) {
+        org.springframework.security.core.Authentication autenticacion =
+                org.springframework.security.core.context
+                        .SecurityContextHolder.getContext()
+                        .getAuthentication();
+
+        boolean esAdministrador = autenticacion != null
+                && autenticacion.getAuthorities().stream()
+                .anyMatch(autoridad ->
+                        "ROLE_ADMINISTRADOR".equals(
+                                autoridad.getAuthority()
+                        )
+                );
         List<SedeCanchaDTO> lista = sedeCanchaRepositorio.BuscarPorDeporteYSede(idTipoCancha, idSede).stream()
+                //mostrar canchas activas para nueva reserva
+                .filter(sc ->
+                        esAdministrador || Boolean.TRUE.equals(sc.getEstado())
+                )
                 .map(sc -> modelMapper.map(sc, SedeCanchaDTO.class))
                 .toList();
 

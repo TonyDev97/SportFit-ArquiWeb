@@ -15,6 +15,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
+import com.upc.sportfit.entidades.Reserva;
+import com.upc.sportfit.repositorios.ReservaRepositorio;
+import java.util.NoSuchElementException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PagoServicio {
@@ -25,15 +29,95 @@ public class PagoServicio {
     @Autowired
     private ModelMapper modelMapper;
 
+    //Verificar la reserva antes de registrar el pago.
+    @Autowired
+    private ReservaRepositorio reservaRepositorio;
+
     public List<Pago> listarPagos() {
         return pagoRepositorio.findAll();
     }
 
+    @Transactional
+
     // VALIDADO NICOLE
     public PagoDTO registrarPago(PagoDTO pagoDTO) {
+        //Validaciones del pago.
+        if (pagoDTO == null
+                || pagoDTO.getReserva() == null
+                || pagoDTO.getReserva().getIdReserva() == null) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar la reserva del pago"
+            );
+        }
+
+        if (pagoDTO.getIdPago() != null) {
+            throw new IllegalArgumentException(
+                    "No debe enviar idPago al registrar un nuevo pago"
+            );
+        }
+
+        if (pagoDTO.getMontoTotal() == null
+                || pagoDTO.getMontoTotal().compareTo(BigDecimal.ZERO) <= 0
+                || pagoDTO.getMontoTotal().stripTrailingZeros().scale() > 2) {
+
+            throw new IllegalArgumentException(
+                    "El monto debe ser positivo y tener hasta dos decimales"
+            );
+        }
+
+        if (pagoDTO.getMetodo() == null
+                || pagoDTO.getMetodo().trim().isEmpty()
+                || pagoDTO.getMetodo().length() > 50) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un método de pago de hasta 50 caracteres"
+            );
+        }
+
+        if (pagoDTO.getUrlComprobante() == null
+                || pagoDTO.getUrlComprobante().trim().isEmpty()
+                || pagoDTO.getUrlComprobante().length() > 500) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un comprobante de hasta 500 caracteres"
+            );
+        }
+
+        Reserva reservaValidada = reservaRepositorio
+                .findById(pagoDTO.getReserva().getIdReserva())
+                .orElseThrow(() ->
+                        new NoSuchElementException("La reserva no existe")
+                );
+
+        //Evitar registrar otro pago para la misma reserva.
+        if (!pagoRepositorio.findByReserva_IdReserva(
+                reservaValidada.getIdReserva()).isEmpty()) {
+
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.CONFLICT,
+                    "La reserva ya tiene un pago registrado"
+            );
+        }
+
+        if (!"solicitada".equalsIgnoreCase(reservaValidada.getEstado())) {
+            throw new IllegalArgumentException(
+                    "Solo se puede registrar el pago de una reserva solicitada"
+            );
+        }
+
+        //Verificar el importe antes de guardar.
+        validarMontoReserva(
+                reservaValidada,
+                pagoDTO.getMontoTotal()
+        );
+
         Pago pago = modelMapper.map(pagoDTO, Pago.class);
+        //Asociar la reserva verificada.
+        pago.setReserva(reservaValidada);
         pago = pagoRepositorio.save(pago);
         return modelMapper.map(pago, PagoDTO.class);
+
     }
 
     public Pago listarPagoPorId(Integer id) {
@@ -101,6 +185,60 @@ public class PagoServicio {
 
     public List<DetalleSedeDTO> listarDetalleSede(Integer mes, Integer anio, Integer sedeId) {
         return pagoRepositorio.listarDetalleSede(mes, anio, sedeId);
+    }
+
+    //Validar el importe según precio por hora y duración.
+    public void validarMontoReserva(
+            Reserva reserva,
+            BigDecimal montoRecibido) {
+
+        if (reserva == null
+                || reserva.getSedeCancha() == null
+                || reserva.getSedeCancha().getPrecio() == null
+                || reserva.getHInicio() == null
+                || reserva.getHFin() == null) {
+
+            throw new IllegalArgumentException(
+                    "La reserva no tiene los datos necesarios para calcular el importe"
+            );
+        }
+
+        if (!reserva.getHInicio().isBefore(reserva.getHFin())) {
+            throw new IllegalArgumentException(
+                    "Las horas de la reserva no son válidas"
+            );
+        }
+
+        BigDecimal precioHora = reserva.getSedeCancha().getPrecio();
+
+        if (precioHora.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException(
+                    "El precio por hora de la cancha debe ser positivo"
+            );
+        }
+
+        long segundos = java.time.Duration.between(
+                reserva.getHInicio(),
+                reserva.getHFin()
+        ).getSeconds();
+
+        BigDecimal montoEsperado = precioHora
+                .multiply(BigDecimal.valueOf(segundos))
+                .divide(
+                        BigDecimal.valueOf(3600),
+                        2,
+                        java.math.RoundingMode.HALF_UP
+                );
+
+        if (montoRecibido == null
+                || montoRecibido.compareTo(montoEsperado) != 0) {
+
+            throw new IllegalArgumentException(
+                    "El monto debe ser S/ "
+                            + montoEsperado.toPlainString()
+                            + " según el precio por hora y la duración"
+            );
+        }
     }
 
 }
