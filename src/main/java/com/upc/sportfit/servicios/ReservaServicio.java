@@ -563,4 +563,54 @@ public class ReservaServicio {
         return banner;
     }
 
+    public List<ReservaDTO> filtrarConcatenado(String estado, Integer idSede, Integer idTipoCancha, LocalDate fecha) {
+
+        List<Reserva> reservas = reservaRepositorio.findAll();
+
+        if (estado != null) {
+            estado = estado.trim().toLowerCase();
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getEstado().equals(estado)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(idTipoCancha != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getSedeCancha().getCancha().getIdTipoCancha().equals(idTipoCancha)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(idSede != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getSedeCancha().getSede().getIdSede().equals(idSede)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(fecha != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getFReserva().equals(fecha)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+
+        List <ReservaDTO> reporteFinal = new ArrayList<>();
+        for (Reserva re1 : reservas) {
+            reporteFinal.add(modelMapper.map(re1, ReservaDTO.class));
+        }
+
+        return reporteFinal;
+    }
+
 }
