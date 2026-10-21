@@ -1,17 +1,16 @@
 package com.upc.sportfit.servicios;
 
 import com.upc.sportfit.dtos.PagoDTO;
-import com.upc.sportfit.dtos.reportes.DetalleSedeDTO;
-import com.upc.sportfit.dtos.reportes.DistribucionPagoDTO;
-import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
-import com.upc.sportfit.dtos.reportes.MontoPerdidoDTO;
+import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Pago;
 import com.upc.sportfit.repositorios.PagoRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
@@ -102,5 +101,41 @@ public class PagoServicio {
     public List<DetalleSedeDTO> listarDetalleSede(Integer mes, Integer anio, Integer sedeId) {
         return pagoRepositorio.listarDetalleSede(mes, anio, sedeId);
     }
+
+    public BannerPagoReporte cargarBannerPago(Integer mes, Integer anio) {
+        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
+        List<IngresoDiarioDTO> ingresos =
+                pagoRepositorio.obtenerIngresosPorPeriodo(rango[0], rango[1]);
+
+        BigDecimal recaudacionTotal = BigDecimal.ZERO;
+        BigDecimal promedioDiario = BigDecimal.ZERO;
+        BigDecimal diaPico = BigDecimal.ZERO;
+        Long pagosRealizados = 0L;
+
+        for (IngresoDiarioDTO ingreso : ingresos) {
+            recaudacionTotal = recaudacionTotal.add(ingreso.getIngresos());
+            pagosRealizados += ingreso.getCantidadPagos();
+
+            if (ingreso.getIngresos().compareTo(diaPico) > 0) {
+                diaPico = ingreso.getIngresos();
+            }
+        }
+
+        if (!ingresos.isEmpty()) {
+            promedioDiario = recaudacionTotal.divide(
+                    BigDecimal.valueOf(ingresos.size()),
+                    2,
+                    RoundingMode.HALF_UP
+            );
+        }
+
+        return new BannerPagoReporte(
+                recaudacionTotal,
+                promedioDiario,
+                diaPico,
+                pagosRealizados
+        );
+    }
+
 
 }

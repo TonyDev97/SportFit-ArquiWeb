@@ -1,6 +1,7 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.PagoDTO;
+import com.upc.sportfit.dtos.reportes.BannerPagoReporte;
 import com.upc.sportfit.dtos.reportes.DetalleSedeDTO;
 import com.upc.sportfit.dtos.reportes.DistribucionPagoDTO;
 import com.upc.sportfit.dtos.reportes.IngresoDiarioDTO;
@@ -56,6 +57,16 @@ public class PagoControlador {
     public ResponseEntity<PagoDTO> registrar(@RequestBody PagoDTO pagoDTO) {
         PagoDTO nuevoPago = pagoServicio.registrarPago(pagoDTO);
         return ResponseEntity.ok(nuevoPago);
+    }
+
+    // ED62
+    @GetMapping("/pago/reporte/banners")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<BannerPagoReporte> cargarBannerPago(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = true) Integer anio
+    ){
+        return ResponseEntity.ok(pagoServicio.cargarBannerPago(mes, anio));
     }
 
     /*

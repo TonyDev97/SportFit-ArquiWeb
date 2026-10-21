@@ -216,6 +216,16 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaActualizada);
     }
 
+    // ED61
+    @GetMapping("/reserva-filtro-concatenado")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<ReservaDTO> filtrarReservas(
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) Integer idSede,
+            @RequestParam(required = false) Integer idTipoCancha,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha){
+        return reservaServicio.filtrarConcatenado(estado, idSede, idTipoCancha, fecha);
+    }
 
     /*
     @GetMapping("/reserva-validar")

@@ -11,20 +11,19 @@ INSERT INTO rol (id_rol, nombre, descripcion) VALUES (2, 'ROLE_ADMINISTRADOR', '
 -- cliente123 -> $2a$10$73qbe7brB/2QaIvYyq44Suf5aE2txQ6OhqwjAAAzEnBtlZnZZEJSW
 -- =========================================================
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Admin', 'Sistema', '00000000', '000000000', 'admin@sportfit.com', '$2a$10$mjtz6jbcUGJekzBSgDE0uOxp4xYVTmSLXai2EFhEOv5BoKrdXDOxG', true, 'import.sql', CURRENT_TIMESTAMP, 2);
-
-
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Cliente', 'Prueba', '00000001', '000000001', 'cliente@sportfit.com', '$2a$10$73qbe7brB/2QaIvYyq44Suf5aE2txQ6OhqwjAAAzEnBtlZnZZEJSW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+
 -- =========================================================
 -- USUARIOS DE NEGOCIO (existentes)
 -- Password: 123456 -> $2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
 -- =========================================================
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Juan', 'Perez', '12345678', '987654321', 'jperez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Maria', 'Gomez', '10000002', '900000002', 'mgomez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 2);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Carlos', 'Ramirez', '10000003', '900000003', 'cramirez@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 2);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Lucia', 'Torres', '10000004', '900000004', 'ltorres@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Diego', 'Flores', '10000005', '900000005', 'dflores@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Ana', 'Castillo', '10000006', '900000006', 'acastillo@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', true, 'import.sql', CURRENT_TIMESTAMP, 1);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Pedro', 'Huaman', '10000007', '900000007', 'phuaman@correo.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', false, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Juan', 'Perez', '12345678', '987654321', 'jperez@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Maria', 'Gomez', '10000002', '900000002', 'mgomez@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 2);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Carlos', 'Ramirez', '10000003', '900000003', 'cramirez@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 2);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Lucia', 'Torres', '10000004', '900000004', 'ltorres@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Diego', 'Flores', '10000005', '900000005', 'dflores@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Ana', 'Castillo', '10000006', '900000006', 'acastillo@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Pedro', 'Huaman', '10000007', '900000007', 'phuaman@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', false, 'import.sql', CURRENT_TIMESTAMP, 1);
 
 -- =========================================================
 -- TIPOS DE CANCHA
@@ -73,7 +72,7 @@ INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion,
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '07:00:00', '09:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 9);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '08:00:00', '10:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 6, 10);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '12:00:00', '13:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 1, 7);
-INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '15:00:00', '17:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 7, 1);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '15:00:00', '17:00:00', 'completada', 'import.sql', CURRENT_TIMESTAMP, 7, 1);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '19:00:00', '21:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 3);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-02', '08:00:00', '10:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 4);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-02', '11:00:00', '13:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 6, 9);

@@ -255,8 +255,8 @@ public class ReservaServicio {
 
     // HU08 - ED21: Cancelaciones por día
     public List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(Integer mes, Integer anio) {
-        LocalDate[] rango = validarYCalcularRangoFechas(mes, anio);
-        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorPeriodo(rango[0], rango[1]);
+        validarYCalcularRangoFechas(mes, anio);
+        List<CancelacionDiaDTO> cancelaciones = reservaRepositorio.obtenerCancelacionesPorPeriodo(mes, anio);
         if (cancelaciones.isEmpty()) {
             throw new RuntimeException("No se encontraron cancelaciones para el período seleccionado");
         }
@@ -350,7 +350,7 @@ public class ReservaServicio {
         }
 
         List<ReservaClienteDTO> resultados = reservaRepositorio.obtenerReservasPorClienteConsolidado(
-                fechaDesde, fechaHasta, minReservas, maxReservas, top);
+                fechaDesde, fechaHasta, minReservas, maxReservas);
 
         // Aplicar límite top en Service si no se hizo en la query
         if (top != null && top > 0 && resultados.size() > top) {
@@ -561,6 +561,56 @@ public class ReservaServicio {
         banner.setDeportePopular(Collections.max(porDeporte.entrySet(), Map.Entry.comparingByValue()).getKey());
         banner.setSedePopular(Collections.max(porSede.entrySet(), Map.Entry.comparingByValue()).getKey());
         return banner;
+    }
+
+    public List<ReservaDTO> filtrarConcatenado(String estado, Integer idSede, Integer idTipoCancha, LocalDate fecha) {
+
+        List<Reserva> reservas = reservaRepositorio.findAll();
+
+        if (estado != null) {
+            estado = estado.trim().toLowerCase();
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getEstado().equals(estado)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(idTipoCancha != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getSedeCancha().getCancha().getIdTipoCancha().equals(idTipoCancha)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(idSede != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getSedeCancha().getSede().getIdSede().equals(idSede)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(fecha != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getFReserva().equals(fecha)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+
+        List <ReservaDTO> reporteFinal = new ArrayList<>();
+        for (Reserva re1 : reservas) {
+            reporteFinal.add(modelMapper.map(re1, ReservaDTO.class));
+        }
+
+        return reporteFinal;
     }
 
 }

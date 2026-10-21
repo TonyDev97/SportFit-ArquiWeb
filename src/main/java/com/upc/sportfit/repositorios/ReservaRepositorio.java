@@ -42,15 +42,15 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "and extract(month from r.fReserva) = :mes group by r.sedeCancha.cancha.deporte, r.sedeCancha.sede.nombre")
     List<ReservaDeporteSedeDTO> frecuenciaReservasPorDeporteSede(@Param("mes") Integer mes);
 
-
-    // HU08 - ED21: Cancelaciones por día en un mes/año
-    @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r)) " +
+    // ED05.1
+    @Query("SELECT new com.upc.sportfit.dtos.reportes.CancelacionDiaDTO(r.fReserva, COUNT(r.idReserva)) " +
             "FROM Reserva r " +
-            "WHERE r.estado = 'cancelada' " +
-            "AND r.fReserva BETWEEN :fechaInicio AND :fechaFin " +
+            "WHERE LOWER(r.estado) = 'cancelada' " +
+            "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +
+            "AND EXTRACT(YEAR FROM r.fReserva) = :anio " +
             "GROUP BY r.fReserva " +
             "ORDER BY r.fReserva")
-    List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+    List<CancelacionDiaDTO> obtenerCancelacionesPorPeriodo(@Param("mes") Integer mes, @Param("anio") Integer anio);
 
     // HU08 - ED23: Total de reservas canceladas en un mes/año
     @Query("SELECT new com.upc.sportfit.dtos.reportes.TotalCancelacionesDTO(COUNT(r)) " +
@@ -127,8 +127,7 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             @Param("fechaDesde") LocalDate fechaDesde,
             @Param("fechaHasta") LocalDate fechaHasta,
             @Param("minReservas") Integer minReservas,
-            @Param("maxReservas") Integer maxReservas,
-            @Param("top") Integer top
+            @Param("maxReservas") Integer maxReservas
     );
 
     //HU10 - ED24 Obtener el número de reservas de un cliente
