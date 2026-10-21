@@ -38,9 +38,9 @@ public interface PagoRepositorio extends JpaRepository<Pago, Integer> {
 
     List<Pago> findByReserva_IdReserva(Integer idReserva);
 
-    // ED86: Detalle de reservas e ingresos por sede y deporte (sedeId null = todas las sedes)
+    // ED20: Detalle de reservas e ingresos por sede y deporte (sedeId null = todas las sedes)
     @Query("SELECT new com.upc.sportfit.dtos.reportes.DetalleSedeDTO(r.sedeCancha.sede.nombre, " +
-            "r.sedeCancha.cancha.deporte, COUNT(DISTINCT r), SUM(p.montoTotal)) " +
+            "r.sedeCancha.cancha.deporte, COUNT(DISTINCT r.idReserva), SUM(p.montoTotal)) " +
             "FROM Pago p JOIN p.reserva r " +
             "WHERE r.estado = 'completada' " +
             "AND EXTRACT(MONTH FROM r.fReserva) = :mes " +

@@ -72,7 +72,7 @@ INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion,
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '07:00:00', '09:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 9);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '08:00:00', '10:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 6, 10);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '12:00:00', '13:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 1, 7);
-INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '15:00:00', '17:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 7, 1);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '15:00:00', '17:00:00', 'completada', 'import.sql', CURRENT_TIMESTAMP, 7, 1);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '19:00:00', '21:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 3);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-02', '08:00:00', '10:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 4);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-02', '11:00:00', '13:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 6, 9);
