@@ -227,7 +227,7 @@ public class ReservaServicio {
         return reservaRepositorio.findByEstado(confirmada);
     }
 
-    // Eliminar logico de la reserva, si tiene estado confirmada
+    // Eliminar logico de la reserva, si tiene estado confirmada ok
     public ReservaDTO eliminarLogicoReserva(Integer id) {
         return reservaRepositorio.findById(id)
                 .map(reserva -> {
