@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Year;
 import java.util.*;
 
@@ -58,7 +57,7 @@ public class ReservaServicio {
         return modelMapper.map(reserva, ReservaDTO.class);
     }
 
-    // ED# pruebas ok
+    // Listar
     public List<ReservaDTO> listarReservas(){
         List<ReservaDTO> lista = reservaRepositorio.findAll().stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
@@ -70,21 +69,15 @@ public class ReservaServicio {
         return lista;
     }
 
-    //ED23 Actualizar únicamente reservas con esta "SOLICITADA" superposición de reservas
+    // Actualizar reserva
     @Transactional
     public ReservaDTO editarReserva(ReservaDTO reservaDTO){
-        if (reservaDTO.getIdReserva() == null) { //ok
+        if (reservaDTO.getIdReserva() == null) {
             throw new RuntimeException("Debe especificar el id de la reserva");
         }
 
-        Reserva reserva = reservaRepositorio.findById(reservaDTO.getIdReserva()) //ok
+        Reserva reserva = reservaRepositorio.findById(reservaDTO.getIdReserva())
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id:" + reservaDTO.getIdReserva()));
-
-        // Validar el estado actual de la reserva
-        if (!"solicitada".equalsIgnoreCase(reserva.getEstado().trim())) { //ok
-            throw new RuntimeException(
-                    "Solo se pueden editar reservas en estado Solicitada");
-        }
 
         if (reservaDTO.getFReserva() != null) {
             reserva.setFReserva(reservaDTO.getFReserva());
@@ -95,52 +88,19 @@ public class ReservaServicio {
         if (reservaDTO.getHFin() != null) {
             reserva.setHFin(reservaDTO.getHFin());
         }
-
-
-        // Validar que el horario sea correcto
-        if (reserva.getFReserva() == null ||
-                reserva.getHInicio() == null ||
-                reserva.getHFin() == null ||
-                !reserva.getHInicio().isBefore(reserva.getHFin())) {
-
-            throw new RuntimeException("Fecha u horario inválido");
-        }
-
-        // Validar que la cancha esté activa
-        if (!Boolean.TRUE.equals(reserva.getSedeCancha().getEstado())) {
-            throw new RuntimeException("La cancha no está activa");
-        }
-
-        // Obtener reservas de la misma cancha y fecha
-        List<Reserva> reservas = reservaRepositorio.listarReservaCancha(
-                reserva.getFReserva(),
-                reserva.getSedeCancha().getIdSedeCancha()
-        );
-
-        // Verificar si existe cruce de horarios
-        for (Reserva otra : reservas) {
-            if (otra.getIdReserva().equals(reserva.getIdReserva())) {
-                continue;
+        if (reservaDTO.getEstado() != null) {
+            List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
+            String estadoIngresado = reservaDTO.getEstado().trim().toLowerCase();
+            if (!estadosValidos.contains(estadoIngresado)) {
+                throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
             }
-            //Si una reserva tiene un estado que ocupa o bloque el horario.
-            //otra.getEstado obtiene el estado de la reserva equalsIgnoreCase compara las cadenas sin importar las mayúsculas o mínusculas
-            boolean estadoOcupado = "solicitada".equalsIgnoreCase(otra.getEstado()) || "confirmada".equalsIgnoreCase(otra.getEstado());
-            //Verifica si el nuevo horario se superpone con el de otra reserva
-            boolean cruceHorario = reserva.getHInicio().isBefore(otra.getHFin()) && reserva.getHFin().isAfter(otra.getHInicio());
-
-            if (estadoOcupado && cruceHorario) {
-                throw new RuntimeException("Ya existe otra reserva en ese horario y cancha");
-            }
+            reserva.setEstado(estadoIngresado);
         }
-
-        //Validación de usuario ok
         if (reservaDTO.getUsuario() != null && reservaDTO.getUsuario().getIdUsuario() != null) {
             Usuario usuario = usuarioRepositorio.findById(reservaDTO.getUsuario().getIdUsuario())
                     .orElseThrow(() -> new RuntimeException("No existe el usuario con ese id:" + reservaDTO.getUsuario().getIdUsuario()));
             reserva.setUsuario(usuario);
         }
-
-        //validación de cancha de la sede ok
         if (reservaDTO.getSedeCancha() != null && reservaDTO.getSedeCancha().getIdSedeCancha() != null) {
             SedeCancha sedeCancha = sedeCanchaRepositorio.findById(reservaDTO.getSedeCancha().getIdSedeCancha())
                     .orElseThrow(() -> new RuntimeException("No existe la sede cancha con ese id:" + reservaDTO.getSedeCancha().getIdSedeCancha()));
@@ -227,7 +187,7 @@ public class ReservaServicio {
         return reservaRepositorio.findByEstado(confirmada);
     }
 
-    // Eliminar logico de la reserva, si tiene estado confirmada ok
+    // Eliminar logico de la reserva, si tiene estado confirmada
     public ReservaDTO eliminarLogicoReserva(Integer id) {
         return reservaRepositorio.findById(id)
                 .map(reserva -> {
@@ -603,80 +563,54 @@ public class ReservaServicio {
         return banner;
     }
 
-
-    // ED61 - HU05 Filtro de reservas - Se agregaron 2 campos de filtro
-    @Transactional(readOnly = true)
-    public List<ReservaDTO> filtrarConcatenado(
-            String estado,
-            Integer idSede,
-            Integer idTipoCancha,
-            String deporte,
-            LocalDate fecha,
-            LocalTime horaInicio,
-            LocalTime horaFin) {
+    public List<ReservaDTO> filtrarConcatenado(String estado, Integer idSede, Integer idTipoCancha, LocalDate fecha) {
 
         List<Reserva> reservas = reservaRepositorio.findAll();
 
-        if (estado != null && !estado.isBlank()) {
-            String filtroEstado = estado.trim();
-
-            reservas = reservas.stream()
-                    .filter(r -> r.getEstado()
-                            .equalsIgnoreCase(filtroEstado))
-                    .toList();
+        if (estado != null) {
+            estado = estado.trim().toLowerCase();
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getEstado().equals(estado)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(idTipoCancha != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getSedeCancha().getCancha().getIdTipoCancha().equals(idTipoCancha)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(idSede != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getSedeCancha().getSede().getIdSede().equals(idSede)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
+        }
+        if(fecha != null){
+            List<Reserva> reporte =  new ArrayList<>();
+            for (Reserva re1 : reservas) {
+                if (re1.getFReserva().equals(fecha)){
+                    reporte.add(re1);
+                }
+            }
+            reservas = reporte;
         }
 
-        if (idTipoCancha != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.getSedeCancha()
-                            .getCancha()
-                            .getIdTipoCancha()
-                            .equals(idTipoCancha))
-                    .toList();
+        List <ReservaDTO> reporteFinal = new ArrayList<>();
+        for (Reserva re1 : reservas) {
+            reporteFinal.add(modelMapper.map(re1, ReservaDTO.class));
         }
 
-        if (idSede != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.getSedeCancha()
-                            .getSede()
-                            .getIdSede()
-                            .equals(idSede))
-                    .toList();
-        }
-
-        // Nuevo filtro por nombre del deporte
-        if (deporte != null && !deporte.isBlank()) {
-            String filtroDeporte = deporte.trim();
-
-            reservas = reservas.stream()
-                    .filter(r -> r.getSedeCancha()
-                            .getCancha()
-                            .getDeporte()
-                            .equalsIgnoreCase(filtroDeporte))
-                    .toList();
-        }
-
-        if (fecha != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.getFReserva().equals(fecha))
-                    .toList();
-        }
-
-        // Nuevo filtro por hora de inicio
-        if (horaInicio != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.getHInicio().equals(horaInicio))
-                    .toList();
-        }
-
-        // Nuevo filtro por hora de fin
-        if (horaFin != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.getHFin().equals(horaFin))
-                    .toList();
-        }
-
-        return reservas.stream().map(r -> modelMapper.map(r, ReservaDTO.class)).toList();
+        return reporteFinal;
     }
 
 }
