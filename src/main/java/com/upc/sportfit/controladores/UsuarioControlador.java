@@ -78,7 +78,7 @@ public class UsuarioControlador {
     public UsuarioDTO insertar(@RequestBody UsuarioDTO usuarioDTO){
         return usuarioServicio.insertar(usuarioDTO);
     } */
-    
+
     // ED58
     @GetMapping("/usuarios-clientes-telefono/{telefono}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
