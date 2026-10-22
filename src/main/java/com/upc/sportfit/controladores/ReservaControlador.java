@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 
@@ -218,27 +217,15 @@ public class ReservaControlador {
     }
 
     // ED61
-
-    // ED61 - HU05 Filtro de reservas
     @GetMapping("/reserva-filtro-concatenado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<ReservaDTO> filtrarReservas(
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) Integer idSede,
             @RequestParam(required = false) Integer idTipoCancha,
-            @RequestParam(required = false) String deporte,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate fecha,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-            LocalTime horaInicio,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-            LocalTime horaFin) {
-        return reservaServicio.filtrarConcatenado(estado, idSede, idTipoCancha, deporte, fecha, horaInicio, horaFin);
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha){
+        return reservaServicio.filtrarConcatenado(estado, idSede, idTipoCancha, fecha);
     }
-
 
     /*
     @GetMapping("/reserva-validar")
