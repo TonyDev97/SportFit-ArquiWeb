@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Year;
 import java.util.*;
 
@@ -101,7 +102,7 @@ public class ReservaServicio {
                     .orElseThrow(() -> new RuntimeException("No existe el usuario con ese id:" + reservaDTO.getUsuario().getIdUsuario()));
             reserva.setUsuario(usuario);
         }
-        
+
         //validación de cancha de la sede ok
         if (reservaDTO.getSedeCancha() != null && reservaDTO.getSedeCancha().getIdSedeCancha() != null) {
             SedeCancha sedeCancha = sedeCanchaRepositorio.findById(reservaDTO.getSedeCancha().getIdSedeCancha())
@@ -565,54 +566,80 @@ public class ReservaServicio {
         return banner;
     }
 
-    public List<ReservaDTO> filtrarConcatenado(String estado, Integer idSede, Integer idTipoCancha, LocalDate fecha) {
+
+    // ED61 - HU05 Filtro de reservas - Se agregaron 2 campos de filtro
+    @Transactional(readOnly = true)
+    public List<ReservaDTO> filtrarConcatenado(
+            String estado,
+            Integer idSede,
+            Integer idTipoCancha,
+            String deporte,
+            LocalDate fecha,
+            LocalTime horaInicio,
+            LocalTime horaFin) {
 
         List<Reserva> reservas = reservaRepositorio.findAll();
 
-        if (estado != null) {
-            estado = estado.trim().toLowerCase();
-            List<Reserva> reporte =  new ArrayList<>();
-            for (Reserva re1 : reservas) {
-                if (re1.getEstado().equals(estado)){
-                    reporte.add(re1);
-                }
-            }
-            reservas = reporte;
-        }
-        if(idTipoCancha != null){
-            List<Reserva> reporte =  new ArrayList<>();
-            for (Reserva re1 : reservas) {
-                if (re1.getSedeCancha().getCancha().getIdTipoCancha().equals(idTipoCancha)){
-                    reporte.add(re1);
-                }
-            }
-            reservas = reporte;
-        }
-        if(idSede != null){
-            List<Reserva> reporte =  new ArrayList<>();
-            for (Reserva re1 : reservas) {
-                if (re1.getSedeCancha().getSede().getIdSede().equals(idSede)){
-                    reporte.add(re1);
-                }
-            }
-            reservas = reporte;
-        }
-        if(fecha != null){
-            List<Reserva> reporte =  new ArrayList<>();
-            for (Reserva re1 : reservas) {
-                if (re1.getFReserva().equals(fecha)){
-                    reporte.add(re1);
-                }
-            }
-            reservas = reporte;
+        if (estado != null && !estado.isBlank()) {
+            String filtroEstado = estado.trim();
+
+            reservas = reservas.stream()
+                    .filter(r -> r.getEstado()
+                            .equalsIgnoreCase(filtroEstado))
+                    .toList();
         }
 
-        List <ReservaDTO> reporteFinal = new ArrayList<>();
-        for (Reserva re1 : reservas) {
-            reporteFinal.add(modelMapper.map(re1, ReservaDTO.class));
+        if (idTipoCancha != null) {
+            reservas = reservas.stream()
+                    .filter(r -> r.getSedeCancha()
+                            .getCancha()
+                            .getIdTipoCancha()
+                            .equals(idTipoCancha))
+                    .toList();
         }
 
-        return reporteFinal;
+        if (idSede != null) {
+            reservas = reservas.stream()
+                    .filter(r -> r.getSedeCancha()
+                            .getSede()
+                            .getIdSede()
+                            .equals(idSede))
+                    .toList();
+        }
+
+        // Nuevo filtro por nombre del deporte
+        if (deporte != null && !deporte.isBlank()) {
+            String filtroDeporte = deporte.trim();
+
+            reservas = reservas.stream()
+                    .filter(r -> r.getSedeCancha()
+                            .getCancha()
+                            .getDeporte()
+                            .equalsIgnoreCase(filtroDeporte))
+                    .toList();
+        }
+
+        if (fecha != null) {
+            reservas = reservas.stream()
+                    .filter(r -> r.getFReserva().equals(fecha))
+                    .toList();
+        }
+
+        // Nuevo filtro por hora de inicio
+        if (horaInicio != null) {
+            reservas = reservas.stream()
+                    .filter(r -> r.getHInicio().equals(horaInicio))
+                    .toList();
+        }
+
+        // Nuevo filtro por hora de fin
+        if (horaFin != null) {
+            reservas = reservas.stream()
+                    .filter(r -> r.getHFin().equals(horaFin))
+                    .toList();
+        }
+
+        return reservas.stream().map(r -> modelMapper.map(r, ReservaDTO.class)).toList();
     }
 
 }
