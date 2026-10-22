@@ -15,6 +15,7 @@ public class SedeControlador {
     @Autowired
     private SedeServicio sedeServicio;
 
+    // ED 43 - HU17 PARA LISTAR TODAS LAS SEDES
     @GetMapping("/sedes")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<Sede> listar() {

@@ -30,6 +30,8 @@ public class SedeCanchaServicio {
     @Autowired
     private TipoCanchaRepositorio tipoCanchaRepositorio;
 
+
+    //esto talvez se pueda considerar para eñ adminstrador
     public List<SedeCancha> listarPorSedeActivas(Integer idSede) {
         return sedeCanchaRepositorio.encontrarActivasPorSede(idSede);
     }

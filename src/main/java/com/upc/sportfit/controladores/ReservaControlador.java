@@ -82,14 +82,14 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.obtenerTotalCancelaciones(mes, anio));
     }
 
-    // ED08 - HU10 - Obtener número de reservas de un cliente cliente (dashboard - tarjeta) - Dilan
+    // ED08 - HU10 - Obtener número de reservas de un cliente  (dashboard - tarjeta) - Dilan
     @GetMapping("/reservas-cantidad/usuario/{idUsuario}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<Integer> obtenerCantidadReservasPorCliente(@PathVariable Integer idUsuario) {
         return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasPorCliente(idUsuario));
     }
 
-    // HU09 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    // ED08 - HU10 - Obtener cantidad de próximas reservas de un cliente
     @GetMapping("/reservas-cantidad-proximas/usuario/{idUsuario}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<Integer> obtenerCantidadReservasProximasPorCliente(@PathVariable Integer idUsuario) {

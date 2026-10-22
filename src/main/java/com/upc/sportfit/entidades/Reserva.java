@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @Setter
 @Entity
 @Table(name = "reserva")
-public class Reserva {
+public class    Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_reserva", nullable = false)

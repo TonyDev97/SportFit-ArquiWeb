@@ -36,7 +36,7 @@ public class SedeCanchaControlador {
         return ResponseEntity.ok(resultado);
     }
 
-    // ED47
+    // ED47 - HU 17: para listar todas las canchas
     @GetMapping("/canchas")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public List<SedeCancha> listar() {

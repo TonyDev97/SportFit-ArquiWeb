@@ -33,7 +33,8 @@ public class NotificacionControlador {
         return notificacionServicio.listarNotificacionPorId(id);
     }
 
-    //ED38 HU? - registrar notificación
+    //ED38 HU? - registrar notificación (el problema de este es qie seria solo para el admin
+    // y no se usa mucho
     @PostMapping("/notificacion")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Notificacion registrar(@RequestBody Notificacion notificacion) {

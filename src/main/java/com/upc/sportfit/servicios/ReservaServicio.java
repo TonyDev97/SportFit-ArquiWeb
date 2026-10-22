@@ -486,25 +486,25 @@ public class ReservaServicio {
                 .toList();
     }
 
-    //H10 - ED24 - Obtener el número de reservas de un cliente
+    //H10 - ED08 - Obtener el número de reservas de un cliente
     public Integer obtenerCantidadReservasPorCliente(Integer idUsuario) {
         Long cantidad = reservaRepositorio.contarReservasPorCliente(idUsuario);
         return cantidad.intValue();
     }
 
-    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    // HU10 - ED09 - Obtener cantidad de próximas reservas de un cliente
     public Integer obtenerCantidadReservasProximas(Integer idUsuario) {
         Long cantidad = reservaRepositorio.contarReservasProximas(idUsuario);
         return cantidad.intValue();
     }
 
-    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    // HU10 - ED10 - Obtener cantidad de reservas canceladas de un cliente
     public Integer obtenerCantidadReservasCanceladas(Integer idUsuario) {
         Long cantidad = reservaRepositorio.contarReservasCanceladas(idUsuario);
         return cantidad.intValue();
     }
 
-    // HU10 - ED27 - Obtener próximas reservas de un cliente
+    // HU10 - ED11 - Obtener próximas reservas de un cliente
     public List<ReservaDTO> obtenerProximasReservas(Integer idUsuario) {
         List<Reserva> reservas = reservaRepositorio.findByUsuario_IdUsuarioAndEstado(idUsuario, "confirmada");
         List<ReservaDTO> reservaDTOs = new ArrayList<>();
@@ -514,7 +514,7 @@ public class ReservaServicio {
         return reservaDTOs;
     }
 
-    // HU10 - ED28 - Obtener reservas solicitadas de un cliente
+    // HU10 - ED12 - Obtener reservas solicitadas de un cliente
     public List<ReservaDTO> obtenerSolicitadasReservas(Integer idUsuario) {
         List<Reserva> reservas = reservaRepositorio.findByUsuario_IdUsuarioAndEstado(idUsuario, "solicitada");
         List<ReservaDTO> reservaDTOs = new ArrayList<>();

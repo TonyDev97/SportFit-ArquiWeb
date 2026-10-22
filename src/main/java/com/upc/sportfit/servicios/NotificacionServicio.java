@@ -21,7 +21,7 @@ public class NotificacionServicio {
     @Autowired
     private NotificacionRepositorio notificacionRepositorio;
 
-    //HU11 - ED32 - Obtener las notificaciones del usuario por ID usuario
+    //HU11 - ED36 - Obtener las notificaciones del usuario por ID usuario
     public List<NotificacionDTO> obtenerNotificacionesUsuario(Integer idUsuario) {
         //Notificaciones de un usuario revisar repository
         List<Notificacion> notificaciones = notificacionRepositorio.findByUsuario_IdUsuario(idUsuario);
@@ -52,15 +52,17 @@ public class NotificacionServicio {
         return notificacionRepositorio.save(notificacion);
     }
 
-    //ED50 - Registrar notificaciones
+    //Registrar notificaciones - PARA ED 38
     public Notificacion registrarNotificacion(Notificacion notificacion) {
         return notificacionRepositorio.save(notificacion);
     }
 
+    //ED37 - Obtener detalle de notificacion por ID
     public Notificacion listarNotificacionPorId(Integer id) {
         return notificacionRepositorio.findById(id).orElse(new Notificacion());
     }
 
+    //ED 40 - Eliminar una notificacion
     public void eliminarNotificacion(Integer id) {
         notificacionRepositorio.deleteById(id);
     }

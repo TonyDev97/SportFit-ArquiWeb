@@ -13,6 +13,7 @@ public class SedeServicio {
     @Autowired
     private SedeRepositorio sedeRepositorio;
 
+    // ED 43 - HU17- PARA LISTAS TODAS LAS SEDES
     public List<Sede> listar() {
         return sedeRepositorio.findAll();
     }
