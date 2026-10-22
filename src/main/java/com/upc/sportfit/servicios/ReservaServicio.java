@@ -70,7 +70,7 @@ public class ReservaServicio {
         return lista;
     }
 
-    //ED23 Actualizar únicamente reservas con esta "SOLICITADA"
+    //ED23 Actualizar únicamente reservas con esta "SOLICITADA" superposición de reservas
     @Transactional
     public ReservaDTO editarReserva(ReservaDTO reservaDTO){
         if (reservaDTO.getIdReserva() == null) { //ok
@@ -94,6 +94,43 @@ public class ReservaServicio {
         }
         if (reservaDTO.getHFin() != null) {
             reserva.setHFin(reservaDTO.getHFin());
+        }
+
+
+        // Validar que el horario sea correcto
+        if (reserva.getFReserva() == null ||
+                reserva.getHInicio() == null ||
+                reserva.getHFin() == null ||
+                !reserva.getHInicio().isBefore(reserva.getHFin())) {
+
+            throw new RuntimeException("Fecha u horario inválido");
+        }
+
+        // Validar que la cancha esté activa
+        if (!Boolean.TRUE.equals(reserva.getSedeCancha().getEstado())) {
+            throw new RuntimeException("La cancha no está activa");
+        }
+
+        // Obtener reservas de la misma cancha y fecha
+        List<Reserva> reservas = reservaRepositorio.listarReservaCancha(
+                reserva.getFReserva(),
+                reserva.getSedeCancha().getIdSedeCancha()
+        );
+
+        // Verificar si existe cruce de horarios
+        for (Reserva otra : reservas) {
+            if (otra.getIdReserva().equals(reserva.getIdReserva())) {
+                continue;
+            }
+            //Si una reserva tiene un estado que ocupa o bloque el horario.
+            //otra.getEstado obtiene el estado de la reserva equalsIgnoreCase compara las cadenas sin importar las mayúsculas o mínusculas
+            boolean estadoOcupado = "solicitada".equalsIgnoreCase(otra.getEstado()) || "confirmada".equalsIgnoreCase(otra.getEstado());
+            //Verifica si el nuevo horario se superpone con el de otra reserva
+            boolean cruceHorario = reserva.getHInicio().isBefore(otra.getHFin()) && reserva.getHFin().isAfter(otra.getHInicio());
+
+            if (estadoOcupado && cruceHorario) {
+                throw new RuntimeException("Ya existe otra reserva en ese horario y cancha");
+            }
         }
 
         //Validación de usuario ok
