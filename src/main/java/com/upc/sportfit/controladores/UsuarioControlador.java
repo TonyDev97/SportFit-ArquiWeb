@@ -93,7 +93,7 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuarioServicio.buscarClienteCorreoDominio(dominio));
     }
 
-    // ED60
+    // ED60 ok
     @PutMapping("/usuario/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Usuario cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){

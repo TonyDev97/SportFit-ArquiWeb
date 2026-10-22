@@ -69,7 +69,7 @@ public class ReservaServicio {
         return lista;
     }
 
-    // Actualizar reserva
+    //ED23 Actualizar únicamente reservas con esta "SOLICITADA" superposición de reservas ok
     @Transactional
     public ReservaDTO editarReserva(ReservaDTO reservaDTO){
         if (reservaDTO.getIdReserva() == null) {
