@@ -89,7 +89,7 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.obtenerCantidadReservasPorCliente(idUsuario));
     }
 
-    // HU09 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    // ED09 - HU10 - Obtener cantidad de próximas reservas de un cliente
     @GetMapping("/reservas-cantidad-proximas/usuario/{idUsuario}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<Integer> obtenerCantidadReservasProximasPorCliente(@PathVariable Integer idUsuario) {

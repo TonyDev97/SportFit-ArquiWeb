@@ -33,12 +33,13 @@ public class NotificacionControlador {
         return notificacionServicio.listarNotificacionPorId(id);
     }
 
-    //ED38 HU? - registrar notificación
+    //ED no existente en la tabla mejorar HU? - registrar notificación
+    /*
     @PostMapping("/notificacion")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Notificacion registrar(@RequestBody Notificacion notificacion) {
         return notificacionServicio.registrarNotificacion(notificacion);
-    }
+    }*/
 
     //ED39 - HU11 - Marcar notificación como leida
     @PutMapping("/notificacion-leida/{id}")
