@@ -13,6 +13,7 @@ public class SedeServicio {
     @Autowired
     private SedeRepositorio sedeRepositorio;
 
+    //ED 43 LISTAR SEDES
     public List<Sede> listar() {
         return sedeRepositorio.findAll();
     }

@@ -130,23 +130,23 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             @Param("maxReservas") Integer maxReservas
     );
 
-    //HU10 - ED24 Obtener el número de reservas de un cliente
+    //HU10 - ED08 Obtener el número de reservas de un cliente
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.usuario.idUsuario = :idUsuario")
     Long contarReservasPorCliente(Integer idUsuario);
 
-    // HU10 - ED25 - Obtener cantidad de próximas reservas de un cliente
+    // HU10 - ED09 - Obtener cantidad de próximas reservas de un cliente
     @Query("SELECT COUNT(r) FROM Reserva r " +
             "WHERE r.usuario.idUsuario = :idUsuario " +
             "AND r.estado = 'confirmada'")
     Long contarReservasProximas(@Param("idUsuario") Integer idUsuario);
 
-    // HU10 - ED26 - Obtener cantidad de reservas canceladas de un cliente
+    // HU10 - ED10 - Obtener cantidad de reservas canceladas de un cliente
     @Query("SELECT COUNT(r) FROM Reserva r " +
             "WHERE r.usuario.idUsuario = :idUsuario " +
             "AND r.estado = 'cancelada'")
     Long contarReservasCanceladas(@Param("idUsuario") Integer idUsuario);
 
-    // HU10 - ED27 ED28 - Obtener próximas reservas de un cliente
+    // HU10 - ED11 - Obtener próximas reservas de un cliente
     List<Reserva> findByUsuario_IdUsuarioAndEstado(Integer idUsuario, String estado);
 
     // ED19: Cantidad total de reservas por deporte en un mes/anio (solo confirmadas y completadas)

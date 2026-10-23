@@ -21,7 +21,7 @@ public class NotificacionServicio {
     @Autowired
     private NotificacionRepositorio notificacionRepositorio;
 
-    //HU11 - ED32 - Obtener las notificaciones del usuario por ID usuario
+    //HU11 - ED36 - Obtener las notificaciones del usuario por ID usuario
     public List<NotificacionDTO> obtenerNotificacionesUsuario(Integer idUsuario) {
         //Notificaciones de un usuario revisar repository
         List<Notificacion> notificaciones = notificacionRepositorio.findByUsuario_IdUsuario(idUsuario);
@@ -33,6 +33,7 @@ public class NotificacionServicio {
     }
 
     //ED Pruebas
+    /*
     public List<NotificacionDTO> listarNotificaciones() {
         List<Notificacion> notificaciones = notificacionRepositorio.findAll();
         List<NotificacionDTO> notificacionDTOs = new ArrayList<>();
@@ -42,9 +43,9 @@ public class NotificacionServicio {
             );
         }
         return notificacionDTOs;
-    }
+    }*/
 
-    //HU11 - ED34 - Marcar como leida
+    //HU11 - ED39 - Marcar como leida
     public Notificacion marcarComoLeida(Integer id) {
         Notificacion notificacion = notificacionRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
@@ -52,15 +53,18 @@ public class NotificacionServicio {
         return notificacionRepositorio.save(notificacion);
     }
 
-    //ED50 - Registrar notificaciones
+    //Registrar notificaciones ( EN DESUSO)
+    /*
     public Notificacion registrarNotificacion(Notificacion notificacion) {
         return notificacionRepositorio.save(notificacion);
-    }
+    }*/
 
+    //ED37 - HU11
     public Notificacion listarNotificacionPorId(Integer id) {
         return notificacionRepositorio.findById(id).orElse(new Notificacion());
     }
 
+    //ED40 -HU11
     public void eliminarNotificacion(Integer id) {
         notificacionRepositorio.deleteById(id);
     }

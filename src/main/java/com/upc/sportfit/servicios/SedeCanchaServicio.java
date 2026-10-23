@@ -50,6 +50,7 @@ public class SedeCanchaServicio {
         return sedeCanchaRepositorio.encontrarTodasPorSede(idSede);
     }
 
+    //ED47 - HU17 LISTAR TODAS LAS CONCHAS
     public List<SedeCancha> listar() {
         return sedeCanchaRepositorio.findAll();
     }
