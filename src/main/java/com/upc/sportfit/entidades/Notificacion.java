@@ -17,7 +17,7 @@ public class Notificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_notificacion", nullable = false)
-    private Integer idNotifiacion;
+    private Integer idNotificacion;
 
     @Size(max = 20)
     @NotNull
