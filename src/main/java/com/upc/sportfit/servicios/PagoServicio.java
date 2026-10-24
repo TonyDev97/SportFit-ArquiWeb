@@ -3,7 +3,9 @@ package com.upc.sportfit.servicios;
 import com.upc.sportfit.dtos.PagoDTO;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Pago;
+import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.repositorios.PagoRepositorio;
+import com.upc.sportfit.repositorios.ReservaRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,12 @@ public class PagoServicio {
     private PagoRepositorio pagoRepositorio;
 
     @Autowired
+    private ReservaRepositorio reservaRepositorio;
+
+    @Autowired
+    private NotificacionServicio notificacionServicio;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     public List<Pago> listarPagos() {
@@ -32,6 +40,20 @@ public class PagoServicio {
     public PagoDTO registrarPago(PagoDTO pagoDTO) {
         Pago pago = modelMapper.map(pagoDTO, Pago.class);
         pago = pagoRepositorio.save(pago);
+
+        // Notificación automática al cliente
+        Reserva reserva = reservaRepositorio.findById(pago.getReserva().getIdReserva()).orElse(null);
+        if (reserva != null) {
+            String mensaje = String.format("Tu pago de S/ %.2f por la reserva en %s ha sido procesado correctamente.",
+                    pago.getMontoTotal(), reserva.getSedeCancha().getSede().getNombre());
+            notificacionServicio.crearNotificacion(
+                    reserva.getUsuario().getIdUsuario(),
+                    "Confirmación",
+                    "Confirmación de pago",
+                    mensaje
+            );
+        }
+
         return modelMapper.map(pago, PagoDTO.class);
     }
 

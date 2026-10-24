@@ -40,6 +40,9 @@ public class ReservaServicio {
     private PagoServicio pagoServicio;
 
     @Autowired
+    private NotificacionServicio notificacionServicio;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     // Registrar reserva
@@ -197,7 +200,20 @@ public class ReservaServicio {
 
                     reserva.setEstado("cancelada");
                     reserva.setFModificacion(Instant.now());
-                    return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
+                    Reserva saved = reservaRepositorio.save(reserva);
+
+                    // Notificación automática al cliente
+                    String sedeNombre = reserva.getSedeCancha().getSede().getNombre();
+                    String mensaje = String.format("Tu reserva en %s para el %s de %s a %s ha sido cancelada.",
+                            sedeNombre, reserva.getFReserva(), reserva.getHInicio(), reserva.getHFin());
+                    notificacionServicio.crearNotificacion(
+                            reserva.getUsuario().getIdUsuario(),
+                            "Cancelación",
+                            "Cancelación de reserva",
+                            mensaje
+                    );
+
+                    return modelMapper.map(saved, ReservaDTO.class);
                 })
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id: " + id));
     }
@@ -470,6 +486,29 @@ public class ReservaServicio {
         reserva.setFModificacion(Instant.now());
 
         reserva = reservaRepositorio.save(reserva);
+
+        // Notificación automática al cliente
+        if ("Confirmada".equals(dto.getEstado())) {
+            String sedeNombre = reserva.getSedeCancha().getSede().getNombre();
+            String mensaje = String.format("Tu reserva en %s para el %s de %s a %s ha sido confirmada.",
+                    sedeNombre, reserva.getFReserva(), reserva.getHInicio(), reserva.getHFin());
+            notificacionServicio.crearNotificacion(
+                    reserva.getUsuario().getIdUsuario(),
+                    "Confirmación",
+                    "Confirmación de reserva",
+                    mensaje
+            );
+        } else {
+            String sedeNombre = reserva.getSedeCancha().getSede().getNombre();
+            String mensaje = String.format("Tu reserva en %s para el %s ha sido rechazada.",
+                    sedeNombre, reserva.getFReserva());
+            notificacionServicio.crearNotificacion(
+                    reserva.getUsuario().getIdUsuario(),
+                    "Cancelación",
+                    "Reserva rechazada",
+                    mensaje
+            );
+        }
 
         return modelMapper.map(reserva, ReservaDTO.class);
     }

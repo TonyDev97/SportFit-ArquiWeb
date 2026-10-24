@@ -2,6 +2,7 @@ package com.upc.sportfit.servicios;
 
 import com.upc.sportfit.dtos.CancelacionDTO;
 import com.upc.sportfit.entidades.Cancelacion;
+import com.upc.sportfit.entidades.Reserva;
 import com.upc.sportfit.repositorios.CancelacionRepositorio;
 import com.upc.sportfit.repositorios.ReservaRepositorio;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,9 @@ public class CancelacionServicio {
     private ReservaServicio reservaServicio;
 
     @Autowired
+    private NotificacionServicio notificacionServicio;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     // Añadir una cancelación
@@ -37,12 +41,27 @@ public class CancelacionServicio {
         }
         Integer idReserva = cancelacionDTO.getReserva().getIdReserva();
 
+        // Obtener la reserva antes de cancelar para tener los datos para la notificación
+        Reserva reserva = reservaRepositorio.findById(idReserva)
+                .orElseThrow(() -> new RuntimeException("No existe la reserva con id: " + idReserva));
+
         reservaServicio.eliminarLogicoReserva(idReserva);
 
         Cancelacion cancelacion = modelMapper.map(cancelacionDTO, Cancelacion.class);
         cancelacion.setIdCancelacion(null);
 
         Cancelacion cancelacionGuardada = cancelacionRepositorio.save(cancelacion);
+
+        // Notificación automática adicional con motivo de cancelación
+        String mensaje = String.format("Tu reserva en %s para el %s ha sido cancelada. Motivo: %s.",
+                reserva.getSedeCancha().getSede().getNombre(), reserva.getFReserva(), cancelacionDTO.getTipoCancelacion());
+        notificacionServicio.crearNotificacion(
+                reserva.getUsuario().getIdUsuario(),
+                "Cancelación",
+                "Cancelación de reserva",
+                mensaje
+        );
+
         return modelMapper.map(cancelacionGuardada, CancelacionDTO.class);
     }
 

@@ -130,11 +130,13 @@ INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('R
 -- =========================================================
 -- NOTIFICACIONES
 -- =========================================================
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Reserva', 'Reserva confirmada', 'Tu reserva del 30/09 en Sede Surco quedo confirmada', CURRENT_TIMESTAMP, true, 4);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Reserva', 'Reserva cancelada', 'Tu reserva del 28/09 fue cancelada por que no podras asistir', CURRENT_TIMESTAMP, false, 7);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Pago', 'Pago registrado', 'Registramos el pago de tu reserva en Sede Barranco', CURRENT_TIMESTAMP, true, 5);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Reserva', 'Cancha no disponible', 'La cancha de tenis de Miraflores esta en mantenimiento', CURRENT_TIMESTAMP, false, 6);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Promocion', 'Promo futsal', 'Reserva 2 horas de futsal y la tercera es gratis', CURRENT_TIMESTAMP, false, 1);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Confirmación de reserva', 'Tu reserva del 30/09 en Sede Surco quedó confirmada', CURRENT_TIMESTAMP, true, 4);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Cancelación', 'Cancelación de reserva', 'Tu reserva del 28/09 fue cancelada por no poder asistir', CURRENT_TIMESTAMP, false, 7);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Confirmación de pago', 'Registramos el pago de tu reserva en Sede Barranco', CURRENT_TIMESTAMP, true, 5);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Recordatorio', 'Recordatorio de reserva', 'Mañana tienes reserva en Sede Miraflores a las 09:00', CURRENT_TIMESTAMP, false, 6);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Recordatorio', 'Recordatorio de reserva', 'Tu reserva en Sede Barranco es en 2 horas', CURRENT_TIMESTAMP, false, 1);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Confirmación de reserva', 'Tu reserva ha sido confirmada', CURRENT_TIMESTAMP, false, 3);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Cancelación', 'Cancelación de reserva', 'Tu reserva fue cancelada', CURRENT_TIMESTAMP, true, 3);
 
 -- =========================================================
 -- INCIDENCIAS
