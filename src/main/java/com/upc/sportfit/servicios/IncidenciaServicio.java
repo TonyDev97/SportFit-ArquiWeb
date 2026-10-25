@@ -1,15 +1,26 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.dtos.IncidenciaDTO;
+import com.upc.sportfit.dtos.IncidenciaRegistroDTO;
+import com.upc.sportfit.dtos.IncidenciaReportes.BannerIncidenciasDTO;
+import com.upc.sportfit.dtos.IncidenciaReportes.DistribucionCategoriaDTO;
+import com.upc.sportfit.dtos.IncidenciaReportes.EstadoResolucionDTO;
+import com.upc.sportfit.dtos.IncidenciaReportes.TendenciaIncidenciasDTO;
+import com.upc.sportfit.dtos.IncidenciaRespuestaDTO;
+import com.upc.sportfit.dtos.UsuarioDTO;
 import com.upc.sportfit.entidades.Incidencia;
+import com.upc.sportfit.entidades.Notificacion;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.IncidenciaRepositorio;
+import com.upc.sportfit.repositorios.NotificacionRepositorio;
 import com.upc.sportfit.repositorios.UsuarioRepositorio;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,139 +31,264 @@ public class IncidenciaServicio {
     private IncidenciaRepositorio incidenciaRepositorio;
 
     @Autowired
+    private NotificacionRepositorio notificacionRepositorio;
+
+    @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+
+    // ED34
     @Transactional
-    public Incidencia InsertarIncidencia(Incidencia incidencia) {
-        return registrarIncidenciaCliente(incidencia);
-    }
+    public IncidenciaDTO registrarIncidencia(IncidenciaRegistroDTO registroDTO) {
+        List<String> tiposPermitidos = List.of("Tecnico", "Instalaciones", "Preguntas");
+        if (!tiposPermitidos.contains(registroDTO.getTipo())) {
+            throw new RuntimeException("El tipo de incidencia no es válido. Debe ser: Tecnico, Instalaciones o Preguntas");
+        }
 
-    public List<Incidencia> listarIncidencias(){
+        Usuario usuario = usuarioRepositorio.findById(registroDTO.getUsuario().getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + registroDTO.getUsuario().getIdUsuario()));
 
-        return incidenciaRepositorio.findAll();
-    }
-    public Incidencia BuscarIncidenciaPorId(Integer id){
-        return incidenciaRepositorio.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: Incidencia no encontrada con ID " + id));
-    }
-    public List<Incidencia> listarIncidenciasPorTipo(String tipo){
+        Incidencia incidencia = new Incidencia();
+        incidencia.setTipo(registroDTO.getTipo());
+        incidencia.setAsunto(registroDTO.getAsunto());
+        incidencia.setDescripcion(registroDTO.getDescripcion());
+        incidencia.setUsuario(usuario);
+        incidencia.setEstado("Pendiente");
+        incidencia.setFCreacion(Instant.now());
 
-        return incidenciaRepositorio.findByTipo(tipo);
+        incidencia = incidenciaRepositorio.save(incidencia);
+        return modelMapper.map(incidencia, IncidenciaDTO.class);
     }
-    public List<Incidencia> listarIncidenciasPorEstado(String estado){
-        return incidenciaRepositorio.findByEstado(estado);
-    }
+    // ED35
     @Transactional
-    public Incidencia editarIncidencia(Incidencia incidencia) {
-        return responderIncidenciaPendiente(incidencia);
+    public IncidenciaDTO responderIncidencia(IncidenciaRespuestaDTO respuestaDTO) {
+        Incidencia incidencia = incidenciaRepositorio.findById(respuestaDTO.getIdIncidencia())
+                .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con ID: " + respuestaDTO.getIdIncidencia()));
+
+        if (!"Pendiente".equalsIgnoreCase(incidencia.getEstado())) {
+            throw new RuntimeException("Solo se pueden responder incidencias en estado Pendiente");
+        }
+
+        incidencia.setRespuestaAdmin(respuestaDTO.getRespuestaAdmin());
+        incidencia.setFRespuesta(Instant.now());
+        incidencia.setEstado("Atendido");
+        incidencia = incidenciaRepositorio.save(incidencia);
+
+        Notificacion notificacion = new Notificacion();
+        notificacion.setTipo("Incidencia");
+        notificacion.setTitulo("Respuesta a tu incidencia");
+        notificacion.setMensaje("Tu incidencia '" + incidencia.getAsunto() + "' ha sido atendida.");
+        notificacion.setFNotificacion(Instant.now());
+        notificacion.setLeido(false);
+        notificacion.setUsuario(incidencia.getUsuario());
+
+        notificacionRepositorio.save(notificacion);
+        return modelMapper.map(incidencia, IncidenciaDTO.class);
     }
 
-    public List<Incidencia> listarPorUsuario(Integer idUsuario) {
+    //ED29
+    @Transactional
+    public List<IncidenciaDTO> listarIncidencias() {
+        List<Incidencia> listaIncidencias = incidenciaRepositorio.ListarResumen();
+
+        return listaIncidencias.stream()
+                .map(incidencia -> {
+                    IncidenciaDTO dto = new IncidenciaDTO();
+
+                    dto.setIdIncidencia(incidencia.getIdIncidencia());
+                    dto.setTipo(incidencia.getTipo());
+                    dto.setAsunto(incidencia.getAsunto());
+                    dto.setDescripcion(incidencia.getDescripcion());
+                    dto.setEstado(incidencia.getEstado());
+                    dto.setFCreacion(incidencia.getFCreacion());
+
+                    if (incidencia.getUsuario() != null) {
+                        UsuarioDTO usuarioDTO = new UsuarioDTO();
+                        usuarioDTO.setIdUsuario(incidencia.getUsuario().getIdUsuario());
+                        usuarioDTO.setNombre(incidencia.getUsuario().getNombre());
+                        dto.setUsuario(usuarioDTO);
+                    }
+
+                    return dto;
+                })
+                .toList();
+    }
+
+    //ED30
+    @Transactional
+    public IncidenciaDTO buscarIncidenciaPorId(Integer id) {
+        Incidencia incidencia = incidenciaRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: Incidencia no encontrada con ID: " + id));
+
+        return modelMapper.map(incidencia, IncidenciaDTO.class);
+    }
+
+    // ED27
+    public List<IncidenciaDTO> listarPorUsuario(Integer idUsuario) {
         validarUsuarioExistente(idUsuario);
-        return incidenciaRepositorio.listarPorUsuario(idUsuario);
+        List<Incidencia> listaIncidencias = incidenciaRepositorio.listarPorUsuario(idUsuario);
+        return listaIncidencias.stream()
+                .map(incidencia -> modelMapper.map(incidencia, IncidenciaDTO.class))
+                .toList();
     }
 
-    public List<Incidencia> filtrarPorUsuario(Integer idUsuario, String tipo, LocalDate inicio, LocalDate fin) {
+    //ED28
+    @Transactional(readOnly = true)
+    public List<IncidenciaDTO> filtrarPorUsuarioTipoYFecha(Integer idUsuario, String tipo, LocalDate fecha) {
         validarUsuarioExistente(idUsuario);
-        validarTipo(tipo);
-        validarFechas(inicio, fin);
-        return incidenciaRepositorio.filtrarPorUsuario(idUsuario, tipo, inicio, fin);
+
+        boolean tieneTipo = (tipo != null && !tipo.isBlank());
+        boolean tieneFecha = (fecha != null);
+
+        if (!tieneTipo && !tieneFecha) {
+            throw new RuntimeException("Debe seleccionar al menos un criterio de búsqueda (tipo o fecha) para aplicar el filtro.");
+        }
+
+        String tipoFiltro = tieneTipo ? tipo : null;
+        List<Incidencia> incidenciasFiltradas = incidenciaRepositorio
+                .filtrarPorUsuarioTipoYFecha(idUsuario, tipoFiltro, fecha);
+
+        return incidenciasFiltradas.stream()
+                .map(incidencia -> modelMapper.map(incidencia, IncidenciaDTO.class))
+                .toList();
     }
 
-    public List<Incidencia> filtrarParaAdministrador(String tipo, LocalDate inicio, LocalDate fin) {
-        validarTipo(tipo);
-        validarFechas(inicio, fin);
-        return incidenciaRepositorio.filtrarParaAdministrador(tipo, inicio, fin);
-    }
-
-    // HU12 - ED36: Registrar una incidencia de un cliente activo.
+    // ED33
     @Transactional
-    public Incidencia registrarIncidenciaCliente(Incidencia datos) {
+    public List<IncidenciaDTO> filtrarParaAdministrador(String tipo, String estado, LocalDate fecha) {
+        String tipoFiltro = (tipo != null && !tipo.isBlank()) ? tipo : null;
+        String estadoFiltro = (estado != null && !estado.isBlank()) ? estado : null;
 
-        if (datos == null
-                || datos.getUsuario() == null
-                || datos.getUsuario().getIdUsuario() == null) {
-            throw new IllegalArgumentException("Debe indicar el cliente");
+        if (tipoFiltro == null && estadoFiltro == null && fecha == null) {
+            throw new RuntimeException("Debe seleccionar al menos un criterio de búsqueda (tipo, estado o fecha) para aplicar el filtro.");
         }
 
-        validarTipo(datos.getTipo());
-        validarTexto(datos.getAsunto(), "El asunto", 100);
-        validarTexto(datos.getDescripcion(), "La descripción", 300);
-
-        Usuario cliente = usuarioRepositorio
-                .findById(datos.getUsuario().getIdUsuario())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("El cliente no existe"));
-
-        if (!Boolean.TRUE.equals(cliente.getActivo())
-                || cliente.getRol() == null
-                || !"ROLE_CLIENTE".equals(cliente.getRol().getNombre())) {
-            throw new IllegalArgumentException(
-                    "Debe indicar un cliente activo");
+        if (tipoFiltro != null) {
+            List<String> tiposPermitidos = List.of("Tecnico", "Instalaciones", "Preguntas");
+            if (!tiposPermitidos.contains(tipoFiltro)) {
+                throw new RuntimeException("El tipo de incidencia no es válido. Debe ser: Tecnico, Instalaciones o Preguntas");
+            }
         }
 
-        Incidencia nueva = new Incidencia();
-        nueva.setTipo(datos.getTipo());
-        nueva.setAsunto(datos.getAsunto().trim());
-        nueva.setDescripcion(datos.getDescripcion().trim());
-        nueva.setUsuario(cliente);
-        nueva.setEstado("Pendiente");
-        nueva.setFCreacion(Instant.now());
+        if (estadoFiltro != null) {
+            List<String> estadosPermitidos = List.of("Pendiente", "Atendido");
+            if (!estadosPermitidos.contains(estadoFiltro)) {
+                throw new RuntimeException("El estado no es válido. Debe ser: Pendiente o Atendido");
+            }
+        }
 
-        return incidenciaRepositorio.save(nueva);
+        List<Incidencia> listaIncidencias = incidenciaRepositorio.filtrarParaAdministrador(tipoFiltro, estadoFiltro, fecha);
+        return listaIncidencias.stream()
+                .map(incidencia -> modelMapper.map(incidencia, IncidenciaDTO.class))
+                .toList();
     }
 
-    // HU12 - ED41: Responder una incidencia pendiente.
+    // REPORTE DE INCIDENCIAS
+
+    //ED31
     @Transactional
-    public Incidencia responderIncidenciaPendiente(Incidencia datos) {
-
-        if (datos == null || datos.getIdIncidencia() == null) {
-            throw new IllegalArgumentException("Debe indicar la incidencia");
+    public BannerIncidenciasDTO obtenerBannerIncidencias(Integer anio, Integer mes) {
+        if (anio == null || mes == null) {
+            throw new RuntimeException("Debe seleccionar obligatoriamente año y mes para consultar el reporte.");
         }
 
-        validarTexto(datos.getRespuestaAdmin(), "La respuesta", 300);
+        Long totalHistorico = incidenciaRepositorio.contarTotalHistorico();
 
-        Incidencia existente = incidenciaRepositorio
-                .findById(datos.getIdIncidencia())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("La incidencia no existe"));
+        Long pendientes = incidenciaRepositorio.contarPorEstadoAnioYMes(anio, mes, "Pendiente");
+        Long atendidas = incidenciaRepositorio.contarPorEstadoAnioYMes(anio, mes, "Atendido");
 
-        if (!"Pendiente".equals(existente.getEstado())) {
-            throw new IllegalArgumentException(
-                    "Solo se pueden responder incidencias pendientes");
-        }
-
-        existente.setRespuestaAdmin(datos.getRespuestaAdmin().trim());
-        existente.setFRespuesta(Instant.now());
-        existente.setEstado("Atendido");
-
-        return incidenciaRepositorio.save(existente);
+        return new BannerIncidenciasDTO(totalHistorico, pendientes, atendidas);
     }
 
+    //ED32
+    @Transactional
+    public EstadoResolucionDTO obtenerEstadoResolucionPorPeriodo(Integer anio, Integer mes) {
+        if (anio == null || mes == null) {
+            throw new RuntimeException("Debe ingresar un año y un mes válidos para consultar el estado de resolución.");
+        }
+
+        Long atendidas = incidenciaRepositorio.contarPorEstadoYPeriodo(anio, mes, "Atendido");
+        Long pendientes = incidenciaRepositorio.contarPorEstadoYPeriodo(anio, mes, "Pendiente");
+        Long totalPeriodo = atendidas + pendientes;
+
+        Double pctAtendidas = totalPeriodo > 0 ? (double) Math.round((atendidas * 100.0 / totalPeriodo) * 10) / 10 : 0.0;
+        Double pctPendientes = totalPeriodo > 0 ? (double) Math.round((pendientes * 100.0 / totalPeriodo) * 10) / 10 : 0.0;
+
+        return new EstadoResolucionDTO(atendidas, pendientes, pctAtendidas, pctPendientes);
+    }
+
+    //ED63
+    @Transactional
+    public List<TendenciaIncidenciasDTO> obtenerTendenciaMensual(Integer anio) {
+        if (anio == null) {
+            throw new RuntimeException("Debe seleccionar obligatoriamente un año para consultar la tendencia.");
+        }
+
+        List<Object[]> resultados = incidenciaRepositorio.obtenerTendenciaMensualPorAnio(anio);
+
+        String[] nombresMeses = {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"};
+        List<TendenciaIncidenciasDTO> tendencia = new ArrayList<>();
+
+        for (int mesNum = 1; mesNum <= 12; mesNum++) {
+            final int mesActual = mesNum;
+
+            Long atendidas = resultados.stream()
+                    .filter(row -> ((Number) row[0]).intValue() == mesActual && "Atendido".equalsIgnoreCase((String) row[1]))
+                    .map(row -> (Long) row[2])
+                    .findFirst()
+                    .orElse(0L);
+
+            Long pendientes = resultados.stream()
+                    .filter(row -> ((Number) row[0]).intValue() == mesActual && "Pendiente".equalsIgnoreCase((String) row[1]))
+                    .map(row -> (Long) row[2])
+                    .findFirst()
+                    .orElse(0L);
+
+            tendencia.add(new TendenciaIncidenciasDTO(nombresMeses[mesNum - 1], atendidas, pendientes));
+        }
+        return tendencia;
+    }
+
+    //ED64
+    @Transactional
+    public List<DistribucionCategoriaDTO> obtenerDistribucionPorCategoria(Integer anio, Integer mes) {
+        if (anio == null || mes == null) {
+            throw new RuntimeException("Debe ingresar obligatoriamente año y mes para consultar la distribución por categoría.");
+        }
+
+        List<Object[]> resultados = incidenciaRepositorio.obtenerDistribucionPorCategoriaYPeriodo(anio, mes);
+
+        long totalPeriodo = resultados.stream()
+                .mapToLong(row -> (Long) row[1])
+                .sum();
+
+        List<String> categoriasBase = List.of("Tecnico", "Instalaciones", "Preguntas");
+        List<DistribucionCategoriaDTO> distribucion = new ArrayList<>();
+
+        for (String cat : categoriasBase) {
+            Long cantidad = resultados.stream()
+                    .filter(row -> cat.equalsIgnoreCase((String) row[0]))
+                    .map(row -> (Long) row[1])
+                    .findFirst()
+                    .orElse(0L);
+
+            Double porcentaje = totalPeriodo > 0
+                    ? (double) Math.round((cantidad * 100.0 / totalPeriodo) * 10) / 10
+                    : 0.0;
+
+            distribucion.add(new DistribucionCategoriaDTO(cat, cantidad, porcentaje));
+        }
+        return distribucion;
+    }
 
     //MÉTODOS PRIVADOS DE VALIDACIÓN
 
     private void validarUsuarioExistente(Integer idUsuario) {
         if (idUsuario == null || !usuarioRepositorio.existsById(idUsuario)) {
             throw new NoSuchElementException("El usuario no existe");
-        }
-    }
-
-    private void validarTipo(String tipo) {
-        if (!"Técnico".equals(tipo) && !"Instalaciones".equals(tipo) && !"Preguntas".equals(tipo)) {
-            throw new IllegalArgumentException("El tipo debe ser Técnico, Instalaciones o Preguntas");
-        }
-    }
-
-    private void validarTexto(String texto, String campo, int maximo) {
-        if (texto == null || texto.trim().isEmpty() || texto.trim().length() > maximo) {
-            throw new IllegalArgumentException(campo + " es obligatorio y admite hasta " + maximo + " caracteres");
-        }
-    }
-
-    private void validarFechas(LocalDate inicio, LocalDate fin) {
-        if (inicio == null || fin == null || inicio.isAfter(fin)) {
-            throw new IllegalArgumentException("El rango de fechas es inválido");
         }
     }
 

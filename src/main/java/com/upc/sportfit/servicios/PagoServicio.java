@@ -33,6 +33,7 @@ public class PagoServicio {
     private ModelMapper modelMapper;
 
     public List<Pago> listarPagos() {
+
         return pagoRepositorio.findAll();
     }
 

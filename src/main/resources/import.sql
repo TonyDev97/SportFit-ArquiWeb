@@ -141,8 +141,5 @@ INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuar
 -- =========================================================
 -- INCIDENCIAS
 -- tipos: Tecnico | Instalaciones | Preguntas
--- estados: Abierta | En proceso | Cerrada
+-- estados: Pendiente | Atendido
 -- =========================================================
--- Nota: Se omiten inserts de incidencias con FK a usuarios que pueden no existir
--- para evitar violaciones de FK durante la carga inicial.
--- Las incidencias se pueden crear via API una vez que existan los usuarios.
