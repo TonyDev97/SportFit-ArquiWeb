@@ -23,6 +23,10 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
 
     List<Reserva> findByEstado(String estado);
 
+    // Listar reservas en estado 'solicitada'
+    @Query("SELECT r FROM Reserva r WHERE LOWER(r.estado) = 'solicitada' ORDER BY r.fCreacion DESC")
+    List<Reserva> listarReservasSolicitadas();
+
     // Listar reservas según fecha, deporte y sede
     @Query("select r from Reserva r where r.fReserva = :fecha and r.sedeCancha.cancha.idTipoCancha = :idDeporte and r.sedeCancha.sede.idSede = :idSede")
     List<Reserva> ListarReservasPorFechaDeporteSede(@Param("fecha") LocalDate fecha,

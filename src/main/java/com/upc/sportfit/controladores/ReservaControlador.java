@@ -227,6 +227,15 @@ public class ReservaControlador {
         return reservaServicio.filtrarConcatenado(estado, idSede, idTipoCancha, fecha);
     }
 
+    //ED65
+    @GetMapping("/reservas/solicitadas")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<ReservaDTO>> listarReservasSolicitadas() {
+        List<ReservaDTO> lista = reservaServicio.listarReservasSolicitadas();
+        return ResponseEntity.ok(lista);
+    }
+
+
     /*
     @GetMapping("/reserva-validar")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
