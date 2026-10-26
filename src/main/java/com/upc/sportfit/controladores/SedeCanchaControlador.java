@@ -36,11 +36,12 @@ public class SedeCanchaControlador {
         return ResponseEntity.ok(resultado);
     }
 
-    // ED47 - HU17 LISTA TODAS LAS SEDE-CANCHAS
+    // ED47 - HU17, HU14 LISTA TODAS LAS SEDE-CANCHAS
     @GetMapping("/canchas")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public List<SedeCancha> listar() {
-        return sedeCanchaServicio.listar();
+    public ResponseEntity<List<SedeCanchaDTO>> listar() {
+        List<SedeCanchaDTO> lista = sedeCanchaServicio.listar();
+        return ResponseEntity.ok(lista);
     }
 
     // ED49 - HU14: Cambiar estado del espacio deportivo
@@ -55,6 +56,18 @@ public class SedeCanchaControlador {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public SedeCanchaDTO actualizarEspacio(@PathVariable Integer id, @RequestBody SedeCanchaDTO dto) {
         return sedeCanchaServicio.actualizarEspacio(id, dto);
+    }
+
+    // ED66 - HU14: Filtrar espacios deportivos según estado, sede y deporte
+    @GetMapping("/canchas/filtros")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<SedeCanchaDTO>> filtrarEspaciosDeportivos(
+            @RequestParam(required = false) Boolean estado,
+            @RequestParam(required = false) Integer idSede,
+            @RequestParam(required = false) String deporte) {
+
+        List<SedeCanchaDTO> lista = sedeCanchaServicio.filtrarEspaciosDeportivos(estado, idSede, deporte);
+        return ResponseEntity.ok(lista);
     }
 
 

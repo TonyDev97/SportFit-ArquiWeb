@@ -31,6 +31,18 @@ public interface SedeCanchaRepositorio extends JpaRepository<SedeCancha, Integer
             @Param("deporte") String deporte
     );
 
+    // Filtra los espacios deportivos según estado, sede y deporte
+    @Query("SELECT sc FROM SedeCancha sc " +
+            "WHERE (:estado IS NULL OR sc.estado = :estado) " +
+            "AND (:idSede IS NULL OR sc.sede.idSede = :idSede) " +
+            "AND (:deporte IS NULL OR LOWER(sc.cancha.deporte) = LOWER(:deporte)) " +
+            "ORDER BY sc.idSedeCancha DESC")
+    List<SedeCancha> filtrarEspaciosDeportivos(
+            @Param("estado") Boolean estado,
+            @Param("idSede") Integer idSede,
+            @Param("deporte") String deporte
+    );
+
     // Busca todas las canchas de una sede (activas e inactivas) para administración
     @Query("""
         SELECT sc FROM SedeCancha sc 

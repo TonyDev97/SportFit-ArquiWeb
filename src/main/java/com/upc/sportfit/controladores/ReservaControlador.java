@@ -132,7 +132,7 @@ public class ReservaControlador {
         return reservaServicio.cargarBannerReservas();
     }
 
-    // ED15 - HU14 - Listar Reservas por Cancha
+    // ED67 - HU14 - Listar Reservas por Cancha
     @GetMapping("/reservas/cancha/{idCancha}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<ReservaDTO>> listarReservasPorCancha(

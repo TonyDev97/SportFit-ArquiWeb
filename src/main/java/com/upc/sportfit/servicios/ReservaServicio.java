@@ -548,16 +548,22 @@ public class ReservaServicio {
         return modelMapper.map(reserva, ReservaDTO.class);
     }
 
-    // HU14 - Listar Reservas por Cancha
+    // ED67 - HU14 - Listar Reservas por Cancha
     public List<ReservaDTO> listarReservasPorCancha(Integer idCancha) {
         if (!sedeCanchaRepositorio.existsById(idCancha)) {
             throw new NoSuchElementException("No existe la cancha con ID " + idCancha);
         }
 
-        return reservaRepositorio.listarPorCancha(idCancha)
+        List<ReservaDTO> lista = reservaRepositorio.listarPorCancha(idCancha)
                 .stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
                 .toList();
+
+        if (lista.isEmpty()) {
+            throw new RuntimeException("El espacio deportivo no registra reservas asociadas.");
+        }
+
+        return lista;
     }
 
     //ED08 - HU10 - Obtener el número de reservas de un cliente

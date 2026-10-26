@@ -50,9 +50,18 @@ public class SedeCanchaServicio {
         return sedeCanchaRepositorio.encontrarTodasPorSede(idSede);
     }
 
-    //ED47 - HU17 LISTAR TODAS LAS CONCHAS
-    public List<SedeCancha> listar() {
-        return sedeCanchaRepositorio.findAll();
+    // ED47: Listar todas las sede-canchas
+    @Transactional
+    public List<SedeCanchaDTO> listar() {
+        List<SedeCancha> lista = sedeCanchaRepositorio.findAll();
+
+        if (lista.isEmpty()) {
+            throw new RuntimeException("No existen canchas registradas.");
+        }
+
+        return lista.stream()
+                .map(sedeCancha -> modelMapper.map(sedeCancha, SedeCanchaDTO.class))
+                .toList();
     }
 
     public SedeCancha buscarPorId(Integer id) {
@@ -167,7 +176,7 @@ public class SedeCanchaServicio {
     public SedeCanchaDTO cambiarEstadoEspacio(Integer id, Boolean estado) {
 
         if (estado == null) {
-            throw new IllegalArgumentException("Debe indicar el estado");
+            throw new IllegalArgumentException("El estado es obligatorio y debe ser un valor booleano (true para activar, false para desactivar).");
         }
 
         SedeCancha cancha = sedeCanchaRepositorio.findById(id)
@@ -177,5 +186,25 @@ public class SedeCanchaServicio {
         cancha = sedeCanchaRepositorio.save(cancha);
 
         return modelMapper.map(cancha, SedeCanchaDTO.class);
+    }
+
+    //ED66
+    @Transactional
+    public List<SedeCanchaDTO> filtrarEspaciosDeportivos(Boolean estado, Integer idSede, String deporte) {
+        String deporteFiltro = (deporte != null && !deporte.isBlank()) ? deporte.trim() : null;
+
+        if (estado == null && idSede == null && deporteFiltro == null) {
+            throw new RuntimeException("Debe seleccionar al menos un criterio de búsqueda (estado, sede o deporte) para aplicar el filtro.");
+        }
+
+        List<SedeCancha> resultado = sedeCanchaRepositorio.filtrarEspaciosDeportivos(estado, idSede, deporteFiltro);
+
+        if (resultado.isEmpty()) {
+            throw new RuntimeException("No se encontraron espacios deportivos que coincidan con los criterios de búsqueda especificados.");
+        }
+
+        return resultado.stream()
+                .map(sc -> modelMapper.map(sc, SedeCanchaDTO.class))
+                .toList();
     }
 }
