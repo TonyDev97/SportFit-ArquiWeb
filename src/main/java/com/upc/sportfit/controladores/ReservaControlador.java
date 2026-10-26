@@ -132,7 +132,7 @@ public class ReservaControlador {
         return reservaServicio.cargarBannerReservas();
     }
 
-    // ED15 - HU14 - Listar Reservas por Cancha
+    // ED67 - HU14 - Listar Reservas por Cancha
     @GetMapping("/reservas/cancha/{idCancha}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<ReservaDTO>> listarReservasPorCancha(
@@ -226,6 +226,15 @@ public class ReservaControlador {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha){
         return reservaServicio.filtrarConcatenado(estado, idSede, idTipoCancha, fecha);
     }
+
+    //ED65
+    @GetMapping("/reservas/solicitadas")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<ReservaDTO>> listarReservasSolicitadas() {
+        List<ReservaDTO> lista = reservaServicio.listarReservasSolicitadas();
+        return ResponseEntity.ok(lista);
+    }
+
 
     /*
     @GetMapping("/reserva-validar")

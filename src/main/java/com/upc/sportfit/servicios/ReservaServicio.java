@@ -3,14 +3,8 @@ package com.upc.sportfit.servicios;
 import com.upc.sportfit.dtos.BannerReservasDTO;
 import com.upc.sportfit.dtos.*;
 import com.upc.sportfit.dtos.reportes.*;
-import com.upc.sportfit.entidades.Pago;
-import com.upc.sportfit.entidades.Reserva;
-import com.upc.sportfit.entidades.SedeCancha;
-import com.upc.sportfit.entidades.Usuario;
-import com.upc.sportfit.repositorios.PagoRepositorio;
-import com.upc.sportfit.repositorios.ReservaRepositorio;
-import com.upc.sportfit.repositorios.SedeCanchaRepositorio;
-import com.upc.sportfit.repositorios.UsuarioRepositorio;
+import com.upc.sportfit.entidades.*;
+import com.upc.sportfit.repositorios.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +20,9 @@ public class ReservaServicio {
 
     @Autowired
     private PagoRepositorio pagoRepositorio;
+
+   @Autowired
+   private NotificacionRepositorio notificacionRepositorio;
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
@@ -60,7 +57,7 @@ public class ReservaServicio {
         return modelMapper.map(reserva, ReservaDTO.class);
     }
 
-    // Listar
+    // ED16 Listar
     public List<ReservaDTO> listarReservas(){
         List<ReservaDTO> lista = reservaRepositorio.findAll().stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
@@ -116,20 +113,53 @@ public class ReservaServicio {
         return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
     }
 
+    //ED25
     @Transactional
     public ReservaDTO ActualizarEstado(Integer idReserva, String nuevoEstado) {
         List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
+        String estadoNormalizado = (nuevoEstado != null) ? nuevoEstado.trim().toLowerCase() : "";
 
-        if (nuevoEstado == null || !estadosValidos.contains(nuevoEstado.trim().toLowerCase())) {
+        if (!estadosValidos.contains(estadoNormalizado)) {
             throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
         }
 
-        return reservaRepositorio.findById(idReserva)
-                .map(reserva -> {
-                    reserva.setEstado(nuevoEstado.trim().toLowerCase());
-                    return modelMapper.map(reservaRepositorio.save(reserva), ReservaDTO.class);
-                })
+        Reserva reserva = reservaRepositorio.findById(idReserva)
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con el id: " + idReserva));
+
+        if (List.of("confirmada", "rechazada").contains(estadoNormalizado)) {
+            if (!"solicitada".equalsIgnoreCase(reserva.getEstado())) {
+                throw new RuntimeException("Solo se pueden confirmar o rechazar reservas que estén en estado 'solicitada'.");
+            }
+        }
+
+        reserva.setEstado(estadoNormalizado);
+        Reserva reservaGuardada = reservaRepositorio.save(reserva);
+
+        // Crear notificación
+        if ("confirmada".equals(estadoNormalizado)) {
+            Notificacion notificacion = new Notificacion();
+            notificacion.setTipo("Confirmada");
+            notificacion.setTitulo("Tu solicitud de reserva ha sido confirmada");
+            notificacion.setMensaje("¡Buenas noticias! Tu solicitud de reserva con el id #" + reserva.getIdReserva() + " ha sido aprobada con éxito.");
+            notificacion.setFNotificacion(Instant.now());
+            notificacion.setLeido(false);
+            notificacion.setUsuario(reserva.getUsuario());
+
+            notificacionRepositorio.save(notificacion);
+
+        } else if ("rechazada".equals(estadoNormalizado)) {
+            Notificacion notificacion = new Notificacion();
+            notificacion.setTipo("Rechazada");
+            notificacion.setTitulo("Tu solicitud de reserva ha sido rechazada");
+            notificacion.setMensaje("Lamentamos informarte que tu solicitud de reserva con el id #" + reserva.getIdReserva() + " ha sido rechazada.");
+            notificacion.setFNotificacion(Instant.now());
+            notificacion.setLeido(false);
+            notificacion.setUsuario(reserva.getUsuario());
+
+            notificacionRepositorio.save(notificacion);
+        }
+
+        return modelMapper.map(reservaGuardada, ReservaDTO.class);
     }
 
     public void eliminarReserva(Integer id){
@@ -396,9 +426,14 @@ public class ReservaServicio {
     }
 
     // HU13 - Consultar Detalle de Solicitud de Reserva y Pagos
+    //ED01
     public SolicitudReservaDTO consultarSolicitud(Integer idReserva) {
         Reserva reserva = reservaRepositorio.findById(idReserva)
                 .orElseThrow(() -> new NoSuchElementException("No existe la reserva con ID " + idReserva));
+
+        if (!"solicitada".equalsIgnoreCase(reserva.getEstado())) {
+            throw new RuntimeException("La reserva con ID " + idReserva + " no tiene una solicitud pendiente (Estado actual: " + reserva.getEstado() + ").");
+        }
 
         List<PagoDTO> pagos = pagoRepositorio.findByReserva_IdReserva(idReserva)
                 .stream()
@@ -513,16 +548,22 @@ public class ReservaServicio {
         return modelMapper.map(reserva, ReservaDTO.class);
     }
 
-    // HU14 - Listar Reservas por Cancha
+    // ED67 - HU14 - Listar Reservas por Cancha
     public List<ReservaDTO> listarReservasPorCancha(Integer idCancha) {
         if (!sedeCanchaRepositorio.existsById(idCancha)) {
             throw new NoSuchElementException("No existe la cancha con ID " + idCancha);
         }
 
-        return reservaRepositorio.listarPorCancha(idCancha)
+        List<ReservaDTO> lista = reservaRepositorio.listarPorCancha(idCancha)
                 .stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
                 .toList();
+
+        if (lista.isEmpty()) {
+            throw new RuntimeException("El espacio deportivo no registra reservas asociadas.");
+        }
+
+        return lista;
     }
 
     //ED08 - HU10 - Obtener el número de reservas de un cliente
@@ -650,6 +691,21 @@ public class ReservaServicio {
         }
 
         return reporteFinal;
+    }
+
+    //ED65
+    @Transactional
+    public List<ReservaDTO> listarReservasSolicitadas() {
+        List<ReservaDTO> lista = reservaRepositorio.listarReservasSolicitadas()
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
+
+        if (lista.isEmpty()) {
+            throw new RuntimeException("No existen solicitudes de reserva pendientes.");
+        }
+
+        return lista;
     }
 
 }
