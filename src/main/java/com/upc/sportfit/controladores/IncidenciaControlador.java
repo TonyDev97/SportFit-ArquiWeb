@@ -23,6 +23,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true", exposedHeaders = "Authorization")
 public class IncidenciaControlador {
     @Autowired
     private IncidenciaServicio incidenciaServicio;
