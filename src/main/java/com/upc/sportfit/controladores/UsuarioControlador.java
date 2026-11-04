@@ -1,11 +1,13 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.PerfilClienteDTO;
 import com.upc.sportfit.dtos.UsuarioDTO;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -101,8 +103,28 @@ public class UsuarioControlador {
         return usuarioServicio.cambiarEstado(id, estado);
     }
 
+    // Se implemento para el acceso de froend -> crear el service -> repository
+    @GetMapping("/cliente/perfil")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public PerfilClienteDTO obtenerPerfil(Authentication authentication) {
+        Usuario usuario = usuarioServicio.buscarPorCorreo(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
-    // NO SE VAN A USAR
+
+        return new PerfilClienteDTO(
+                usuario.getIdUsuario(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getDni(),
+                usuario.getTelefono(),
+                usuario.getCorreo(),
+                usuario.getActivo(),
+                usuario.getImgUsuario(),
+                usuario.getFCreacion()
+        );}
+
+
+        // NO SE VAN A USAR
     //@GetMapping("/usuarios")
     //public List<Usuario> listarTodo(){
     //    return usuarioServicio.listarTodo();
