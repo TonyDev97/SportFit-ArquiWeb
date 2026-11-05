@@ -42,8 +42,7 @@ public class ReservaServicio {
     @Autowired
     private ModelMapper modelMapper;
 
-    // Registrar reserva
-
+    // Registrar reserva CORREGIR ESTO PORFA
     @Transactional
     public ReservaDTO registrarReserva(ReservaDTO reservaDTO) {
 
