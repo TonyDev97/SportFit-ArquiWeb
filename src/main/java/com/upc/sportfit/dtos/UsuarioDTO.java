@@ -29,5 +29,5 @@ public class UsuarioDTO {
     private String imgUsuario;
     private Instant fCreacion;
     private Instant fModificacion;
-    private RolDTO rol;
+    private Rol rol;
 }

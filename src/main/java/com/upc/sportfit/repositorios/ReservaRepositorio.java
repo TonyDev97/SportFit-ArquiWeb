@@ -27,11 +27,16 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
     @Query("SELECT r FROM Reserva r WHERE LOWER(r.estado) = 'solicitada' ORDER BY r.fCreacion DESC")
     List<Reserva> listarReservasSolicitadas();
 
-    // Listar reservas según fecha, deporte y sede
-    @Query("select r from Reserva r where r.fReserva = :fecha and r.sedeCancha.cancha.idTipoCancha = :idDeporte and r.sedeCancha.sede.idSede = :idSede")
+    // Listar reservas según fecha, deporte y sede (solo estado 'solicitada' o 'confirmada')
+    @Query("SELECT r FROM Reserva r " +
+            "WHERE r.fReserva = :fecha " +
+            "AND r.sedeCancha.cancha.idTipoCancha = :idDeporte " +
+            "AND r.sedeCancha.sede.idSede = :idSede " +
+            "AND LOWER(r.estado) IN ('solicitada', 'confirmada') " +
+            "ORDER BY r.hInicio ASC")
     List<Reserva> ListarReservasPorFechaDeporteSede(@Param("fecha") LocalDate fecha,
-                                          @Param("idDeporte") Integer idDeporte,
-                                          @Param("idSede") Integer idSede);
+                                                    @Param("idDeporte") Integer idDeporte,
+                                                    @Param("idSede") Integer idSede);
 
     @Query("select r from Reserva r where r.sedeCancha.sede.idSede = :id_sede")
     List<Reserva> listarReservasSede(@Param("id_sede") Integer id_sede);

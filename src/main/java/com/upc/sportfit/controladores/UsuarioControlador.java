@@ -105,7 +105,7 @@ public class UsuarioControlador {
 
     // Se implemento para el acceso de froend -> crear el service -> repository
     @GetMapping("/cliente/perfil")
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public PerfilClienteDTO obtenerPerfil(Authentication authentication) {
         Usuario usuario = usuarioServicio.buscarPorCorreo(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
