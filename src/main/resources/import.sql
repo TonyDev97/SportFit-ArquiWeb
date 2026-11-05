@@ -89,6 +89,7 @@ INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion,
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '11:00:00', '13:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 7, 3);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '15:00:00', '17:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 1, 9);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '18:00:00', '20:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 10);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '22:00:00', '24:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 10);
 
 -- =========================================================
 -- PAGOS (reservas solicitada, confirmada, completada y tambien cancelada: esas son el monto perdido)

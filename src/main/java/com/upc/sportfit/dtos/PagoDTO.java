@@ -13,10 +13,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PagoDTO {
-
     private Integer idPago;
     private BigDecimal montoTotal;
     private String metodo;
     private String urlComprobante;
-    private ReservaDTO reserva;
+    private Integer idReserva;
 }

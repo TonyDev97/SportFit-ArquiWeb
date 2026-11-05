@@ -39,21 +39,31 @@ public class PagoServicio {
 
     // VALIDADO NICOLE
     public PagoDTO registrarPago(PagoDTO pagoDTO) {
+        //Obtenemos la reserva por su ID
+        Reserva reserva = reservaRepositorio.findById(pagoDTO.getIdReserva())
+                .orElseThrow(() -> new RuntimeException("La reserva no existe"));
+
         Pago pago = modelMapper.map(pagoDTO, Pago.class);
+
+        //Establecemos la relación
+        pago.setReserva(reserva);
+
+        //Guardamos el pago
         pago = pagoRepositorio.save(pago);
 
         // Notificación automática al cliente
-        Reserva reserva = reservaRepositorio.findById(pago.getReserva().getIdReserva()).orElse(null);
-        if (reserva != null) {
-            String mensaje = String.format("Tu pago de S/ %.2f por la reserva en %s ha sido procesado correctamente.",
-                    pago.getMontoTotal(), reserva.getSedeCancha().getSede().getNombre());
-            notificacionServicio.crearNotificacion(
-                    reserva.getUsuario().getIdUsuario(),
-                    "Confirmación",
-                    "Confirmación de pago",
-                    mensaje
-            );
-        }
+        String mensaje = String.format(
+                "Tu pago de S/ %.2f por la reserva en %s ha sido procesado correctamente.",
+                pagoDTO.getMontoTotal(),
+                reserva.getSedeCancha().getSede().getNombre()
+        );
+
+        notificacionServicio.crearNotificacion(
+                reserva.getUsuario().getIdUsuario(),
+                "Confirmación",
+                "Confirmación de pago",
+                mensaje
+        );
 
         return modelMapper.map(pago, PagoDTO.class);
     }

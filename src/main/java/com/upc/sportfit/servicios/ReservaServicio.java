@@ -43,31 +43,122 @@ public class ReservaServicio {
     private ModelMapper modelMapper;
 
     // Registrar reserva
-    public ReservaDTO registrarReserva(ReservaDTO reservaDTO){
-        List<String> estadosValidos = List.of("cancelada", "solicitada", "rechazada", "confirmada", "completada");
+
+    @Transactional
+    public ReservaDTO registrarReserva(ReservaDTO reservaDTO) {
+
+        // Validar estado
+        List<String> estadosValidos = List.of(
+                "cancelada",
+                "solicitada",
+                "rechazada",
+                "confirmada",
+                "completada"
+        );
+
         String estadoIngresado = reservaDTO.getEstado();
 
-        if (estadoIngresado == null || !estadosValidos.contains(estadoIngresado.trim().toLowerCase())) {
-            throw new RuntimeException("Estado inválido. Solo se permite: " + String.join(", ", estadosValidos));
+        if (estadoIngresado == null ||
+                !estadosValidos.contains(estadoIngresado.trim().toLowerCase())) {
+            throw new RuntimeException(
+                    "Estado inválido. Solo se permite: " +
+                            String.join(", ", estadosValidos)
+            );
         }
 
-        Reserva reserva = modelMapper.map(reservaDTO, Reserva.class);
+        // Validar los IDs de las relaciones
+        if (reservaDTO.getIdUsuario() == null ||
+                reservaDTO.getIdSedeCancha() == null) {
+            throw new RuntimeException(
+                    "Debe especificar el usuario y la sede cancha"
+            );
+        }
+
+        // Validar fecha y horarios
+        if (reservaDTO.getFReserva() == null ||
+                reservaDTO.getHInicio() == null ||
+                reservaDTO.getHFin() == null) {
+            throw new RuntimeException(
+                    "La fecha y los horarios son obligatorios"
+            );
+        }
+
+        // Validar que la hora de inicio sea menor a la hora final
+        if (!reservaDTO.getHInicio().isBefore(reservaDTO.getHFin())) {
+            throw new RuntimeException(
+                    "La hora de inicio debe ser anterior a la hora final"
+            );
+        }
+
+        // Buscar usuario
+        Usuario usuario = usuarioRepositorio.findById(
+                reservaDTO.getIdUsuario()
+        ).orElseThrow(() -> new RuntimeException(
+                "El usuario no existe"
+        ));
+
+        // Buscar sede cancha
+        SedeCancha sedeCancha = sedeCanchaRepositorio.findById(
+                reservaDTO.getIdSedeCancha()
+        ).orElseThrow(() -> new RuntimeException(
+                "La sede cancha no existe"
+        ));
+
+        // Crear la reserva
+        Reserva reserva = new Reserva();
+
+        // Asignar datos
         reserva.setEstado(estadoIngresado.trim().toLowerCase());
-        reserva = reservaRepositorio.save(reserva);
-        return modelMapper.map(reserva, ReservaDTO.class);
+        reserva.setCreadoPor(reservaDTO.getCreadoPor());
+        reserva.setModificadoPor(reservaDTO.getModificadoPor());
+
+        // Asignar fechas y horarios
+        reserva.setFReserva(reservaDTO.getFReserva());
+        reserva.setHInicio(reservaDTO.getHInicio());
+        reserva.setHFin(reservaDTO.getHFin());
+        reserva.setFCreacion(Instant.now());
+
+        // Asignar relaciones
+        reserva.setUsuario(usuario);
+        reserva.setSedeCancha(sedeCancha);
+
+        // Guardar en PostgreSQL
+        Reserva reservaGuardada = reservaRepositorio.save(reserva);
+
+        // Convertir a DTO
+        ReservaDTO respuesta = modelMapper.map(
+                reservaGuardada,
+                ReservaDTO.class
+        );
+
+        // Incluir los IDs de las relaciones en la respuesta
+        respuesta.setIdUsuario(usuario.getIdUsuario());
+        respuesta.setIdSedeCancha(sedeCancha.getIdSedeCancha());
+
+        return respuesta;
     }
 
-    // ED16 Listar
-    public List<ReservaDTO> listarReservas(){
-        List<ReservaDTO> lista = reservaRepositorio.findAll().stream()
-                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
-                .toList();
 
-        if (lista.isEmpty()) {
-            throw new RuntimeException("No existen reservas registradas");
+    // ED16 Listar
+
+    public List<ReservaDTO> listarReservas() {
+        // Obtenemos todas las reservas de la base de datos
+        List<Reserva> reservas = reservaRepositorio.findAll();
+        // Creamos la lista que devolveremos
+        List<ReservaDTO> lista = new ArrayList<>();
+        // Recorremos las reservas
+        for (Reserva reserva : reservas) {
+            // Convertimos la entidad a DTO
+            ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
+            // Asignamos los IDs de las relaciones
+            dto.setIdUsuario(reserva.getUsuario().getIdUsuario());
+            dto.setIdSedeCancha(reserva.getSedeCancha().getIdSedeCancha());
+            // Agregamos el DTO completo a la lista
+            lista.add(dto);
         }
         return lista;
     }
+
 
     //ED23 Actualizar únicamente reservas con esta "SOLICITADA" superposición de reservas ok
     @Transactional
@@ -96,16 +187,31 @@ public class ReservaServicio {
             }
             reserva.setEstado(estadoIngresado);
         }
-        if (reservaDTO.getUsuario() != null && reservaDTO.getUsuario().getIdUsuario() != null) {
-            Usuario usuario = usuarioRepositorio.findById(reservaDTO.getUsuario().getIdUsuario())
-                    .orElseThrow(() -> new RuntimeException("No existe el usuario con ese id:" + reservaDTO.getUsuario().getIdUsuario()));
+
+        if (reservaDTO.getIdUsuario() != null) {
+
+            Usuario usuario = usuarioRepositorio.findById(
+                    reservaDTO.getIdUsuario()
+            ).orElseThrow(() -> new RuntimeException(
+                    "No existe el usuario con ese ID: " + reservaDTO.getIdUsuario()
+            ));
+
             reserva.setUsuario(usuario);
         }
-        if (reservaDTO.getSedeCancha() != null && reservaDTO.getSedeCancha().getIdSedeCancha() != null) {
-            SedeCancha sedeCancha = sedeCanchaRepositorio.findById(reservaDTO.getSedeCancha().getIdSedeCancha())
-                    .orElseThrow(() -> new RuntimeException("No existe la sede cancha con ese id:" + reservaDTO.getSedeCancha().getIdSedeCancha()));
+
+
+        if (reservaDTO.getIdSedeCancha() != null) {
+
+            SedeCancha sedeCancha = sedeCanchaRepositorio.findById(
+                    reservaDTO.getIdSedeCancha()
+            ).orElseThrow(() -> new RuntimeException(
+                    "No existe la sede cancha con ese ID: " +
+                            reservaDTO.getIdSedeCancha()
+            ));
+
             reserva.setSedeCancha(sedeCancha);
         }
+
 
         reserva.setModificadoPor(reservaDTO.getModificadoPor());
         reserva.setFModificacion(Instant.now());

@@ -48,8 +48,8 @@ public class IncidenciaServicio {
             throw new RuntimeException("El tipo de incidencia no es válido. Debe ser: Tecnico, Instalaciones o Preguntas");
         }
 
-        Usuario usuario = usuarioRepositorio.findById(registroDTO.getUsuario().getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + registroDTO.getUsuario().getIdUsuario()));
+        Usuario usuario = usuarioRepositorio.findById(registroDTO.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Incidencia incidencia = new Incidencia();
         incidencia.setTipo(registroDTO.getTipo());
@@ -106,12 +106,8 @@ public class IncidenciaServicio {
                     dto.setFCreacion(incidencia.getFCreacion());
 
                     if (incidencia.getUsuario() != null) {
-                        UsuarioDTO usuarioDTO = new UsuarioDTO();
-                        usuarioDTO.setIdUsuario(incidencia.getUsuario().getIdUsuario());
-                        usuarioDTO.setNombre(incidencia.getUsuario().getNombre());
-                        dto.setUsuario(usuarioDTO);
+                        dto.setIdUsuario(incidencia.getUsuario().getIdUsuario());
                     }
-
                     return dto;
                 })
                 .toList();

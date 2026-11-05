@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -36,20 +37,23 @@ public class CancelacionServicio {
     // Añadir una cancelación
     @Transactional
     public CancelacionDTO registrar(CancelacionDTO cancelacionDTO) {
-        if (cancelacionDTO.getReserva() == null || cancelacionDTO.getReserva().getIdReserva() == null) {
+        //Validamos que exite el id los odio compañeritos
+        if (cancelacionDTO.getIdReserva() == null) {
             throw new RuntimeException("Debe especificar una reserva válida");
         }
-        Integer idReserva = cancelacionDTO.getReserva().getIdReserva();
+        Integer idReserva = cancelacionDTO.getIdReserva();
 
         // Obtener la reserva antes de cancelar para tener los datos para la notificación
         Reserva reserva = reservaRepositorio.findById(idReserva)
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con id: " + idReserva));
 
+        //cambia el estado del servicio a cancelada
         reservaServicio.eliminarLogicoReserva(idReserva);
 
         Cancelacion cancelacion = modelMapper.map(cancelacionDTO, Cancelacion.class);
         cancelacion.setIdCancelacion(null);
-
+        cancelacion.setReserva(reserva); //asignamos la cancelación a una reserva oink
+        cancelacion.setFCancelacion(Instant.now()); //asignamos el tiempo actual faltaba importar y agregar
         Cancelacion cancelacionGuardada = cancelacionRepositorio.save(cancelacion);
 
         // Notificación automática adicional con motivo de cancelación

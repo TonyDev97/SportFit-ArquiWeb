@@ -27,5 +27,5 @@ public class IncidenciaRegistroDTO {
     @Size(max = 300, message = "La descripción no puede exceder los 300 caracteres")
     private String descripcion;
 
-    private UsuarioDTO usuario;
+    private Integer idUsuario;
 }
