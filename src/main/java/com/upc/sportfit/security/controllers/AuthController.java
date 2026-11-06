@@ -1,5 +1,6 @@
 package com.upc.sportfit.security.controllers;
 
+import com.upc.sportfit.dtos.UsuarioDTO;
 import com.upc.sportfit.entidades.Rol;
 import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.RolRepositorio;
@@ -69,7 +70,7 @@ public class AuthController {
 
 
     //Modificar esto
-    @PostMapping("auth/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<AuthResponseDTO> registrar(@Valid @RequestBody RegistroRequestDTO dto) {
         // Verificar si el correo ya existe
         if (usuarioServicio.buscarPorCorreo(dto.getCorreo()).isPresent()) {
@@ -80,21 +81,20 @@ public class AuthController {
         Rol rolCliente = rolRepositorio.findById(1)
                 .orElseThrow(() -> new RuntimeException("Rol CLIENTE no encontrado"));
 
-        // Crear usuario
-        Usuario usuario = new Usuario();
-        usuario.setCorreo(dto.getCorreo());
-        usuario.setContrasenaHash(passwordEncoder.encode(dto.getContrasenaHash()));
-        usuario.setNombre(dto.getNombre());
-        usuario.setApellido(dto.getApellido());
-        usuario.setImgUsuario(dto.getImgUsuario());
-        usuario.setDni(dto.getDni());
-        usuario.setTelefono(dto.getTelefono());
-        usuario.setActivo(true);
-        usuario.setRol(rolCliente);
-        usuario.setCreadoPor("REGISTRO");
-        usuario.setFCreacion(java.time.Instant.now());
+        // CORRECCIÓN idRol: Se crea el UsuarioDTO con su idRol Integer en lugar de invocar la entidad directamente en el servicio
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setCorreo(dto.getCorreo());
+        usuarioDTO.setContrasenaHash(passwordEncoder.encode(dto.getContrasenaHash()));
+        usuarioDTO.setNombre(dto.getNombre());
+        usuarioDTO.setApellido(dto.getApellido());
+        usuarioDTO.setImgUsuario(dto.getImgUsuario());
+        usuarioDTO.setDni(dto.getDni());
+        usuarioDTO.setTelefono(dto.getTelefono());
+        usuarioDTO.setActivo(true);
+        usuarioDTO.setIdRol(1); // Rol CLIENTE por defecto
 
-        Usuario usuarioGuardado = usuarioServicio.insertar(usuario);
+        // Se envía el UsuarioDTO adaptado al nuevo método de UsuarioServicio
+        UsuarioDTO usuarioGuardado = usuarioServicio.insertar(usuarioDTO);
 
         // Generar JWT automáticamente
         final UserDetails userDetails = userDetailsService.loadUserByUsername(usuarioGuardado.getCorreo());

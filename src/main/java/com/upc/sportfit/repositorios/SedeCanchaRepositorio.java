@@ -33,9 +33,10 @@ public interface SedeCanchaRepositorio extends JpaRepository<SedeCancha, Integer
 
     // Filtra los espacios deportivos según estado, sede y deporte
     @Query("SELECT sc FROM SedeCancha sc " +
+            "JOIN sc.cancha tc " +
             "WHERE (:estado IS NULL OR sc.estado = :estado) " +
             "AND (:idSede IS NULL OR sc.sede.idSede = :idSede) " +
-            "AND (:deporte IS NULL OR LOWER(sc.cancha.deporte) = LOWER(:deporte)) " +
+            "AND (:deporte IS NULL OR LOWER(CAST(tc.deporte AS string)) = LOWER(CAST(:deporte AS string))) " +
             "ORDER BY sc.idSedeCancha DESC")
     List<SedeCancha> filtrarEspaciosDeportivos(
             @Param("estado") Boolean estado,

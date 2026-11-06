@@ -14,5 +14,5 @@ public class SedeDTO {
     private String direccion;
     private String urlUbicacion;
     private String imgSede;
-    private UsuarioDTO usuario;
+    private Integer idUsuario;
 }

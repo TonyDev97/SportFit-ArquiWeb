@@ -24,14 +24,14 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
     List<Usuario> findByNombreContainingIgnoreCaseAndRol_IdRol(String nombre, Integer idRol);
 
     // Buscar clientes por DNI si empieza VALIDADO
-    List<Usuario> findByDniStartingWithAndRol_IdRol(String dni, Integer rolIdRol);
+    List<Usuario> findByDniStartingWithAndRol_IdRol(String dni, Integer idRol);
 
     // Buscar clientes por estado VALIDADO
     List<Usuario> findByActivoAndRol_IdRol(Boolean estado, Integer idRol);
 
-    List<Usuario> findByTelefonoStartingWithAndRol_IdRol(String telefono, Integer rolIdRol);
+    List<Usuario> findByTelefonoStartingWithAndRol_IdRol(String telefono, Integer idRol);
 
-    List<Usuario> findByCorreoEndingWithAndRol_IdRol(String correo, Integer rolIdRol);
+    List<Usuario> findByCorreoEndingWithAndRol_IdRol(String correo, Integer idRol);
 
     @Query("select r.usuario from Reserva r where r.usuario.rol.idRol = 1 group by r.usuario having count(r) = :cantidad_reservas")
     List<Usuario> buscarClientesCantidadReservas(@Param("cantidad_reservas")  Integer cantidadResevas);

@@ -30,11 +30,15 @@ public class SedeCanchaServicio {
     @Autowired
     private TipoCanchaRepositorio tipoCanchaRepositorio;
 
-    public List<SedeCancha> listarPorSedeActivas(Integer idSede) {
-        return sedeCanchaRepositorio.encontrarActivasPorSede(idSede);
+    @Transactional
+    public List<SedeCanchaDTO> listarPorSedeActivas(Integer idSede) {
+        return sedeCanchaRepositorio.encontrarActivasPorSede(idSede)
+                .stream()
+                .map(sc -> modelMapper.map(sc, SedeCanchaDTO.class))
+                .toList();
     }
 
-    // VALIDADO NICOLE
+    @Transactional
     public List<SedeCanchaDTO> listarPorDeporteYSede(Integer idTipoCancha, Integer idSede) {
         List<SedeCanchaDTO> lista = sedeCanchaRepositorio.BuscarPorDeporteYSede(idTipoCancha, idSede).stream()
                 .map(sc -> modelMapper.map(sc, SedeCanchaDTO.class))
@@ -46,8 +50,13 @@ public class SedeCanchaServicio {
         return lista;
     }
 
-    public List<SedeCancha> listarTodasPorSede(Integer idSede) {
-        return sedeCanchaRepositorio.encontrarTodasPorSede(idSede);
+
+    // NO SE USA
+    public List<SedeCanchaDTO> listarTodasPorSede(Integer idSede) {
+        return sedeCanchaRepositorio.encontrarTodasPorSede(idSede)
+                .stream()
+                .map(sc -> modelMapper.map(sc, SedeCanchaDTO.class))
+                .toList();
     }
 
     // ED47: Listar todas las sede-canchas
@@ -64,14 +73,18 @@ public class SedeCanchaServicio {
                 .toList();
     }
 
+    // NO SE USA
     public SedeCancha buscarPorId(Integer id) {
         return sedeCanchaRepositorio.findById(id).orElse(null);
     }
 
+    // NO SE USA
     public SedeCancha insertar(SedeCancha sedeCancha) {
+
         return sedeCanchaRepositorio.save(sedeCancha);
     }
 
+    // NO SE USA(?)
     // HU14 - ED61: Actualizar aplicando las validaciones existentes.
     @Transactional
     public SedeCancha actualizar(SedeCancha sedeCancha) {
@@ -96,6 +109,7 @@ public class SedeCanchaServicio {
         sedeCanchaRepositorio.deleteById(id);
     }
 
+    // NO SE USA
     // HU14: consultar espacios deportivos utilizando DTO
     public List<SedeCanchaDTO> listarEspacios() {
         return sedeCanchaRepositorio.findAll()
@@ -104,12 +118,14 @@ public class SedeCanchaServicio {
                 .toList();
     }
 
+    // NO SE USA
     // HU14: consultar un espacio deportivo
     public SedeCanchaDTO buscarEspacio(Integer id) {
         return sedeCanchaRepositorio.findById(id)
                 .map(cancha -> modelMapper.map(cancha, SedeCanchaDTO.class))
                 .orElseThrow(() -> new NoSuchElementException("No existe la cancha con ID " + id));
     }
+
 
     // HU14: actualizar la información del espacio deportivo
     @Transactional
@@ -143,22 +159,22 @@ public class SedeCanchaServicio {
             throw new IllegalArgumentException("Debe indicar una URL de imagen de hasta 300 caracteres");
         }
 
-        if (dto.getSede() == null || dto.getSede().getIdSede() == null) {
-            throw new IllegalArgumentException("Debe indicar la sede");
+        if (dto.getIdSedeSede() == null) {
+            throw new IllegalArgumentException("Debe indicar el ID de la sede");
         }
 
-        if (dto.getCancha() == null || dto.getCancha().getIdTipoCancha() == null) {
-            throw new IllegalArgumentException("Debe indicar el tipo de cancha");
+        if (dto.getIdTipoCancha() == null) {
+            throw new IllegalArgumentException("Debe indicar el ID del tipo de cancha");
         }
 
         cancha.setSede(
-                sedeRepositorio.findById(dto.getSede().getIdSede())
-                        .orElseThrow(() -> new NoSuchElementException("La sede no existe"))
+                sedeRepositorio.findById(dto.getIdSedeSede())
+                        .orElseThrow(() -> new NoSuchElementException("La sede no existe con ID " + dto.getIdSedeSede()))
         );
 
         cancha.setCancha(
-                tipoCanchaRepositorio.findById(dto.getCancha().getIdTipoCancha())
-                        .orElseThrow(() -> new NoSuchElementException("El tipo de cancha no existe"))
+                tipoCanchaRepositorio.findById(dto.getIdTipoCancha())
+                        .orElseThrow(() -> new NoSuchElementException("El tipo de cancha no existe con ID " + dto.getIdTipoCancha()))
         );
 
         cancha.setNombre(dto.getNombre().trim());

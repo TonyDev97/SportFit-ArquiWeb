@@ -1,7 +1,10 @@
 package com.upc.sportfit.servicios;
 
+import com.upc.sportfit.dtos.SedeDTO;
 import com.upc.sportfit.entidades.Sede;
 import com.upc.sportfit.repositorios.SedeRepositorio;
+import com.upc.sportfit.repositorios.UsuarioRepositorio;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +16,24 @@ public class SedeServicio {
     @Autowired
     private SedeRepositorio sedeRepositorio;
 
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     //ED 43 LISTAR SEDES
-    public List<Sede> listar() {
-        return sedeRepositorio.findAll();
+    public List<SedeDTO> listar() {
+        return sedeRepositorio.findAll()
+                .stream()
+                .map(sede -> modelMapper.map(sede, SedeDTO.class))
+                .toList();
     }
+
+
+
+
+    //NO SE USAN LOS DE ABAJO (NO LOS HE CAMBIADO)
 
     public Sede buscarPorId(Integer id) {
         return sedeRepositorio.findById(id).orElse(null);

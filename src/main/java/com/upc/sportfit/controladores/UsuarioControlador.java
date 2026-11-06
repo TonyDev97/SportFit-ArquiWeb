@@ -29,24 +29,24 @@ public class UsuarioControlador {
     // ED51 - Buscar clientes
     @GetMapping("/usuario/clientes")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Usuario> buscarClientes(){
-        return usuarioServicio.listarTodo();
+    public ResponseEntity<List<UsuarioDTO>> buscarClientes() {
+        return ResponseEntity.ok(usuarioServicio.listarTodo());
     }
 
     // ED52
     // Validado
     @GetMapping("/usuario/clientes-nombre/{nombre}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<UsuarioDTO> buscarClientesNombreContiene(@PathVariable String nombre){
-        return usuarioServicio.buscarClientesNombreContiene(nombre);
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesNombreContiene(@PathVariable String nombre){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesNombreContiene(nombre));
     }
 
     // ED53
     // Validado
     @GetMapping("/usuario/clientes-dni/{dni}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<UsuarioDTO> buscarClientesDniInicia(@PathVariable String dni){
-        return usuarioServicio.buscarClientesDniInicia(dni);
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesDniInicia(@PathVariable String dni){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesDniInicia(dni));
     }
 
     // ED54
@@ -99,19 +99,19 @@ public class UsuarioControlador {
     // ED60 ok
     @PutMapping("/usuario/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public Usuario cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
-        return usuarioServicio.cambiarEstado(id, estado);
+    public ResponseEntity<UsuarioDTO> cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
+        return ResponseEntity.ok(usuarioServicio.cambiarEstado(id, estado));
     }
 
     // Se implemento para el acceso de froend -> crear el service -> repository
     @GetMapping("/cliente/perfil")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public PerfilClienteDTO obtenerPerfil(Authentication authentication) {
+    public ResponseEntity<PerfilClienteDTO> obtenerPerfil(Authentication authentication) {
         Usuario usuario = usuarioServicio.buscarPorCorreo(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
 
-        return new PerfilClienteDTO(
+        return ResponseEntity.ok(new PerfilClienteDTO(
                 usuario.getIdUsuario(),
                 usuario.getNombre(),
                 usuario.getApellido(),
@@ -121,7 +121,8 @@ public class UsuarioControlador {
                 usuario.getActivo(),
                 usuario.getImgUsuario(),
                 usuario.getFCreacion()
-        );}
+        ));
+    }
 
 
         // NO SE VAN A USAR
