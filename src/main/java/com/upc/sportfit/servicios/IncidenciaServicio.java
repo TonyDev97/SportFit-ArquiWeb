@@ -31,7 +31,7 @@ public class IncidenciaServicio {
     private IncidenciaRepositorio incidenciaRepositorio;
 
     @Autowired
-    private NotificacionRepositorio notificacionRepositorio;
+    private NotificacionServicio notificacionServicio;
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
@@ -49,7 +49,7 @@ public class IncidenciaServicio {
         }
 
         Usuario usuario = usuarioRepositorio.findById(registroDTO.getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + registroDTO.getIdUsuario()));
 
         Incidencia incidencia = new Incidencia();
         incidencia.setTipo(registroDTO.getTipo());
@@ -77,15 +77,13 @@ public class IncidenciaServicio {
         incidencia.setEstado("Atendido");
         incidencia = incidenciaRepositorio.save(incidencia);
 
-        Notificacion notificacion = new Notificacion();
-        notificacion.setTipo("Incidencia");
-        notificacion.setTitulo("Respuesta a tu incidencia");
-        notificacion.setMensaje("Tu incidencia '" + incidencia.getAsunto() + "' ha sido atendida.");
-        notificacion.setFNotificacion(Instant.now());
-        notificacion.setLeido(false);
-        notificacion.setUsuario(incidencia.getUsuario());
+        notificacionServicio.crearNotificacion(
+                incidencia.getUsuario().getIdUsuario(),
+                "Incidencia",
+                "Respuesta a tu incidencia",
+                "Tu incidencia '" + incidencia.getAsunto() + "' ha sido atendida."
+        );
 
-        notificacionRepositorio.save(notificacion);
         return modelMapper.map(incidencia, IncidenciaDTO.class);
     }
 

@@ -35,6 +35,4 @@ public class ReservaDTO {
     private Integer idUsuario;
     private Integer idSedeCancha;
 
-
-
 }

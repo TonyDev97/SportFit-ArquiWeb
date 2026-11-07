@@ -66,4 +66,12 @@ public class Reserva {
     @JoinColumn(name = "id_sede_cancha", nullable = false)
     private SedeCancha sedeCancha;
 
+    public Integer getIdUsuario() {
+        return this.usuario != null ? this.usuario.getIdUsuario() : null;
+    }
+
+    public Integer getIdSedeCancha() {
+        return this.sedeCancha != null ? this.sedeCancha.getIdSedeCancha() : null;
+    }
+
 }

@@ -37,10 +37,10 @@ INSERT INTO tipo_cancha (deporte, descripcion, aforo, f_creacion) VALUES ('FUTSA
 -- =========================================================
 -- SEDES
 -- =========================================================
-INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede Surco', 'Surco', 'Av. Los Pinos 120', 'https://maps.google.com/?q=-12.1469,-76.9706', 2);
-INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede San Miguel', 'San Miguel', 'Calle La Paz 345', 'https://maps.google.com/?q=-12.0821,-77.0035', 2);
-INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede Miraflores', 'Miraflores', 'Av. Arequipa 1500', 'https://maps.google.com/?q=-12.1280,-77.0300', 3);
-INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede Barranco', 'Barranco', 'Malecón 99', 'https://maps.google.com/?q=-12.1440,-77.0200', 3);
+INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede Surco', 'Surco', 'Av. Los Pinos 120', 'https://maps.google.com/?q=-12.1469,-76.9706', 1);
+INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede San Miguel', 'San Miguel', 'Calle La Paz 345', 'https://maps.google.com/?q=-12.0821,-77.0035', 4);
+INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede Miraflores', 'Miraflores', 'Av. Arequipa 1500', 'https://maps.google.com/?q=-12.1280,-77.0300', 5);
+INSERT INTO sede (nombre, distrito, direccion, url_ubicacion, id_usuario) VALUES ('Sede Barranco', 'Barranco', 'Malecón 99', 'https://maps.google.com/?q=-12.1440,-77.0200', 5);
 
 -- =========================================================
 -- CANCHAS POR SEDE

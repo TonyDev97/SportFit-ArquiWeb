@@ -21,9 +21,6 @@ public class ReservaServicio {
     @Autowired
     private PagoRepositorio pagoRepositorio;
 
-   @Autowired
-   private NotificacionRepositorio notificacionRepositorio;
-
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
@@ -42,7 +39,6 @@ public class ReservaServicio {
     @Autowired
     private ModelMapper modelMapper;
 
-    // Registrar reserva CORREGIR ESTO PORFA
     @Transactional
     public ReservaDTO registrarReserva(ReservaDTO reservaDTO) {
 
@@ -69,7 +65,7 @@ public class ReservaServicio {
         if (reservaDTO.getIdUsuario() == null ||
                 reservaDTO.getIdSedeCancha() == null) {
             throw new RuntimeException(
-                    "Debe especificar el usuario y la sede cancha"
+                    "Debe especificar el ID del usuario y el ID de la sede cancha"
             );
         }
 
@@ -93,14 +89,14 @@ public class ReservaServicio {
         Usuario usuario = usuarioRepositorio.findById(
                 reservaDTO.getIdUsuario()
         ).orElseThrow(() -> new RuntimeException(
-                "El usuario no existe"
+                "El usuario no existe con ID: " + reservaDTO.getIdUsuario()
         ));
 
         // Buscar sede cancha
         SedeCancha sedeCancha = sedeCanchaRepositorio.findById(
                 reservaDTO.getIdSedeCancha()
         ).orElseThrow(() -> new RuntimeException(
-                "La sede cancha no existe"
+                "La sede cancha no existe con ID: " + reservaDTO.getIdSedeCancha()
         ));
 
         // Crear la reserva
@@ -124,38 +120,44 @@ public class ReservaServicio {
         // Guardar en PostgreSQL
         Reserva reservaGuardada = reservaRepositorio.save(reserva);
 
+        return modelMapper.map(reservaGuardada, ReservaDTO.class);
+
         // Convertir a DTO
-        ReservaDTO respuesta = modelMapper.map(
-                reservaGuardada,
-                ReservaDTO.class
-        );
+        //ReservaDTO respuesta = modelMapper.map(
+        //        reservaGuardada,
+        //        ReservaDTO.class
+        //);
 
         // Incluir los IDs de las relaciones en la respuesta
-        respuesta.setIdUsuario(usuario.getIdUsuario());
-        respuesta.setIdSedeCancha(sedeCancha.getIdSedeCancha());
+        //respuesta.setIdUsuario(usuario.getIdUsuario());
+        //respuesta.setIdSedeCancha(sedeCancha.getIdSedeCancha());
 
-        return respuesta;
+        //return respuesta;
     }
 
 
     // ED16 Listar
 
     public List<ReservaDTO> listarReservas() {
+        return reservaRepositorio.findAll()
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
         // Obtenemos todas las reservas de la base de datos
-        List<Reserva> reservas = reservaRepositorio.findAll();
+        //List<Reserva> reservas = reservaRepositorio.findAll();
         // Creamos la lista que devolveremos
-        List<ReservaDTO> lista = new ArrayList<>();
+        //List<ReservaDTO> lista = new ArrayList<>();
         // Recorremos las reservas
-        for (Reserva reserva : reservas) {
+        //for (Reserva reserva : reservas) {
             // Convertimos la entidad a DTO
-            ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
+            //ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
             // Asignamos los IDs de las relaciones
-            dto.setIdUsuario(reserva.getUsuario().getIdUsuario());
-            dto.setIdSedeCancha(reserva.getSedeCancha().getIdSedeCancha());
+            //dto.setIdUsuario(reserva.getUsuario().getIdUsuario());
+            //dto.setIdSedeCancha(reserva.getSedeCancha().getIdSedeCancha());
             // Agregamos el DTO completo a la lista
-            lista.add(dto);
-        }
-        return lista;
+            //lista.add(dto);
+        //}
+        //return lista;
     }
 
 
@@ -188,7 +190,6 @@ public class ReservaServicio {
         }
 
         if (reservaDTO.getIdUsuario() != null) {
-
             Usuario usuario = usuarioRepositorio.findById(
                     reservaDTO.getIdUsuario()
             ).orElseThrow(() -> new RuntimeException(
@@ -200,7 +201,6 @@ public class ReservaServicio {
 
 
         if (reservaDTO.getIdSedeCancha() != null) {
-
             SedeCancha sedeCancha = sedeCanchaRepositorio.findById(
                     reservaDTO.getIdSedeCancha()
             ).orElseThrow(() -> new RuntimeException(
@@ -242,26 +242,20 @@ public class ReservaServicio {
 
         // Crear notificación
         if ("confirmada".equals(estadoNormalizado)) {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setTipo("Confirmada");
-            notificacion.setTitulo("Tu solicitud de reserva ha sido confirmada");
-            notificacion.setMensaje("¡Buenas noticias! Tu solicitud de reserva con el id #" + reserva.getIdReserva() + " ha sido aprobada con éxito.");
-            notificacion.setFNotificacion(Instant.now());
-            notificacion.setLeido(false);
-            notificacion.setUsuario(reserva.getUsuario());
-
-            notificacionRepositorio.save(notificacion);
+            notificacionServicio.crearNotificacion(
+                    reserva.getUsuario().getIdUsuario(),
+                    "Confirmada",
+                    "Tu solicitud de reserva ha sido confirmada",
+                    "¡Buenas noticias! Tu solicitud de reserva con el id #" + reserva.getIdReserva() + " ha sido aprobada con éxito."
+            );
 
         } else if ("rechazada".equals(estadoNormalizado)) {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setTipo("Rechazada");
-            notificacion.setTitulo("Tu solicitud de reserva ha sido rechazada");
-            notificacion.setMensaje("Lamentamos informarte que tu solicitud de reserva con el id #" + reserva.getIdReserva() + " ha sido rechazada.");
-            notificacion.setFNotificacion(Instant.now());
-            notificacion.setLeido(false);
-            notificacion.setUsuario(reserva.getUsuario());
-
-            notificacionRepositorio.save(notificacion);
+            notificacionServicio.crearNotificacion(
+                    reserva.getUsuario().getIdUsuario(),
+                    "Rechazada",
+                    "Tu solicitud de reserva ha sido rechazada",
+                    "Lamentamos informarte que tu solicitud de reserva con el id #" + reserva.getIdReserva() + " ha sido rechazada."
+            );
         }
 
         return modelMapper.map(reservaGuardada, ReservaDTO.class);
@@ -310,14 +304,10 @@ public class ReservaServicio {
 
     // HU10 ED16
     public List<ReservaDTO> listarReservasCliente(Integer id) {
-        List<Reserva> reservas = reservaRepositorio.listarReservaCliente(id);
-        List<ReservaDTO> reservaDTOs = new ArrayList<>();
-        for (Reserva reserva : reservas) {
-            reservaDTOs.add(
-                    modelMapper.map(reserva, ReservaDTO.class)
-            );
-        }
-        return reservaDTOs;
+        return reservaRepositorio.listarReservaCliente(id)
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .toList();
     }
 
     public List<Reserva> listarReservaConfirmada(){
@@ -338,9 +328,13 @@ public class ReservaServicio {
                     Reserva saved = reservaRepositorio.save(reserva);
 
                     // Notificación automática al cliente
-                    String sedeNombre = reserva.getSedeCancha().getSede().getNombre();
+                    String sedeNombre = (reserva.getSedeCancha() != null && reserva.getSedeCancha().getSede() != null)
+                            ? reserva.getSedeCancha().getSede().getNombre()
+                            : "Sede";
+
                     String mensaje = String.format("Tu reserva en %s para el %s de %s a %s ha sido cancelada.",
                             sedeNombre, reserva.getFReserva(), reserva.getHInicio(), reserva.getHFin());
+
                     notificacionServicio.crearNotificacion(
                             reserva.getUsuario().getIdUsuario(),
                             "Cancelación",
@@ -353,6 +347,7 @@ public class ReservaServicio {
                 .orElseThrow(() -> new RuntimeException("No existe la reserva con ese id: " + id));
     }
 
+    // NO SE USA
     public List<ReservaDTO> listarReservasSede(Integer id_sede) {
 
         return reservaRepositorio.listarReservasSede(id_sede).stream()
@@ -360,6 +355,7 @@ public class ReservaServicio {
                 .toList();
     }
 
+    // NO SE USA
     public List<ReservaDTO> listarReservasDeporte(String deporte){
         return reservaRepositorio.listarReservasDeporte(deporte).stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
