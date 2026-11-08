@@ -177,8 +177,8 @@ public class UsuarioServicio {
     }
 
     // Agregado por mi
-    public UsuarioDTO obtenerIdAdministradorCorreo(String correo){
-        Integer idRol = 2;
+    // obtenerAdministradorClienteCorreo
+    public UsuarioDTO obtenerAdministradorClienteCorreo(String correo, Integer idRol){
         Usuario usuario = usuarioRepositorio.findByCorreoAndRolIdRol(correo, idRol);
         UsuarioDTO resultado = modelMapper.map(usuario, UsuarioDTO.class);
         if (resultado == null){

@@ -124,10 +124,11 @@ public class UsuarioControlador {
         ));
     }
 
-    @GetMapping("/administrador")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<UsuarioDTO> obtenerIdAdministradorCorreo(@RequestParam String correo){
-        return ResponseEntity.ok(usuarioServicio.obtenerIdAdministradorCorreo(correo));
+    //Esta API permite obtener los datos del cliente/admin al iniciar sesion
+    @GetMapping("/obtener-usuario")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    public ResponseEntity<UsuarioDTO> obtenerAdministradorClienteCorreo(@RequestParam String correo, Integer idRol){
+        return ResponseEntity.ok(usuarioServicio.obtenerAdministradorClienteCorreo(correo, idRol));
     }
 
         // NO SE VAN A USAR
