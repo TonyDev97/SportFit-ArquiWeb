@@ -176,6 +176,7 @@ public class UsuarioServicio {
         return usuarioDTOs;
     }
 
+    // Agregado por mi
     public UsuarioDTO obtenerIdAdministradorCorreo(String correo){
         Integer idRol = 2;
         Usuario usuario = usuarioRepositorio.findByCorreoAndRolIdRol(correo, idRol);
