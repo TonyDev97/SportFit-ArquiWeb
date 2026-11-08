@@ -124,6 +124,11 @@ public class UsuarioControlador {
         ));
     }
 
+    @GetMapping("/administrador")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<UsuarioDTO> obtenerIdAdministradorCorreo(@RequestParam String correo){
+        return ResponseEntity.ok(usuarioServicio.obtenerIdAdministradorCorreo(correo));
+    }
 
         // NO SE VAN A USAR
     //@GetMapping("/usuarios")

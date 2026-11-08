@@ -176,6 +176,15 @@ public class UsuarioServicio {
         return usuarioDTOs;
     }
 
+    public UsuarioDTO obtenerIdAdministradorCorreo(String correo){
+        Integer idRol = 2;
+        Usuario usuario = usuarioRepositorio.findByCorreoAndRolIdRol(correo, idRol);
+        UsuarioDTO resultado = modelMapper.map(usuario, UsuarioDTO.class);
+        if (resultado == null){
+            throw new RuntimeException("No existe el usuario");
+        }
+        return resultado;
+    }
 
 
 }
