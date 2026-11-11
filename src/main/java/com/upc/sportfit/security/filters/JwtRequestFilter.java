@@ -26,6 +26,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    // Omitir JWT incluso si el servidor registra este componente como filtro.
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return true;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {

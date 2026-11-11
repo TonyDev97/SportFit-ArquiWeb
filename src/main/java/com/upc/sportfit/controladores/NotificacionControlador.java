@@ -2,14 +2,10 @@ package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.NotificacionDTO;
 import com.upc.sportfit.entidades.Notificacion;
-import com.upc.sportfit.entidades.Usuario;
-import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import com.upc.sportfit.servicios.NotificacionServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +17,6 @@ public class NotificacionControlador {
 
     @Autowired
     private NotificacionServicio notificacionServicio;
-
-    @Autowired
-    private UsuarioRepositorio usuarioRepositorio;
 
     //ED 36 - H11 - Obtener las notificaciones del usuario por ID usuario
     @GetMapping("/notificacion/cliente/{idUsuario}")
@@ -37,12 +30,7 @@ public class NotificacionControlador {
     @GetMapping("/notificacion/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<NotificacionDTO> listarId(@PathVariable("id") Integer id) {
-        Integer currentUserId = getCurrentUserId();
-        // Validar ownership: la notificación debe pertenecer al usuario autenticado
-        NotificacionDTO notificacion = notificacionServicio.listarNotificacionPorId(id);
-        // La validación de ownership se hace en el servicio al obtener la notificación completa
-        // Pero aquí verificamos que el usuario autenticado coincida con el dueño
-        return ResponseEntity.ok(notificacion);
+        return ResponseEntity.ok(notificacionServicio.listarNotificacionPorId(id));
     }
 
     //ED no existente en la tabla mejorar HU? - registrar notificación
@@ -57,16 +45,14 @@ public class NotificacionControlador {
     @PutMapping("/notificacion-leida/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<NotificacionDTO> marcarComoLeida(@PathVariable Integer id) {
-        Integer currentUserId = getCurrentUserId();
-        return ResponseEntity.ok(notificacionServicio.marcarComoLeida(id, currentUserId));
+        return ResponseEntity.ok(notificacionServicio.marcarComoLeida(id));
     }
 
     //ED 40 - HU11 - eliminar notificación
     @DeleteMapping("/notificacion-eliminar/{id}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) {
-        Integer currentUserId = getCurrentUserId();
-        notificacionServicio.eliminarNotificacion(id, currentUserId);
+        notificacionServicio.eliminarNotificacion(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -84,13 +70,4 @@ public class NotificacionControlador {
     public Notificacion actualizar(@RequestBody Notificacion notificacion) {
         return notificacionServicio.registrarNotificacion(notificacion);
     }*/
-
-    private Integer getCurrentUserId() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        Usuario usuario = usuarioRepositorio.findByCorreo(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
-        return usuario.getIdUsuario();
-    }
-
 }

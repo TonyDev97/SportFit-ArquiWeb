@@ -25,7 +25,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+// Seguridad por roles desactivada para pruebas sin autenticacion.
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
@@ -51,24 +51,13 @@ public class SecurityConfig {
         //Customizer.withDefaults: utilizamos la configuración disponible del cors sin definir manualmente dentro de security :)
         //http.cors: activa el soporte cors compañeritos
         http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/authenticate",
-                                "/api/auth/register"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        // Filtro JWT desactivado en esta rama de pruebas.
 
 
         return http.build();

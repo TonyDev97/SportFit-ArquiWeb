@@ -48,14 +48,12 @@ public class NotificacionServicio {
         return notificacionDTOs;
     }*/
 
-    //HU11 - ED39 - Marcar como leida con validación de ownership
-    public NotificacionDTO marcarComoLeida(Integer id, Integer currentUserId) {
+    //HU11 - ED39 - Marcar como leida sin autenticacion para pruebas
+    public NotificacionDTO marcarComoLeida(Integer id) {
         Notificacion notificacion = notificacionRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
 
-        if (!notificacion.getUsuario().getIdUsuario().equals(currentUserId)) {
-            throw new RuntimeException("No autorizado para modificar esta notificación");
-        }
+        // Acceso libre a notificaciones en esta rama de pruebas.
 
         notificacion.setLeido(true);
         Notificacion saved = notificacionRepositorio.save(notificacion);
@@ -75,14 +73,12 @@ public class NotificacionServicio {
         return modelMapper.map(notificacion, NotificacionDTO.class);
     }
 
-    //ED40 - HU11 - Eliminar notificación con validación de ownership
-    public void eliminarNotificacion(Integer id, Integer currentUserId) {
+    //ED40 - HU11 - Eliminar notificación sin autenticacion para pruebas
+    public void eliminarNotificacion(Integer id) {
         Notificacion notificacion = notificacionRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
 
-        if (!notificacion.getUsuario().getIdUsuario().equals(currentUserId)) {
-            throw new RuntimeException("No autorizado para eliminar esta notificación");
-        }
+        // Acceso libre a notificaciones en esta rama de pruebas.
 
         notificacionRepositorio.deleteById(id);
     }
