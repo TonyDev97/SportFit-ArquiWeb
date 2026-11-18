@@ -7,6 +7,7 @@ import com.upc.sportfit.repositorios.RolRepositorio;
 import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -19,6 +20,9 @@ import java.util.Optional;
 
 @Service
 public class UsuarioServicio {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
@@ -114,7 +118,7 @@ public class UsuarioServicio {
         if(usuario == null){
             throw new RuntimeException("No es existe el usuario para cambiar la contraseña");
         }
-        usuario.setContrasenaHash(password);
+        usuario.setContrasenaHash(passwordEncoder.encode(password));
         usuarioRepositorio.save(usuario);
         return modelMapper.map(usuario, UsuarioDTO.class) ;
     }
