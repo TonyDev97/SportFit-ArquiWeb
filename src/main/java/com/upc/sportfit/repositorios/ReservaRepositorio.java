@@ -1,5 +1,6 @@
 package com.upc.sportfit.repositorios;
 
+import com.upc.sportfit.dtos.MiReservaDTO;
 import com.upc.sportfit.dtos.reportes.*;
 import com.upc.sportfit.entidades.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -178,5 +180,29 @@ public interface ReservaRepositorio extends JpaRepository<Reserva, Integer> {
             "GROUP BY r.sedeCancha.cancha.deporte, EXTRACT(MONTH FROM r.fReserva) " +
             "ORDER BY r.sedeCancha.cancha.deporte, EXTRACT(MONTH FROM r.fReserva)")
     List<TendenciaAnualDTO> listarTendenciaAnual(@Param("anio") Integer anio);
+
+    // Cuenta las reservas solicitadas o confirmadas que se cruzan con el horario pedido
+    @Query("SELECT COUNT(r) FROM Reserva r " +
+            "WHERE r.sedeCancha.idSedeCancha = :idSedeCancha " +
+            "AND r.fReserva = :fecha " +
+            "AND LOWER(r.estado) IN ('solicitada', 'confirmada') " +
+            "AND r.hInicio < :hFin AND r.hFin > :hInicio")
+    Long contarReservasQueSeCruzan(@Param("idSedeCancha") Integer idSedeCancha,
+                                   @Param("fecha") LocalDate fecha,
+                                   @Param("hInicio") LocalTime hInicio,
+                                   @Param("hFin") LocalTime hFin);
+
+    // MIS RESERVAS: trae las reservas de un cliente con los datos de cancha, sede, deporte y pago.
+    @Query("SELECT new com.upc.sportfit.dtos.MiReservaDTO(" +
+            "r.idReserva, s.idSede, tc.idTipoCancha, tc.deporte, sc.idSedeCancha, s.nombre, " +
+            "r.fReserva, r.hInicio, r.hFin, p.montoTotal, p.metodo, r.estado) " +
+            "FROM Reserva r " +
+            "JOIN r.sedeCancha sc " +
+            "JOIN sc.sede s " +
+            "JOIN sc.cancha tc " +
+            "LEFT JOIN Pago p ON p.reserva = r " +
+            "WHERE r.usuario.idUsuario = :idUsuario " +
+            "ORDER BY r.fReserva DESC, r.hInicio DESC")
+    List<MiReservaDTO> listarMisReservas(@Param("idUsuario") Integer idUsuario);
 
 }

@@ -7,12 +7,12 @@ import com.upc.sportfit.entidades.*;
 import com.upc.sportfit.repositorios.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Year;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -808,5 +808,94 @@ public class ReservaServicio {
 
         return lista;
     }
+
+    // ED 69
+    //Crea una reserva en estado 'solicitada' y su pago en una sola transacción,
+    //reutilizando registrarReserva y registrarPago. Si algo falla, no se guarda nada.
+    @Transactional
+    public ReservaDTO solicitarReserva(SolicitudReservaDTO solicitud) {
+
+        // Paso 1: comprobar que lleguen la reserva y un pago, y que estén completos
+        if (solicitud == null || solicitud.getReserva() == null
+                || solicitud.getPagos() == null || solicitud.getPagos().isEmpty()) {
+            throw new IllegalArgumentException("Debe enviar los datos de la reserva y del pago");
+        }
+        ReservaDTO reservaDTO = solicitud.getReserva();
+        PagoDTO pagoDTO = solicitud.getPagos().get(0); // solo se usa el primer pago
+
+        if (reservaDTO.getIdUsuario() == null || reservaDTO.getCreadoPor() == null
+                || reservaDTO.getCreadoPor().isBlank()) {
+            throw new IllegalArgumentException("Debe indicar el usuario que solicita la reserva");
+        }
+        if (reservaDTO.getIdSedeCancha() == null || reservaDTO.getFReserva() == null
+                || reservaDTO.getHInicio() == null || reservaDTO.getHFin() == null) {
+            throw new IllegalArgumentException("Debe indicar la cancha, la fecha y el horario");
+        }
+        if (!reservaDTO.getHInicio().isBefore(reservaDTO.getHFin())) {
+            throw new IllegalArgumentException("La hora de inicio debe ser anterior a la hora final");
+        }
+        if (pagoDTO.getMontoTotal() == null || pagoDTO.getMontoTotal().signum() <= 0) {
+            throw new IllegalArgumentException("El monto total debe ser mayor a 0");
+        }
+        if (pagoDTO.getMetodo() == null || pagoDTO.getMetodo().isBlank()) {
+            throw new IllegalArgumentException("Debe indicar el método de pago");
+        }
+        if (pagoDTO.getUrlComprobante() == null || pagoDTO.getUrlComprobante().isBlank()
+                || pagoDTO.getUrlComprobante().length() > 500) {
+            throw new IllegalArgumentException("Debe ingresar la URL del comprobante (máximo 500 caracteres)");
+        }
+
+        // Paso 2: la fecha debe ser desde mañana en adelante (hora de Lima)
+        LocalDate hoy = LocalDate.now(ZoneId.of("America/Lima"));
+        if (!reservaDTO.getFReserva().isAfter(hoy)) {
+            throw new IllegalArgumentException("La fecha de reserva debe ser desde mañana en adelante");
+        }
+
+        // Paso 3: buscar la cancha y comprobar que esté activa
+        SedeCancha sedeCancha = sedeCanchaRepositorio.findById(reservaDTO.getIdSedeCancha())
+                .orElseThrow(() -> new NoSuchElementException("La cancha no existe con ID: " + reservaDTO.getIdSedeCancha()));
+        if (!Boolean.TRUE.equals(sedeCancha.getEstado())) {
+            throw new IllegalArgumentException("La cancha seleccionada no está disponible");
+        }
+
+        // Paso 4: comprobar que no choque con otra reserva solicitada o confirmada
+        Long cruces = reservaRepositorio.contarReservasQueSeCruzan(
+                reservaDTO.getIdSedeCancha(), reservaDTO.getFReserva(), reservaDTO.getHInicio(), reservaDTO.getHFin());
+        if (cruces > 0) {
+            // 409 = conflicto: el front lo usa para mostrar el diálogo "Reserva no disponible"
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "El horario seleccionado ya fue reservado por otro usuario. Por favor, selecciona otro horario disponible.");
+        }
+
+        // Paso 5: la reserva siempre nace 'solicitada' y se crea con registrarReserva
+        // (registrarReserva también comprueba que el usuario exista)
+        reservaDTO.setEstado("solicitada");
+        ReservaDTO reservaCreada = registrarReserva(reservaDTO);
+
+        // Paso 6: crear el pago asociado a la reserva con registrarPago
+        pagoDTO.setMetodo(pagoDTO.getMetodo().trim());
+        pagoDTO.setUrlComprobante(pagoDTO.getUrlComprobante().trim());
+        pagoDTO.setIdReserva(reservaCreada.getIdReserva());
+        pagoServicio.registrarPago(pagoDTO);
+
+        return reservaCreada;
+    }
+
+    //ED70
+    public List<MiReservaDTO> filtrarMisReservas(Integer idUsuario, Integer idSede, Integer idTipoCancha,
+                                                 String estado, LocalDate fecha,
+                                                 LocalTime horaInicio, LocalTime horaFin) {
+        List<MiReservaDTO> reservas = reservaRepositorio.listarMisReservas(idUsuario);
+
+        return reservas.stream()
+                .filter(r -> idSede == null || idSede.equals(r.getIdSede()))
+                .filter(r -> idTipoCancha == null || idTipoCancha.equals(r.getIdTipoCancha()))
+                .filter(r -> estado == null || estado.isBlank() || estado.trim().equalsIgnoreCase(r.getEstado()))
+                .filter(r -> fecha == null || fecha.equals(r.getFReserva()))
+                .filter(r -> horaInicio == null || r.getHInicio().equals(horaInicio))  // empieza exactamente a esa hora
+                .filter(r -> horaFin == null || r.getHFin().equals(horaFin))           // termina exactamente a esa hora
+                .toList();
+    }
+
 
 }

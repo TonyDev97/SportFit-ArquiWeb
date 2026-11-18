@@ -57,6 +57,10 @@ INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES
 INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES ('Cancha Futsal Barranco', true, 38.00, 4, 5);
 INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES ('Cancha Tenis Barranco', true, 60.00, 4, 4);
 INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES ('Cancha Basket Barranco', true, 33.00, 4, 2);
+-- Canchas extra de FUTBOL en Sede Surco (varias filas en el cuadro)
+INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES ('Cancha Futbol Surco B', true, 25.00, 1, 1);
+INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES ('Cancha Futbol Surco C', true, 45.00, 1, 1);
+INSERT INTO sede_cancha (nombre, estado, precio, id_sede, id_tipo_cancha) VALUES ('Cancha Futbol Surco D', true, 45.00, 1, 1);
 
 -- =========================================================
 -- RESERVAS (ids 1 a 25)
@@ -69,7 +73,7 @@ INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion,
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-28', '09:00:00', '11:00:00', 'completada', 'import.sql', CURRENT_TIMESTAMP, 6, 2);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-28', '10:00:00', '12:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 7, 5);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-28', '17:00:00', '19:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 6);
-INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '07:00:00', '09:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 9);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '08:00:00', '10:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 9);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '08:00:00', '10:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 6, 10);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '12:00:00', '13:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 1, 7);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-09-30', '15:00:00', '17:00:00', 'completada', 'import.sql', CURRENT_TIMESTAMP, 7, 1);
@@ -81,7 +85,7 @@ INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion,
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-05', '10:00:00', '12:00:00', 'rechazada', 'import.sql', CURRENT_TIMESTAMP, 4, 12);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-05', '14:00:00', '16:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 5, 5);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-05', '16:00:00', '18:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 6, 10);
-INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-10', '07:00:00', '09:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 7, 9);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-10', '08:00:00', '10:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 7, 9);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-10', '09:00:00', '11:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 1, 2);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-10', '13:00:00', '15:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 4);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-10', '20:00:00', '22:00:00', 'rechazada', 'import.sql', CURRENT_TIMESTAMP, 5, 6);
@@ -89,7 +93,22 @@ INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion,
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '11:00:00', '13:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 7, 3);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '15:00:00', '17:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 1, 9);
 INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '18:00:00', '20:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 10);
-INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '22:00:00', '24:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 10);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES ('2026-10-15', '21:00:00', '23:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 4, 10);
+-- Corregir fechas de reservas para que estén en el rango de fechas actual
+-- (evitar cambair todo a mano y de igual manera pasen los dias y tenga q cambair denuevo)
+UPDATE reserva SET f_reserva = CURRENT_DATE + (id_reserva % 7 + 1) WHERE id_reserva <= 26 AND estado IN ('confirmada', 'solicitada');
+UPDATE reserva SET f_reserva = CURRENT_DATE - (id_reserva % 20 + 1) WHERE id_reserva <= 26 AND estado IN ('completada', 'cancelada', 'rechazada');
+-- RESERVAS CON EL CLIENTE PRUEBA (id_usuario = 2) PARA PRUEBAS DE FRONTEND
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE + 3, '09:00:00', '11:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 2, 1);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE + 3, '18:00:00', '20:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 2, 4);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE + 5, '10:00:00', '12:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 2, 2);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE + 4, '15:00:00', '17:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 2, 3);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE + 6, '19:00:00', '21:00:00', 'solicitada', 'import.sql', CURRENT_TIMESTAMP, 2, 11);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE - 3, '08:00:00', '10:00:00', 'completada', 'import.sql', CURRENT_TIMESTAMP, 2, 9);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE - 10, '16:00:00', '18:00:00', 'completada', 'import.sql', CURRENT_TIMESTAMP, 2, 10);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE - 1, '20:00:00', '22:00:00', 'cancelada', 'import.sql', CURRENT_TIMESTAMP, 2, 6);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE - 5, '13:00:00', '15:00:00', 'rechazada', 'import.sql', CURRENT_TIMESTAMP, 2, 12);
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) VALUES (CURRENT_DATE + 7, '21:00:00', '23:00:00', 'confirmada', 'import.sql', CURRENT_TIMESTAMP, 2, 14);
 
 -- =========================================================
 -- PAGOS (reservas solicitada, confirmada, completada y tambien cancelada: esas son el monto perdido)
@@ -118,15 +137,29 @@ INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (45.0
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (38.00, 'Yape', 'https://comprobantes/021', 9);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (55.00, 'Plin', 'https://comprobantes/022', 12);
 INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (40.00, 'Efectivo', null, 17);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (70.00, 'Yape', 'https://comprobantes/023', 21);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (76.00, 'Plin', 'https://comprobantes/024', 26);
+-- Pagos de reservas del cliente prueba (id_usuario = 2)
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (90.00, 'Yape', 'https://comprobantes/027', 27);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (100.00, 'Plin', 'https://comprobantes/028', 28);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (60.00, 'Yape', 'https://comprobantes/029', 29);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (70.00, 'Yape', 'https://comprobantes/030', 30);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (120.00, 'Plin', 'https://comprobantes/031', 31);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (84.00, 'Tarjeta', 'https://comprobantes/032', 32);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (76.00, 'Yape', 'https://comprobantes/033', 33);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (70.00, 'Yape', 'https://comprobantes/034', 34);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (66.00, 'Plin', 'https://comprobantes/035', 35);
+INSERT INTO pago (monto_total, metodo, url_comprobante, id_reserva) VALUES (90.00, 'Yape', 'https://comprobantes/036', 36);
 
 -- =========================================================
 -- CANCELACIONES (solo reservas con estado cancelada)
--- tipos: No podre asistir | Problemas de salud | Problemas de transporte | Reserve por error
+-- tipos: No podre asistir | Problemas de salud | Problemas de transporte | Reserve por error | Otro
 -- =========================================================
 INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('No podré asistir', CURRENT_TIMESTAMP, 4);
 INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('Problemas de salud', CURRENT_TIMESTAMP, 9);
 INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('Problemas de transporte', CURRENT_TIMESTAMP, 12);
 INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('Reservé por error', CURRENT_TIMESTAMP, 17);
+INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('No podré asistir', CURRENT_TIMESTAMP, 34);
 
 -- =========================================================
 -- NOTIFICACIONES

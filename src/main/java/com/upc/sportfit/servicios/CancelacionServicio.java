@@ -42,6 +42,10 @@ public class CancelacionServicio {
     // Añadir una cancelación
     @Transactional
     public CancelacionDTO registrar(CancelacionDTO cancelacionDTO) {
+        // El motivo es obligatorio
+        if (cancelacionDTO.getTipoCancelacion() == null || cancelacionDTO.getTipoCancelacion().isBlank()) {
+            throw new IllegalArgumentException("Debe indicar el motivo de cancelación");
+        }
         //Validamos que exite el id los odio compañeritos
         if (cancelacionDTO.getIdReserva() == null) {
             throw new RuntimeException("Debe especificar una reserva válida");
