@@ -66,6 +66,7 @@ public class UsuarioControlador {
     }
 
 
+
     // ED56
     @PutMapping("/usuario/administrador-password/{idAdmin}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -74,6 +75,7 @@ public class UsuarioControlador {
             @RequestBody String password){
         return ResponseEntity.ok(usuarioServicio.cambiarPassword(idAdmin, password));
     }
+
     /*
     // ED57
     @PostMapping("/usuario/cliente")
