@@ -1,14 +1,10 @@
 package com.upc.sportfit.dtos;
 
-import com.upc.sportfit.entidades.Rol;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
@@ -24,6 +20,8 @@ public class UsuarioDTO {
     private String dni;
     private String telefono;
     private String correo;
+    //utilizamos esto para el cambio de contraseña y poder un cifrado BCrypt investigación propia no enseñado por el profesor
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contrasenaHash;
     private Boolean activo;
     private String imgUsuario;

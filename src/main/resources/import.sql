@@ -20,7 +20,9 @@ INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, a
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Juan', 'Perez', '12345678', '987654321', 'jperez@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Maria', 'Gomez', '10000002', '900000002', 'mgomez@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 2);
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Carlos', 'Ramirez', '10000003', '900000003', 'cramirez@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 2);
-INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Lucia', 'Torres', '10000004', '900000004', 'ltorres@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
+
+INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol, img_usuario) VALUES ('Lucia', 'Torres', '10000004', '900000004', 'ltorres@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1, 'https://drive.google.com/thumbnail?id=1TFHRfUT0CtzxpV-4Kys_As8A6YMjjWWN&sz=w1000');
+
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Diego', 'Flores', '10000005', '900000005', 'dflores@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Ana', 'Castillo', '10000006', '900000006', 'acastillo@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', true, 'import.sql', CURRENT_TIMESTAMP, 1);
 INSERT INTO usuario (nombre, apellido, dni, telefono, correo, contrasena_hash, activo, creado_por, f_creacion, id_rol) VALUES ('Pedro', 'Huaman', '10000007', '900000007', 'phuaman@correo.com', '$2a$12$R/CseIQ.R/ElyHhZvFNkmuLxC35yWMO9ILU8rCAYFZTBb8DIylFg2', false, 'import.sql', CURRENT_TIMESTAMP, 1);
@@ -177,3 +179,9 @@ INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuar
 -- tipos: Tecnico | Instalaciones | Preguntas
 -- estados: Pendiente | Atendido
 -- =========================================================
+
+
+-- INCIDENCIAS DEL USUARIO 6
+INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Tecnico', 'Error al visualizar mis reservas', 'Al ingresar a Mis reservas, algunas reservas confirmadas no aparecen en el historial.', 'Pendiente', NULL, CURRENT_TIMESTAMP, NULL, 6);
+INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Instalaciones', 'Iluminacion defectuosa en cancha', 'Durante mi reserva en la sede Surco, dos reflectores dejaron de funcionar y dificultaron el partido.', 'Pendiente', NULL, CURRENT_TIMESTAMP, NULL, 6);
+INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Preguntas', 'Consulta sobre cambio de horario', 'Quisiera saber si puedo modificar la fecha y hora de una reserva confirmada sin realizar un pago adicional.', 'Pendiente', NULL, CURRENT_TIMESTAMP, NULL, 6);

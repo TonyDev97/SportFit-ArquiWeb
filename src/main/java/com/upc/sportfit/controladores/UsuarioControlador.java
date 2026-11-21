@@ -1,14 +1,12 @@
 package com.upc.sportfit.controladores;
 
-import com.upc.sportfit.dtos.PerfilClienteDTO;
 import com.upc.sportfit.dtos.UsuarioDTO;
-import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -61,9 +59,11 @@ public class UsuarioControlador {
     // Validado
     @PutMapping("/usuario-actualizar")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO){
-        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO));
+    public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO) {
+        String correo = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO, correo));
     }
+
 
 
     // ED56
@@ -101,27 +101,6 @@ public class UsuarioControlador {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
         return ResponseEntity.ok(usuarioServicio.cambiarEstado(id, estado));
-    }
-
-    // Se implemento para el acceso de froend -> crear el service -> repository
-    @GetMapping("/cliente/perfil")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public ResponseEntity<PerfilClienteDTO> obtenerPerfil(Authentication authentication) {
-        Usuario usuario = usuarioServicio.buscarPorCorreo(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-
-
-        return ResponseEntity.ok(new PerfilClienteDTO(
-                usuario.getIdUsuario(),
-                usuario.getNombre(),
-                usuario.getApellido(),
-                usuario.getDni(),
-                usuario.getTelefono(),
-                usuario.getCorreo(),
-                usuario.getActivo(),
-                usuario.getImgUsuario(),
-                usuario.getFCreacion()
-        ));
     }
 
     //Esta API permite obtener los datos del cliente/admin al iniciar sesion

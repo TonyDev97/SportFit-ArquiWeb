@@ -8,14 +8,15 @@ import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+//importación para la contraseña
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
 
 @Service
 public class UsuarioServicio {
@@ -27,6 +28,9 @@ public class UsuarioServicio {
 
     @Autowired
     private RolRepositorio rolRepositorio;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UsuarioDTO insertar(UsuarioDTO usuarioDTO){
         Usuario usuario = modelMapper.map(usuarioDTO,Usuario.class);
@@ -56,23 +60,32 @@ public class UsuarioServicio {
     }
 
 
-    public UsuarioDTO actualizar(UsuarioDTO usuarioDTO){
-        return usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
-                .map(usuario -> {
-                    modelMapper.map(usuarioDTO, usuario);
 
-                    if (usuarioDTO.getIdRol() != null) {
-                        Rol rol = rolRepositorio.findById(usuarioDTO.getIdRol())
-                                .orElseThrow(() -> new NoSuchElementException("No existe el rol con ID: " + usuarioDTO.getIdRol()));
-                        usuario.setRol(rol);
-                    }
+    public UsuarioDTO actualizar(UsuarioDTO usuarioDTO, String correoAutenticado) {
+        Usuario usuario = usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
 
-                    usuario.setFModificacion(Instant.now());
-                    Usuario usuarioGuardado = usuarioRepositorio.save(usuario);
-                    return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
-                })
-                .orElseThrow(() -> new NoSuchElementException("No existe el usuario con el ID: " + usuarioDTO.getIdUsuario()));
+        if (!usuario.getCorreo().equals(correoAutenticado)) {
+            throw new AccessDeniedException("No puedes actualizar otro usuario");
+        }
+
+        Usuario datos = modelMapper.map(usuarioDTO, Usuario.class);
+        usuario.setNombre(datos.getNombre());
+        usuario.setApellido(datos.getApellido());
+        usuario.setDni(datos.getDni());
+        usuario.setTelefono(datos.getTelefono());
+        usuario.setCorreo(datos.getCorreo());
+        if (usuarioDTO.getContrasenaHash() != null &&
+                !usuarioDTO.getContrasenaHash().isBlank()) {
+            usuario.setContrasenaHash(
+                    passwordEncoder.encode(usuarioDTO.getContrasenaHash())
+            );
+        }
+        usuario.setFModificacion(Instant.now());
+        Usuario guardado = usuarioRepositorio.save(usuario);
+        return modelMapper.map(guardado, UsuarioDTO.class);
     }
+
 
 
     public UsuarioDTO cambiarEstado(Integer id, Boolean estado) {

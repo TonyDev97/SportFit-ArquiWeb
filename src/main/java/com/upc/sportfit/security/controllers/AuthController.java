@@ -2,7 +2,6 @@ package com.upc.sportfit.security.controllers;
 
 import com.upc.sportfit.dtos.UsuarioDTO;
 import com.upc.sportfit.entidades.Rol;
-import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.repositorios.RolRepositorio;
 import com.upc.sportfit.security.dtos.AuthRequestDTO;
 import com.upc.sportfit.security.dtos.AuthResponseDTO;
@@ -12,7 +11,6 @@ import com.upc.sportfit.security.util.JwtUtil;
 import com.upc.sportfit.servicios.UsuarioServicio;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
