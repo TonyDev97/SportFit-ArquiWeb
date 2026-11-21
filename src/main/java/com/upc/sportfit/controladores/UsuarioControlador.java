@@ -71,7 +71,7 @@ public class UsuarioControlador {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> cambiarPassword(
             @PathVariable Integer idAdmin,
-            @RequestBody String password){
+            @RequestParam String password){
         return ResponseEntity.ok(usuarioServicio.cambiarPassword(idAdmin, password));
     }
     /*

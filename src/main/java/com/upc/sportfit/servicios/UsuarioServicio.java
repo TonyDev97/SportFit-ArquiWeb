@@ -122,12 +122,11 @@ public class UsuarioServicio {
 
     // MODIFICAR ACA
     public UsuarioDTO cambiarPassword(Integer id, String password){
-
         Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
         if(usuario == null){
             throw new RuntimeException("No es existe el usuario para cambiar la contraseña");
         }
-        usuario.setContrasenaHash(password);
+        usuario.setContrasenaHash(passwordEncoder.encode(password));
         usuarioRepositorio.save(usuario);
         return modelMapper.map(usuario, UsuarioDTO.class) ;
     }
