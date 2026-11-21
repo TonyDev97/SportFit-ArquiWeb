@@ -722,7 +722,7 @@ public class ReservaServicio {
 
     // ED30: Banner del dashboard (total de reservas, deporte popular y sede popular del mes)
     public BannerReservasDTO cargarBannerReservas() {
-        Integer mes = 9;
+        Integer mes = LocalDate.now().getMonthValue();
         List<ReservaDeporteSedeDTO> datos = reservaRepositorio.frecuenciaReservasPorDeporteSede(mes);
         if (datos.isEmpty()) {
             throw new RuntimeException("No hay reservas para el período seleccionado");

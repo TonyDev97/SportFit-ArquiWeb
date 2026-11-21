@@ -164,13 +164,20 @@ INSERT INTO cancelacion (tipo_cancelacion, f_cancelacion, id_reserva) VALUES ('N
 -- =========================================================
 -- NOTIFICACIONES
 -- =========================================================
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Confirmación de reserva', 'Tu reserva del 30/09 en Sede Surco quedó confirmada', CURRENT_TIMESTAMP, true, 4);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Cancelación', 'Cancelación de reserva', 'Tu reserva del 28/09 fue cancelada por no poder asistir', CURRENT_TIMESTAMP, false, 7);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Confirmación de pago', 'Registramos el pago de tu reserva en Sede Barranco', CURRENT_TIMESTAMP, true, 5);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Recordatorio', 'Recordatorio de reserva', 'Mañana tienes reserva en Sede Miraflores a las 09:00', CURRENT_TIMESTAMP, false, 6);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Recordatorio', 'Recordatorio de reserva', 'Tu reserva en Sede Barranco es en 2 horas', CURRENT_TIMESTAMP, false, 1);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Confirmación de reserva', 'Tu reserva ha sido confirmada', CURRENT_TIMESTAMP, false, 3);
-INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Cancelación', 'Cancelación de reserva', 'Tu reserva fue cancelada', CURRENT_TIMESTAMP, true, 3);
+
+-- Clientes: estado de sus propias reservas.
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Reserva aprobada', 'Tu reserva #27 fue aprobada.', CURRENT_TIMESTAMP, true, 2);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Pendiente', 'Reserva pendiente', 'Tu reserva #30 está pendiente de aprobación.', CURRENT_TIMESTAMP, false, 2);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Reserva aprobada', 'Tu reserva #5 fue aprobada.', CURRENT_TIMESTAMP, false, 3);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Pendiente', 'Reserva pendiente', 'Tu reserva #6 está pendiente de aprobación.', CURRENT_TIMESTAMP, false, 6);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Confirmación', 'Reserva aprobada', 'Tu reserva #13 fue aprobada.', CURRENT_TIMESTAMP, false, 7);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Pendiente', 'Reserva pendiente', 'Tu reserva #8 está pendiente de aprobación.', CURRENT_TIMESTAMP, false, 8);
+
+-- Administradores: solicitudes de reserva de clientes pendientes de revisión.
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Solicitud', 'Solicitud de reserva', 'El cliente de prueba envió la solicitud de reserva #30. Está pendiente de revisión.', CURRENT_TIMESTAMP, false, 1);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Solicitud', 'Solicitud de reserva', 'Lucía Torres envió la solicitud de reserva #6. Está pendiente de revisión.', CURRENT_TIMESTAMP, false, 4);
+INSERT INTO notificacion (tipo, titulo, mensaje, f_notificacion, leido, id_usuario) VALUES ('Solicitud', 'Solicitud de reserva', 'Ana Castillo envió la solicitud de reserva #8. Está pendiente de revisión.', CURRENT_TIMESTAMP, false, 5);
+
 
 -- =========================================================
 -- INCIDENCIAS
@@ -188,3 +195,7 @@ INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_cr
 INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Instalaciones', 'Candado trabado', 'La puerta del vestuario no abria', 'Atendido', 'Se cambio el candado', '2026-10-05 10:00:00', '2026-10-05 10:30:00', 5);
 INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Preguntas', 'Tarifa por grupos grandes', 'Hay descuento por torneos?', 'Pendiente', null, '2026-10-10 14:15:00', null, 6);
 INSERT INTO incidencia (tipo, asunto, descripcion, estado, respuesta_admin, f_creacion, f_respuesta, id_usuario) VALUES ('Tecnico', 'Sonido de parlantes distorsionado', 'El altavoz de la cancha 1 chilla', 'Atendido', 'Se cambio el cable de audio', '2026-10-18 16:00:00', '2026-10-19 10:00:00', 2);
+
+
+-- ED14: 10 reservas completadas del mes actual para probar los banners de A28.
+INSERT INTO reserva (f_reserva, h_inicio, h_fin, estado, creado_por, f_creacion, id_usuario, id_sede_cancha) SELECT DATE_TRUNC('month', CURRENT_DATE)::date, TIME '08:00' + n * INTERVAL '1 hour', TIME '09:00' + n * INTERVAL '1 hour', 'completada', 'import-ed14', CURRENT_TIMESTAMP, u.id_usuario, (SELECT sc.id_sede_cancha FROM sede_cancha sc ORDER BY sc.id_sede_cancha LIMIT 1 OFFSET (n % LEAST(5, (SELECT COUNT(*) FROM sede_cancha)))) FROM usuario u CROSS JOIN generate_series(0, 9) AS serie(n) WHERE u.correo = 'cliente@sportfit.com' AND EXISTS (SELECT 1 FROM sede_cancha) AND NOT EXISTS (SELECT 1 FROM reserva r WHERE r.creado_por = 'import-ed14' AND r.id_usuario = u.id_usuario AND r.f_reserva = DATE_TRUNC('month', CURRENT_DATE)::date AND r.h_inicio = TIME '08:00' + n * INTERVAL '1 hour');
