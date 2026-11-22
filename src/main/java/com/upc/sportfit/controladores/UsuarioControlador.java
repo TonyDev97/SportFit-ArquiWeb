@@ -60,8 +60,11 @@ public class UsuarioControlador {
     @PutMapping("/usuario-actualizar")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO) {
-        String correo = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO, correo));
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String correo = auth.getName();
+        boolean esAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMINISTRADOR".equals(a.getAuthority()));
+        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO, correo, esAdmin));
     }
 
 
