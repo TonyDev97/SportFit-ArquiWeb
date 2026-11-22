@@ -75,6 +75,9 @@ public class UsuarioServicio {
         usuario.setDni(datos.getDni());
         usuario.setTelefono(datos.getTelefono());
         usuario.setCorreo(datos.getCorreo());
+        if (datos.getImgUsuario() != null && !datos.getImgUsuario().isBlank()) {
+            usuario.setImgUsuario(datos.getImgUsuario());
+        }
         if (usuarioDTO.getContrasenaHash() != null &&
                 !usuarioDTO.getContrasenaHash().isBlank()) {
             usuario.setContrasenaHash(

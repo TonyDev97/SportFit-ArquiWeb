@@ -18,7 +18,7 @@ public class UsuarioControlador {
     private UsuarioServicio usuarioServicio;
 
     // ED48
-    @GetMapping("/api/usuario-clientes-reservas/{cantidadReservas}")
+    @GetMapping("/usuario-clientes-reservas/{cantidadReservas}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesCantidadReservas(@PathVariable Integer cantidadReservas){
         return ResponseEntity.ok(usuarioServicio.buscarClientesCantidadReservas(cantidadReservas));
@@ -90,7 +90,7 @@ public class UsuarioControlador {
     }
 
     // ED59
-    @GetMapping("/api/usuarios-clientes-correo/{dominio}")
+    @GetMapping("/usuarios-clientes-correo/{dominio}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClienteCorreoDominio(@PathVariable String dominio){
         return ResponseEntity.ok(usuarioServicio.buscarClienteCorreoDominio(dominio));
