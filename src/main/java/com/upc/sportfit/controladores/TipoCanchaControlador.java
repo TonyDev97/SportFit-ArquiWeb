@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true", exposedHeaders = "Authorization")
+@CrossOrigin(origins = {"http://localhost:4200", "http://100.60.225.62:4200"}, allowCredentials = "true", exposedHeaders = "Authorization")
 public class TipoCanchaControlador {
     @Autowired
     private TipoCanchaServicio tipoCanchaServicio;
