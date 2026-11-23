@@ -1,8 +1,10 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.TipoCanchaDTO;
 import com.upc.sportfit.entidades.TipoCancha;
 import com.upc.sportfit.servicios.TipoCanchaServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,12 @@ import java.util.List;
 public class TipoCanchaControlador {
     @Autowired
     private TipoCanchaServicio tipoCanchaServicio;
+
+    @GetMapping("/tipoCanchas")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<TipoCanchaDTO>> listar() {
+        return ResponseEntity.ok(tipoCanchaServicio.listar());
+    }
     /*
     @PostMapping("/tipoCancha")
     @PreAuthorize("hasRole('ADMINISTRADOR')")

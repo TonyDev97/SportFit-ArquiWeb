@@ -8,13 +8,15 @@ import com.upc.sportfit.repositorios.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+
+//importación para la contraseña
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
 
 @Service
 public class UsuarioServicio {
@@ -27,9 +29,13 @@ public class UsuarioServicio {
     @Autowired
     private RolRepositorio rolRepositorio;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UsuarioDTO insertar(UsuarioDTO usuarioDTO){
         Usuario usuario = modelMapper.map(usuarioDTO,Usuario.class);
-        Rol rol = rolRepositorio.findByNombre("CLIENTE");
+        Rol rol = rolRepositorio.findById(usuarioDTO.getIdRol())
+                .orElseThrow(() -> new NoSuchElementException("No existe el rol con ID: " + usuarioDTO.getIdRol()));
         usuario.setRol(rol);
         usuario.setFCreacion(Instant.now());
         usuario.setCreadoPor("API");
@@ -37,44 +43,65 @@ public class UsuarioServicio {
         return modelMapper.map(usuario,UsuarioDTO.class);
     }
 
-    public Usuario insertar(Usuario usuario){
-        return usuarioRepositorio.save(usuario);
-    }
-
     public Optional<Usuario> buscarPorCorreo(String correo){
         return usuarioRepositorio.findByCorreo(correo);
     }
 
-    public List<Usuario> listarTodo(){
-        return usuarioRepositorio.findByRol_IdRol(1);
+    public List<UsuarioDTO> listarTodo() {
+        return usuarioRepositorio.findByRol_IdRol(1)
+                .stream()
+                .map(usuario -> modelMapper.map(usuario, UsuarioDTO.class))
+                .toList();
     }
 
+    //NO SE USA
     public List<Usuario> listarActivos(){
         return usuarioRepositorio.findByActivoTrue();
     }
 
 
-    public UsuarioDTO actualizar(UsuarioDTO usuarioDTO){
-        return usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
-                .map(usuario -> {
-                    modelMapper.map(usuarioDTO, usuario);
-                    Usuario usuarioGuardado = usuarioRepositorio.save(usuario);
-                    return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
-                })
-                .orElseThrow(() -> new RuntimeException("No existe el usuario con el id: " + usuarioDTO.getIdUsuario()));
-    }
+    public UsuarioDTO actualizar(UsuarioDTO usuarioDTO, String correoAutenticado, boolean esAdmin) {
+        Usuario usuario = usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
 
-
-    public Usuario cambiarEstado(Integer id, Boolean estado){
-        Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
-
-        if(usuario != null){
-            usuario.setActivo(estado);
-            return usuarioRepositorio.save(usuario);
+        if (!esAdmin && !usuario.getCorreo().equals(correoAutenticado)) {
+            throw new AccessDeniedException("No puedes actualizar otro usuario");
         }
-        return null;
+
+        Usuario datos = modelMapper.map(usuarioDTO, Usuario.class);
+        usuario.setNombre(datos.getNombre());
+        usuario.setApellido(datos.getApellido());
+        usuario.setDni(datos.getDni());
+        usuario.setTelefono(datos.getTelefono());
+        usuario.setCorreo(datos.getCorreo());
+        if (datos.getImgUsuario() != null && !datos.getImgUsuario().isBlank()) {
+            usuario.setImgUsuario(datos.getImgUsuario());
+        }
+        if (usuarioDTO.getContrasenaHash() != null &&
+                !usuarioDTO.getContrasenaHash().isBlank()) {
+            usuario.setContrasenaHash(
+                    passwordEncoder.encode(usuarioDTO.getContrasenaHash())
+            );
+        }
+        usuario.setFModificacion(Instant.now());
+        Usuario guardado = usuarioRepositorio.save(usuario);
+        return modelMapper.map(guardado, UsuarioDTO.class);
     }
 
+
+
+    public UsuarioDTO cambiarEstado(Integer id, Boolean estado) {
+        Usuario usuario = usuarioRepositorio.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No existe el usuario con el ID: " + id));
+
+        usuario.setActivo(estado);
+        usuario.setFModificacion(Instant.now());
+        Usuario guardado = usuarioRepositorio.save(usuario);
+
+        return modelMapper.map(guardado, UsuarioDTO.class);
+    }
+
+    // NO SE USA
     public List<Usuario> buscarClientes(String nombre, String dni, Boolean estado){
         if(nombre != null){
             return usuarioRepositorio.findByNombreContainingIgnoreCase(nombre);
@@ -90,18 +117,18 @@ public class UsuarioServicio {
         return usuarioRepositorio.findAll();
     }
 
+    // NO SE USA
     public Usuario buscarPorId(Integer id){
         return usuarioRepositorio.findById(id).orElse(null);
     }
 
     // MODIFICAR ACA
     public UsuarioDTO cambiarPassword(Integer id, String password){
-
         Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
         if(usuario == null){
             throw new RuntimeException("No es existe el usuario para cambiar la contraseña");
         }
-        usuario.setContrasenaHash(password);
+        usuario.setContrasenaHash(passwordEncoder.encode(password));
         usuarioRepositorio.save(usuario);
         return modelMapper.map(usuario, UsuarioDTO.class) ;
     }
@@ -163,6 +190,16 @@ public class UsuarioServicio {
         return usuarioDTOs;
     }
 
+    // Agregado por mi
+    // obtenerAdministradorClienteCorreo
+    public UsuarioDTO obtenerAdministradorClienteCorreo(String correo, Integer idRol){
+        Usuario usuario = usuarioRepositorio.findByCorreoAndRolIdRol(correo, idRol);
+        UsuarioDTO resultado = modelMapper.map(usuario, UsuarioDTO.class);
+        if (resultado == null){
+            throw new RuntimeException("No existe el usuario");
+        }
+        return resultado;
+    }
 
 
 }

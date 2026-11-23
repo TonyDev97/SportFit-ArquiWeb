@@ -22,8 +22,8 @@ public class SedeCanchaControlador {
     // ED45
     @GetMapping("/cancha/sede/{idSede}")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public List<SedeCancha> listarCanchasPorSede(@PathVariable Integer idSede) {
-        return sedeCanchaServicio.listarPorSedeActivas(idSede);
+    public ResponseEntity<List<SedeCanchaDTO>> listarCanchasPorSede(@PathVariable Integer idSede) {
+        return ResponseEntity.ok(sedeCanchaServicio.listarPorSedeActivas(idSede));
     }
 
     // ED46
@@ -48,15 +48,15 @@ public class SedeCanchaControlador {
     // ED49 - HU14: Cambiar estado del espacio deportivo
     @PutMapping("/sede-cancha/{idCancha}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public SedeCanchaDTO cambiarEstadoEspacio(@PathVariable Integer idCancha, @RequestParam Boolean estado) {
-        return sedeCanchaServicio.cambiarEstadoEspacio(idCancha, estado);
+    public ResponseEntity<SedeCanchaDTO> cambiarEstadoEspacio(@PathVariable Integer idCancha, @RequestParam Boolean estado) {
+        return ResponseEntity.ok(sedeCanchaServicio.cambiarEstadoEspacio(idCancha, estado));
     }
 
     // ED50 - HU14: Actualizar espacio deportivo utilizando DTO
     @PutMapping("/cancha/espacio/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public SedeCanchaDTO actualizarEspacio(@PathVariable Integer id, @RequestBody SedeCanchaDTO dto) {
-        return sedeCanchaServicio.actualizarEspacio(id, dto);
+    public ResponseEntity<SedeCanchaDTO> actualizarEspacio(@PathVariable Integer id, @RequestBody SedeCanchaDTO dto) {
+        return ResponseEntity.ok(sedeCanchaServicio.actualizarEspacio(id, dto));
     }
 
     // ED66 - HU14: Filtrar espacios deportivos según estado, sede y deporte

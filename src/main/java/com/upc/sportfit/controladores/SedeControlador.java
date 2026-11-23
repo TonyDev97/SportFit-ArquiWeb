@@ -1,8 +1,10 @@
 package com.upc.sportfit.controladores;
 
+import com.upc.sportfit.dtos.SedeDTO;
 import com.upc.sportfit.entidades.Sede;
 import com.upc.sportfit.servicios.SedeServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +21,8 @@ public class SedeControlador {
     // ED43 - HU43 LISTAR TODAS LAS SEDES
     @GetMapping("/sedes")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public List<Sede> listar() {
-        return sedeServicio.listar();
+    public ResponseEntity<List<SedeDTO>> listar() {
+        return ResponseEntity.ok(sedeServicio.listar());
     }
 
     /*

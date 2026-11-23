@@ -36,4 +36,8 @@ public class Pago {
     @JoinColumn(name = "id_reserva", nullable = false)
     private Reserva reserva;
 
+    public Integer getIdReserva() {
+        return this.reserva != null ? this.reserva.getIdReserva() : null;
+    }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -235,6 +236,32 @@ public class ReservaControlador {
         List<ReservaDTO> lista = reservaServicio.listarReservasSolicitadas();
         return ResponseEntity.ok(lista);
     }
+
+    //ED69
+    // NUEVA RESERVA: crea la reserva (estado 'solicitada') y su pago en una sola llamada.
+    // El front envía el idUsuario y el creadoPor dentro de la reserva.
+    @PostMapping("/reserva/solicitar")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ReservaDTO> solicitarReserva(@RequestBody SolicitudReservaDTO solicitudReservaDTO) {
+        return ResponseEntity.ok(reservaServicio.solicitarReserva(solicitudReservaDTO));
+    }
+
+    //ED70
+    // MIS RESERVAS: lista las reservas de un cliente con filtros concatenados (todos opcionales)
+    @GetMapping("/reservas-filtro/usuario/{idUsuario}")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    public ResponseEntity<List<MiReservaDTO>> filtrarMisReservas(
+            @PathVariable Integer idUsuario,
+            @RequestParam(required = false) Integer idSede,
+            @RequestParam(required = false) Integer idTipoCancha,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaFin) {
+        return ResponseEntity.ok(reservaServicio.filtrarMisReservas(
+                idUsuario, idSede, idTipoCancha, estado, fecha, horaInicio, horaFin));
+    }
+
 
 
     /*

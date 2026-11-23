@@ -16,6 +16,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class PagoServicio {
@@ -32,36 +33,52 @@ public class PagoServicio {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<Pago> listarPagos() {
-
-        return pagoRepositorio.findAll();
+    public List<PagoDTO> listarPagos() {
+        return pagoRepositorio.findAll()
+                .stream()
+                .map(pago -> modelMapper.map(pago, PagoDTO.class))
+                .toList();
     }
 
     // VALIDADO NICOLE
     public PagoDTO registrarPago(PagoDTO pagoDTO) {
+        //Obtenemos la reserva por su ID
+        Reserva reserva = reservaRepositorio.findById(pagoDTO.getIdReserva())
+                .orElseThrow(() -> new NoSuchElementException("La reserva no existe con el ID: " + pagoDTO.getIdReserva()));
+
         Pago pago = modelMapper.map(pagoDTO, Pago.class);
+        pago.setIdPago(null);
+        pago.setReserva(reserva);
+
         pago = pagoRepositorio.save(pago);
 
         // Notificación automática al cliente
-        Reserva reserva = reservaRepositorio.findById(pago.getReserva().getIdReserva()).orElse(null);
-        if (reserva != null) {
-            String mensaje = String.format("Tu pago de S/ %.2f por la reserva en %s ha sido procesado correctamente.",
-                    pago.getMontoTotal(), reserva.getSedeCancha().getSede().getNombre());
-            notificacionServicio.crearNotificacion(
-                    reserva.getUsuario().getIdUsuario(),
-                    "Confirmación",
-                    "Confirmación de pago",
-                    mensaje
-            );
-        }
+        String sedeNombre = (reserva.getSedeCancha() != null && reserva.getSedeCancha().getSede() != null)
+                ? reserva.getSedeCancha().getSede().getNombre()
+                : "Sede";
+
+        String mensaje = String.format(
+                "Tu pago de S/ %.2f por la reserva en %s ha sido procesado correctamente.",
+                pagoDTO.getMontoTotal(),
+                sedeNombre
+        );
+
+        notificacionServicio.crearNotificacion(
+                reserva.getUsuario().getIdUsuario(),
+                "Confirmación",
+                "Confirmación de pago",
+                mensaje
+        );
 
         return modelMapper.map(pago, PagoDTO.class);
     }
 
+    // NO SE USA
     public Pago listarPagoPorId(Integer id) {
         return pagoRepositorio.findById(id).orElse(new Pago());
     }
 
+    // NO SE USA
     public void eliminarPago(Integer id) {
         pagoRepositorio.deleteById(id);
     }

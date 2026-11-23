@@ -12,7 +12,6 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IncidenciaDTO {
-
     private Integer idIncidencia;
     private String tipo;
     private String asunto;
@@ -21,5 +20,5 @@ public class IncidenciaDTO {
     private String respuestaAdmin;
     private Instant fCreacion;
     private Instant fRespuesta;
-    private UsuarioDTO usuario;
+    private Integer idUsuario;
 }
