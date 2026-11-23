@@ -60,11 +60,6 @@ public class UsuarioServicio {
     }
 
 
-
-    public UsuarioDTO actualizar(UsuarioDTO usuarioDTO, String correoAutenticado) {
-        return actualizar(usuarioDTO, correoAutenticado, false);
-    }
-
     public UsuarioDTO actualizar(UsuarioDTO usuarioDTO, String correoAutenticado, boolean esAdmin) {
         Usuario usuario = usuarioRepositorio.findById(usuarioDTO.getIdUsuario())
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
