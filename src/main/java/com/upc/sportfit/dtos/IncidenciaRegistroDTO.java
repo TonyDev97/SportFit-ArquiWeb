@@ -1,6 +1,4 @@
 package com.upc.sportfit.dtos;
-
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,5 +25,5 @@ public class IncidenciaRegistroDTO {
     @Size(max = 300, message = "La descripción no puede exceder los 300 caracteres")
     private String descripcion;
 
-    private UsuarioDTO usuario;
+    private Integer idUsuario;
 }

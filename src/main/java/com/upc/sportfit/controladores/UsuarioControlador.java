@@ -1,12 +1,12 @@
 package com.upc.sportfit.controladores;
 
 import com.upc.sportfit.dtos.UsuarioDTO;
-import com.upc.sportfit.entidades.Usuario;
 import com.upc.sportfit.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class UsuarioControlador {
     private UsuarioServicio usuarioServicio;
 
     // ED48
-    @GetMapping("/api/usuario-clientes-reservas/{cantidadReservas}")
+    @GetMapping("/usuario-clientes-reservas/{cantidadReservas}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesCantidadReservas(@PathVariable Integer cantidadReservas){
         return ResponseEntity.ok(usuarioServicio.buscarClientesCantidadReservas(cantidadReservas));
@@ -27,24 +27,24 @@ public class UsuarioControlador {
     // ED51 - Buscar clientes
     @GetMapping("/usuario/clientes")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<Usuario> buscarClientes(){
-        return usuarioServicio.listarTodo();
+    public ResponseEntity<List<UsuarioDTO>> buscarClientes() {
+        return ResponseEntity.ok(usuarioServicio.listarTodo());
     }
 
     // ED52
     // Validado
     @GetMapping("/usuario/clientes-nombre/{nombre}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<UsuarioDTO> buscarClientesNombreContiene(@PathVariable String nombre){
-        return usuarioServicio.buscarClientesNombreContiene(nombre);
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesNombreContiene(@PathVariable String nombre){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesNombreContiene(nombre));
     }
 
     // ED53
     // Validado
     @GetMapping("/usuario/clientes-dni/{dni}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public List<UsuarioDTO> buscarClientesDniInicia(@PathVariable String dni){
-        return usuarioServicio.buscarClientesDniInicia(dni);
+    public ResponseEntity<List<UsuarioDTO>> buscarClientesDniInicia(@PathVariable String dni){
+        return ResponseEntity.ok(usuarioServicio.buscarClientesDniInicia(dni));
     }
 
     // ED54
@@ -59,9 +59,14 @@ public class UsuarioControlador {
     // Validado
     @PutMapping("/usuario-actualizar")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
-    public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO){
-        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO));
+    public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String correo = auth.getName();
+        boolean esAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMINISTRADOR".equals(a.getAuthority()));
+        return ResponseEntity.ok(usuarioServicio.actualizar(usuarioDTO, correo, esAdmin));
     }
+
 
 
     // ED56
@@ -69,7 +74,7 @@ public class UsuarioControlador {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> cambiarPassword(
             @PathVariable Integer idAdmin,
-            @RequestBody String password){
+            @RequestParam String password){
         return ResponseEntity.ok(usuarioServicio.cambiarPassword(idAdmin, password));
     }
     /*
@@ -88,7 +93,7 @@ public class UsuarioControlador {
     }
 
     // ED59
-    @GetMapping("/api/usuarios-clientes-correo/{dominio}")
+    @GetMapping("/usuarios-clientes-correo/{dominio}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClienteCorreoDominio(@PathVariable String dominio){
         return ResponseEntity.ok(usuarioServicio.buscarClienteCorreoDominio(dominio));
@@ -97,12 +102,18 @@ public class UsuarioControlador {
     // ED60 ok
     @PutMapping("/usuario/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public Usuario cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
-        return usuarioServicio.cambiarEstado(id, estado);
+    public ResponseEntity<UsuarioDTO> cambiarEstado(@PathVariable Integer id, @RequestParam Boolean estado){
+        return ResponseEntity.ok(usuarioServicio.cambiarEstado(id, estado));
     }
 
+    //Esta API permite obtener los datos del cliente/admin al iniciar sesion
+    @GetMapping("/obtener-usuario")
+    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    public ResponseEntity<UsuarioDTO> obtenerAdministradorClienteCorreo(@RequestParam String correo, Integer idRol){
+        return ResponseEntity.ok(usuarioServicio.obtenerAdministradorClienteCorreo(correo, idRol));
+    }
 
-    // NO SE VAN A USAR
+        // NO SE VAN A USAR
     //@GetMapping("/usuarios")
     //public List<Usuario> listarTodo(){
     //    return usuarioServicio.listarTodo();

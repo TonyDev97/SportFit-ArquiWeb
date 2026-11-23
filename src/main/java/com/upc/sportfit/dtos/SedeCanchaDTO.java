@@ -28,7 +28,7 @@ public class SedeCanchaDTO {
     private Boolean estado;
     private BigDecimal precio;
     private String imgCancha;
-    private SedeDTO sede;
-    private TipoCanchaDTO cancha;
+    private Integer idSedeSede;
+    private Integer idTipoCancha;
 
 }

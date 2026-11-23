@@ -32,9 +32,7 @@ public class ReservaDTO {
     private Instant fCreacion;
     private String modificadoPor;
     private Instant fModificacion;
-    private UsuarioDTO usuario;
-    private SedeCanchaDTO sedeCancha;
-
-
+    private Integer idUsuario;
+    private Integer idSedeCancha;
 
 }

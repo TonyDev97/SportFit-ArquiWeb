@@ -14,5 +14,5 @@ public class CancelacionDTO {
     private Integer idCancelacion;
     private String tipoCancelacion;
     private Instant fCancelacion;
-    private ReservaDTO reserva;
+    private Integer idReserva;
 }
