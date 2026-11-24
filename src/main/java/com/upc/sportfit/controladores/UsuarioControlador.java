@@ -56,7 +56,7 @@ public class UsuarioControlador {
     }
 
     // ED55
-    // Validado
+    // Validado funcional para ambos roles tanto admin y cliente
     @PutMapping("/usuario-actualizar")
     @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioDTO> actualizar(@RequestBody UsuarioDTO usuarioDTO) {
