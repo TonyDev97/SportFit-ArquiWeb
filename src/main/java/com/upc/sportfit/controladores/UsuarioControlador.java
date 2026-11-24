@@ -48,7 +48,7 @@ public class UsuarioControlador {
     }
 
     // ED54
-    // Validado
+    // Validado testeado
     @GetMapping("/usuario/clientes-estado/{estado}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<UsuarioDTO>> buscarClientesEstado(@PathVariable Boolean estado){
