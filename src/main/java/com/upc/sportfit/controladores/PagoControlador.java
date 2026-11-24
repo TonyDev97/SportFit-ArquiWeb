@@ -59,7 +59,7 @@ public class PagoControlador {
         return ResponseEntity.ok(nuevoPago);
     }
 
-    // ED62
+    // ED62 banners reportes
     @GetMapping("/pago/reporte/banners")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<BannerPagoReporte> cargarBannerPago(
