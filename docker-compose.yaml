@@ -17,7 +17,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db_sportfit
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=admin
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - IP_FRONTEND=http://100.60.225.62:4200
   db:
     image: postgres:16-alpine
     volumes:

@@ -57,14 +57,14 @@ public class ReservaControlador {
         return reservaServicio.listarDeporteParticipacion();
     }
 
-    // ED05 - HU08: Cancelaciones por día (mes y año como parámetros)
+    /*// ED05 - HU08: Cancelaciones por día (mes y año como parámetros)
     @GetMapping("/reservas-canceladas/periodo")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<CancelacionDiaDTO>> obtenerCancelacionesPorPeriodo(
             @RequestParam Integer mes,
             @RequestParam Integer anio) {
         return ResponseEntity.ok(reservaServicio.obtenerCancelacionesPorPeriodo(mes, anio));
-    }
+    }*/
 
     // ED06 - HU08: Monto perdido por cancelaciones
     @GetMapping("/reservas-canceladas/monto-perdido")
