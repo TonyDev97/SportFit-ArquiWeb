@@ -825,7 +825,7 @@ public class ReservaServicio {
 
         if (reservaDTO.getIdUsuario() == null || reservaDTO.getCreadoPor() == null
                 || reservaDTO.getCreadoPor().isBlank()) {
-            throw new IllegalArgumentException("Debe indicar el usuario que solicita la reserva");
+            throw new IllegalArgumentException("Debe indicar el usuario que  solicita la reserva");
         }
         if (reservaDTO.getIdSedeCancha() == null || reservaDTO.getFReserva() == null
                 || reservaDTO.getHInicio() == null || reservaDTO.getHFin() == null) {
